@@ -1,6 +1,6 @@
 #lang racket
 (require redex
-         "./grammar.rkt"
+         "../grammar.rkt"
          )
 
 (define-metafunction ext-lang

@@ -1,2 +1,6 @@
 #lang racket
-(require redex)
+
+(require redex
+         "../grammar.rkt"
+         "../Meta-functions/delta.rkt"
+         )
