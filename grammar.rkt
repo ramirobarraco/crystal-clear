@@ -2,17 +2,24 @@
 
 (require redex)
 
-(define-language ext-lang
+(define-language crystal-lang
   (P ::=
+     (P P P...)
+     \;
      Name
-     Name = v
-     (while P P end)
-     (if0 P then P else P)
+     (Name = v)
+     (while P P)
+     (if P then P else P)
      (strictbinop P P)
-     (unop p)
+     (unop P)
+     v
      )
-  (E ::=(v ...E e ...)
-     []
+  (E ::=
+     (unop E)
+     (strictbinop E P)
+     (E P P...)
+     (if E then P else P)
+     hole
      )
   ;Type definition
   [v Nil Boolean Number Str Union]
@@ -42,20 +49,30 @@
   ; Name can be anything except a keyword of the language
   [Name variable-not-otherwise-mentioned]
   )
-(provide ext-lang)
+(provide crystal-lang)
 
 (define is_number?
-  (redex-match? ext-lang
+  (redex-match? crystal-lang
                 Number))
 
 (define is_string?
-  (redex-match? ext-lang
+  (redex-match? crystal-lang
                 Str))
 
 (define is_nil?
-  (redex-match? ext-lang
+  (redex-match? crystal-lang
                 nil))
 
 (define is_bool?
-  (redex-match? ext-lang
+  (redex-match? crystal-lang
                 Boolean))
+
+(define is_false?
+  (redex-match? crystal-lang
+                false))
+
+(define (is_false_cond? t)
+  (or (is_false? t)
+      (is_nil? t)))
+
+(provide (all-defined-out))

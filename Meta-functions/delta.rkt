@@ -3,7 +3,7 @@
          "../grammar.rkt"
          )
 
-(define-metafunction ext-lang
+(define-metafunction crystal-lang
   ; arithmetic operations
   ; coercion
   [(δbasic binop v_1 v_2)
