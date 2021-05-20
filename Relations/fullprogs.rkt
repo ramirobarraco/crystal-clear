@@ -3,6 +3,7 @@
 (require redex
          "../grammar.rkt"
          "../Meta-functions/delta.rkt"
+         "../Relations/progs.rkt"
          )
 (define full-rel
   (reduction-relation
@@ -15,4 +16,10 @@
            (where(P_2),(apply-reduction-relation progs-rel(term P_1)))
 
            FWD-Pure)
+
+   (↦ (σ_1:(in-hole E P_1))
+           (σ_2:(in-hole E P_2))
+           (where(σ_2:P_2),(apply-reduction-relation σ-rel(term(σ: P_1))))
+
+           FWD-σ)
    ))

@@ -6,32 +6,44 @@
 (define-metafunction crystal-lang
   ; arithmetic operations
   ; coercion
-  [(δbasic binop v_1 v_2)
-   (δbasic binop Number_1 Number_2)
-   (where Number_1 (δbasic v_1 nil))
-   (where Number_2 (δbasic v_2 nil))]
   
-  [(δbasic + Number_1 Number_2)
-   ,(+ (term Number_3) (term Number_4))
-   
-   (where Number_3 , (term Number_1))
-   (where Number_4 , (term Number_2))]
+  [(δbasic + int32_1 int32_2)
+   ,(+ (term int32_1) (term int32_2))]
 
-  [(δbasic - Number_1 Number_2)
-   ,(- (term Number_3) (term Number_4))
-   
-   (where Number_3 , (term Number_1))
-   (where Number_4 , (term Number_2))]
+  [(δbasic - int32_1 int32_2)
+   ,(- (term int32_1) (term int32_2))]
   
-  [(δbasic * Number_1 Number_2)
-   ,(* (term Number_3) (term Number_4))
-   
-   (where Number_3 ,(term Number_1))
-   (where Number_4 ,(term Number_2))]
+  [(δbasic * int32_1 int32_2)
+   ,(* (term int32_1) (term int32_2))]
  
-  [(δbasic / Number_1 Number_2)
-   ,(/ (term Number_3) (term Number_4))
-   (where Number_3 ,(term Number_1))
-   (where Number_4 ,(term Number_2))
+  [(δbasic / int32_1 int32_2)
+   ,(/ (term int32_1) (term int32_2))
   ]
+  [(δbasic == v_1 v_2)
+   ,(eq? (term v_1)(term v_2))
+   ]
+  [(δbasic < > v_1 v_2)
+   ,(eq? (term v_1)(term v_2))
+   ]
+  [(δbasic >= v_1 v_2)
+   ,(eq? (term v_1)(term v_2))
+   ]
+  [(δbasic <= v_1 v_2)
+   ,(eq? (term v_1)(term v_2))
+   ]
+  [(δbasic > v_1 v_2)
+   ,(eq? (term v_1)(term v_2))
+   ]
+  [(δbasic & v_1 v_2)
+   ,(eq? (term v_1)(term v_2))
+   ]
+  [(δbasic \| v_1 v_2)
+   ,(eq? (term v_1)(term v_2))
+   ]
+  [(δbasic and v_1 v_2)
+   ,(eq? (term v_1)(term v_2))
+   ]
+  [(δbasic or v_1 v_2)
+   ,(eq? (term v_1)(term v_2))
+   ]
 )

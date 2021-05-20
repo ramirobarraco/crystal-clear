@@ -26,27 +26,17 @@
          P]
    
    [-->P (v_1 binop v_2)
-           v_3
-
-           E-BinOpNumber
-
-           ; arith. or .. op, over numeric or string operands
-           (side-condition (or (term (isArithBinOp binop))
-                               (is_strconcat? (term binop))))
-
+           (δ binop v_1 v_2)
+           E-BinOp
            ; apply binop, check if the operation was successful
-           (where v_3 (δ binop v_1 v_2))
-
-           ; we are assuming the soundness of δ: successful arithops only return
-           ; numbers, successful concat only returns strings
-           (side-condition (or (is_string? (term v_3))
-                               (is_number? (term v_3))))]
+           (side-condition (is_strictbinop? (term binop)))]
    
    ; logical conectives
-   [-->P (v binop e)
-           (δ binop v e)
+   [-->P (v binop P)
+           (δ binop v P)
            E-LogicOp
         
-           (side-condition (term (isBooleanBinOp binop)))]
+           (side-condition (is_shortbinop? (term binop)))]
 
    ))
+(provide progs-rel)

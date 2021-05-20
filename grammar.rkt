@@ -7,43 +7,64 @@
      (P P P...)
      \;
      Name
-     (Name = v)
+     (var = v)
      (while P P)
+     (P binop P)
      (if P then P else P)
-     (strictbinop P P)
      (unop P)
      v
      )
   (E ::=
      (unop E)
-     (strictbinop E P)
+     (E binop P)
      (E P P...)
      (if E then P else P)
+     (while E P)
+     (var = E)
      hole
      )
+  (var::=
+   Name
+   r
+   )
+  (Ev ::=
+     (unop hole)
+     (hole binop P)
+     (v binop hole)
+     (hole P P...)
+     (if hole then P else P)
+     (while hole P)
+     (var = hole)
+       )
   ;Type definition
-  [v Nil Boolean Number Str Union]
-  [t nil bool int32 string union]
+  [v nil bool int32 str union]
+  [t Nil Bool Int32 String Union]
 
-  [Boolean true false]
+  [bool true false]
 
-  [Number integer]
+  [int32 integer]
 
-  [Str string]
+  [str string]
 
-  [Union (union Type ...)]
+  [union (union Type ...)]
 
-  ; primitive operators
-  [arithop + - * / ^ %]
-
-  [relop < <= > >=]
-
+  [binop shortbinop strictbinop]
+  
   ; Not short-circuit binop
-  [strictbinop arithop relop == ..]
+  [strictbinop
+        ;arith
+        + - * / ^ % 
+        ; relop 
+        < <= > >= == 
+        ; boolean
+        & \|]
 
-  [binop strictbinop and or]
+  [shortbinop and or]
 
   [unop - not typeof]
+
+  ;r is a reference
+  [r natural]
 
   [σ ((r v) ...)]
   ; Name can be anything except a keyword of the language
@@ -70,6 +91,14 @@
 (define is_false?
   (redex-match? crystal-lang
                 false))
+
+(define is_shortbinop?
+  (redex-match? crystal-lang
+                shortbinop))
+
+(define is_strictbinop?
+  (redex-match? crystal-lang
+                strictbinop))
 
 (define (is_false_cond? t)
   (or (is_false? t)
