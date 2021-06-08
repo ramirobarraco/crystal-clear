@@ -7,7 +7,7 @@
      (P P P...)
      \;
      Name
-     (var = v)
+     (var = P)
      (while P P)
      (P binop P)
      (if P then P else P)
@@ -55,9 +55,8 @@
         ;arith
         + - * / ^ % 
         ; relop 
-        < <= > >= == 
-        ; boolean
-        & \|]
+        < <= > >= ==
+        ]
 
   [shortbinop and or]
 
