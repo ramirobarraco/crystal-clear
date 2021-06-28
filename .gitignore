@@ -6,3 +6,6 @@ Meta-functions/compiled/drracket/errortrace/delta_rkt.zo
 Meta-functions/delta.2
 Relations/compiled/drracket/errortrace/progs_rkt.dep
 Relations/compiled/drracket/errortrace/progs_rkt.zo
+*.bak
+*.dep
+*.zo
