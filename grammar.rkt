@@ -3,6 +3,7 @@
 (require redex)
 
 (define-language crystal-lang
+  
   (P ::=
      (P P P...)
      \;
@@ -14,28 +15,33 @@
      (unop P)
      v
      )
+; next instruction to compute
   (E ::=
      (unop E)
      (E binop P)
+     (v stricbinop P)
      (E P P...)
      (if E then P else P)
      (while E P)
      (var = E)
      hole
      )
+
   (var::=
    Name
    r
    )
+; Context
   (Ev ::=
      (unop hole)
      (hole binop P)
-     (v binop hole)
+     (v strictbinop hole)
      (hole P P...)
      (if hole then P else P)
      (while hole P)
      (var = hole)
        )
+  
   ;Type definition
   [v nil bool int32 str union]
   [t Nil Bool Int32 String Union]
