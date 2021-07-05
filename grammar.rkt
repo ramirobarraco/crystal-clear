@@ -7,7 +7,7 @@
   (P ::=
      (P P P...)
      \;
-     Name
+     var
      (var = P)
      (while P P)
      (P binop P)
@@ -19,15 +19,15 @@
   (E ::=
      (unop E)
      (E binop P)
-     (v stricbinop P)
-     (E P P...)
+     (v strictbinop E)
+     (E P P ...)
      (if E then P else P)
      (while E P)
      (var = E)
      hole
      )
 
-  (var::=
+  (var ::=
    Name
    r
    )
@@ -36,7 +36,7 @@
      (unop hole)
      (hole binop P)
      (v strictbinop hole)
-     (hole P P...)
+     (hole P P ...)
      (if hole then P else P)
      (while hole P)
      (var = hole)
@@ -69,7 +69,7 @@
   [unop - not typeof]
 
   ;r is a reference
-  [r natural]
+  [r (ref natural)]
 
   [σ ((r v) ...)]
   ; Name can be anything except a keyword of the language

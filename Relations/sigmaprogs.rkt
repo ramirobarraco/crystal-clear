@@ -8,7 +8,7 @@
 (define σ-rel
   (reduction-relation
    crystal-lang
-   #:domain (σ:P)
+   #:domain (σ : P)
    #:arrow -->σ/P
    [-->σ/P (((r_1 v_1) ... (r v) (r_2 v_2) ...) : (in-hole Ev r))
          (((r_1 v_1) ... (r v) (r_2 v_2) ...) : (in-hole Ev v))

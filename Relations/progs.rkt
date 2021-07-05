@@ -30,14 +30,14 @@
          ]
    
    [-->P (v_1 binop v_2)
-           (δbasic binop v_1 v_2)
+           (δ binop v_1 v_2)
            E-BinOp
            ; apply binop, check if the operation was successful
            (side-condition (is_strictbinop? (term binop)))]
    
    ; logical conectives
    [-->P (v binop P)
-           (δbasic binop v P)
+           (δ binop v P)
            E-LogicOp
         
            (side-condition (is_shortbinop? (term binop)))]

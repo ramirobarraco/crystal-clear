@@ -8,3 +8,5 @@
             (term (1 + 1))
             (term 2))
 )
+
+(progs-rel-test-suite)
