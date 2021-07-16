@@ -5,7 +5,7 @@
 (define-language crystal-lang
   
   (P ::=
-     (P P P...)
+     (P P P ...)
      \;
      var
      (var = P)
@@ -22,7 +22,6 @@
      (v strictbinop E)
      (E P P ...)
      (if E then P else P)
-     (while E P)
      (var = E)
      hole
      )
@@ -38,7 +37,6 @@
      (v strictbinop hole)
      (hole P P ...)
      (if hole then P else P)
-     (while hole P)
      (var = hole)
        )
   

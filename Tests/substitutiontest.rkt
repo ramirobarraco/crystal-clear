@@ -10,6 +10,5 @@
   (test-equal (term (subst (X + 1) ((X (ref 1))))) (term ((ref 1) + 1)))
 
 
-
   )
 (subst-exp-test-suite)

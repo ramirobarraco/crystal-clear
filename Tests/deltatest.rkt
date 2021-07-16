@@ -11,6 +11,9 @@
   
   (test-equal (term (δ - 1 1))
               0)
+
+  (test-equal (term (δ - 0))
+              -0)
   
   (test-equal (term (δ * 2 2))
               4)

@@ -21,12 +21,18 @@
          if-F
 
          (side-condition(is_false_cond? (term v)))]
-   
-   [-->P (\; P)
-         P]
 
-   [-->P (while v P_1)
-         (if v then P_1 \; while v P_1 else \;)
+   [-->P (\; P_1)
+         P_1
+         1-skip]
+
+   [-->P (\; P_1 P_2 P_3 ...)
+         (P_1 P_2 P_3 ...)
+         more-skip]
+   
+
+   [-->P (while P_1 P_2)
+         (if P_1 then (P_2 \; (while P_1 P_2)) else \;)
          ]
    
    [-->P (v_1 binop v_2)

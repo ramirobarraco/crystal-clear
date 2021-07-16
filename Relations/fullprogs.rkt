@@ -20,7 +20,7 @@
 
    (↦ (σ_1 : (in-hole E P_1))
            (σ_2 : (in-hole E P_2))
-           (where (σ_2 : P_2) ,(apply-reduction-relation σ-rel (term (σ_1 : P_1))))
+           (where ((σ_2 : P_2)) ,(apply-reduction-relation σ-rel (term (σ_1 : P_1))))
 
            FWD-σ)
    ))
