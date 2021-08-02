@@ -9,3 +9,4 @@ Relations/compiled/drracket/errortrace/progs_rkt.zo
 *.bak
 *.dep
 *.zo
+*.2

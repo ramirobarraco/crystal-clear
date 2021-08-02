@@ -19,6 +19,13 @@
             (term ((((ref 1) 3))
                    : (3 < 1))))
   
+  (test--> σ-rel(term ((((ref 1) 3))
+                         :
+                         ((ref 1) = 1 )))
+            
+            (term ((((ref 1) 1))
+                   : \;)))
+  
   )
 
 (sigma-progs-test-suite)

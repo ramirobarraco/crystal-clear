@@ -16,6 +16,7 @@
      v
      )
 ; next instruction to compute
+  
   (E ::=
      (unop E)
      (E binop P)
@@ -25,11 +26,7 @@
      (var = E)
      hole
      )
-
-  (var ::=
-   Name
-   r
-   )
+  
 ; Context
   (Ev ::=
      (unop hole)
@@ -39,6 +36,11 @@
      (if hole then P else P)
      (var = hole)
        )
+
+  (var ::=
+   Name
+   r
+   )
   
   ;Type definition
   [v nil bool int32 str union]
@@ -50,7 +52,7 @@
 
   [str string]
 
-  [union (union Type ...)]
+  [union (t ...)]
 
   [binop shortbinop strictbinop]
   
