@@ -43,7 +43,7 @@
    )
   
   ;Type definition
-  [v nil bool int32 str union]
+  [v nil bool int32 str]
   [t Nil Bool Int32 String Union]
 
   [bool true false]
@@ -52,7 +52,7 @@
 
   [str string]
 
-  [union (t ...)]
+  [Union (t ...)]
 
   [binop shortbinop strictbinop]
   
