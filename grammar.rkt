@@ -13,6 +13,7 @@
      (P binop P)
      (if P then P else P)
      (unop P)
+     (let Name = P in P)
      v
      )
 ; next instruction to compute
@@ -24,6 +25,7 @@
      (E P P ...)
      (if E then P else P)
      (var = E)
+     (let Name = E in P)
      hole
      )
   
@@ -70,8 +72,10 @@
 
   ;r is a reference
   [r (ref natural)]
+  ;reference pair
+  [rp (r v)]
 
-  [σ ((r v) ...)]
+  [σ (rp ...)]
   ; Name can be anything except a keyword of the language
   [Name variable-not-otherwise-mentioned]
   )

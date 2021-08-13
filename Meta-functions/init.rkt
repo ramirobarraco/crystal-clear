@@ -4,12 +4,16 @@
          )
 
 (define-metafunction crystal-lang
+  init : σ -> r
   [(init ())
-   0]
+   (ref 0)]
   
-  [(init ((r_1 v_1) ... ))
-   ,(+ (argmax max (term (r_1 ...))) 1)]
+  [(init (((ref number_1) v_1) ... ))
+   (ref number_2)
+
+   (where number_2 ,(+ (argmax max (term (number_1 ...))) 1))]
   )
+
 
 (define-metafunction crystal-lang
   addVal : σ (v ...) -> (σ (r ...))
@@ -18,10 +22,10 @@
    (((r v) ...) ())]
   
   ; Inductive case
-  [(addVal ((r v) ...) (v_1 v_2 ...))
+  [(addVal (rp ...) (v_1 v_2 ...))
    (σ (r_1 r ...))
 
-   (where r_1 (init ((r v) ...)))
-   (where (σ (r ...)) (addVal ((r v) ... (r_1 v_1)) (v_2 ...)))])
+   (where r_1 (init (rp ...)))
+   (where (σ (r ...)) (addVal (rp ... (r_1 v_1)) (v_2 ...)))])
 
 (provide addVal)

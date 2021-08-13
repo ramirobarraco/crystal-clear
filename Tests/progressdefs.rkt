@@ -4,7 +4,7 @@
          )
 
 (define-extended-language crystal-lang+Γ crystal-lang
-  [Γ · (Name : t Γ)])
+  [Γ (Name ...)])
 
 (define-judgment-form
   crystal-lang
@@ -60,6 +60,16 @@
 
   [
    -----------------------------
-   (WF Γ σ \;)]
+   (WF Γ σ r)]
+  
+  [(WF Γ σ P_1)
+   (WF Γ σ P_2)
+   -----------------------------
+   (WF Γ σ (let x = P_1 in P_2))]
+
+  [
+   -----------------------------
+   (WF Γ σ Name)]
+  
   
   )
