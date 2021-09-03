@@ -4,10 +4,10 @@
          )
 
 (define-extended-language crystal-lang+Γ crystal-lang
-  [Γ (Name ...)])
+  [Γ · (Name Γ)])
 
 (define-judgment-form
-  crystal-lang
+  crystal-lang+Γ
   #:mode (WF I I I)
   #:contract (WF Γ σ P)
   
@@ -63,13 +63,25 @@
    (WF Γ σ r)]
   
   [(WF Γ σ P_1)
-   (WF Γ σ P_2)
+   (where Γ_1 (x Γ))
+   (WF Γ_1 σ P_2)
    -----------------------------
    (WF Γ σ (let x = P_1 in P_2))]
 
-  [
+  [(side-condition (in Γ Name))
    -----------------------------
    (WF Γ σ Name)]
   
   
   )
+
+(provide WF)
+
+(define-metafunction crystal-lang+Γ
+  [(in (Name_1 Γ) Name_1)
+   #t
+   ]
+  [(in · Name_1)
+   #f]
+  [(in (Name Γ) Name_1)
+   (in Γ Name_1)])
