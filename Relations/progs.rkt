@@ -48,5 +48,13 @@
         
            (side-condition (is_shortbinop? (term binop)))]
 
+   [-->P (- v)
+         (δ - v)
+         (side-condition (is_int? (term v)))]
+
+   [-->P (not v)
+         (δ not v)
+         (side-condition (is_bool? (term v)))]
+
    ))
 (provide progs-rel)

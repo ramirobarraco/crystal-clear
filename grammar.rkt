@@ -45,7 +45,7 @@
    )
   
   ;Type definition
-  [v nil bool int32 str]
+  [v nil bool int32 str union]
   [t Nil Bool Int32 String Union]
 
   [bool true false]
@@ -54,7 +54,7 @@
 
   [str string]
 
-  [Union (t ...)]
+  [union (t ...)]
 
   [binop shortbinop strictbinop]
   
@@ -68,7 +68,9 @@
 
   [shortbinop and or]
 
-  [unop - not typeof]
+  [unop - not
+        ;typeof
+        ]
 
   ;r is a reference
   [r (ref natural)]
@@ -81,13 +83,13 @@
   )
 (provide crystal-lang)
 
-(define is_number?
+(define is_int?
   (redex-match? crystal-lang
-                Number))
+                int32))
 
 (define is_string?
   (redex-match? crystal-lang
-                Str))
+                string))
 
 (define is_nil?
   (redex-match? crystal-lang
@@ -95,7 +97,7 @@
 
 (define is_bool?
   (redex-match? crystal-lang
-                Boolean))
+                bool))
 
 (define is_false?
   (redex-match? crystal-lang
