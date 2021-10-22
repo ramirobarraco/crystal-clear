@@ -22,6 +22,12 @@
          (σ_2 : (subst P ((Name r_2))))
          (where (σ_2 (r_2)) (addVal σ_1 (v_2)))
          ]
+   
+   [-->σ/P (σ_1 : (let t Name = v_2 in P))
+         (σ_2 : (subst P ((Name r_2))))
+         (where (σ_2 (r_2)) (addVal σ_1 (v_2)))
+         ]
+
 
    ;[-->σ/P (σ_1 : (let Name_1 Name_2 ..._1 = v_2 v_3 ..._1 in P))
     ;     (σ_2 : term(subst(P ((Name_1 r_2)(Name_2 r_3) ...))))

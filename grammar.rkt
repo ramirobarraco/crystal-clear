@@ -14,6 +14,7 @@
      (if P then P else P)
      (unop P)
      (let Name = P in P)
+     (let t Name = P in P)
      v
      )
 ; next instruction to compute
@@ -26,6 +27,7 @@
      (if E then P else P)
      (var = E)
      (let Name = E in P)
+     (let t Name = E in P)
      hole
      )
   
@@ -45,16 +47,17 @@
    )
   
   ;Type definition
-  [v nil bool int32 str union]
-  [t Nil Bool Int32 String Union]
+  [v nil bool int32 str]
+  ;last type is the union of types
+  [t Nil Bool Int32 String union]
+  [st Nil Bool Int32 String]
+  [union (st ...)]
 
   [bool true false]
 
   [int32 integer]
 
   [str string]
-
-  [union (t ...)]
 
   [binop shortbinop strictbinop]
   
