@@ -102,6 +102,14 @@
   (redex-match? crystal-lang
                 bool))
 
+(define-metafunction crystal-lang
+  is_a? : v -> t
+  [(is_a? v) Int32 (side-condition (is_int? v))]
+  [(is_a? v) Bool (side-condition (is_bool? v))]
+  [(is_a? v) String (side-condition (is_string? v))]
+  [(is_a? v) Nil (side-condition (is_nil? v))]
+      )
+
 (define is_false?
   (redex-match? crystal-lang
                 false))
@@ -117,5 +125,6 @@
 (define (is_false_cond? t)
   (or (is_false? t)
       (is_nil? t)))
+
 
 (provide (all-defined-out))
