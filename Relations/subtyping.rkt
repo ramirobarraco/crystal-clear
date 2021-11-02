@@ -7,18 +7,19 @@
   [(subtype t ())]
   [(subtype t_1 t_2)
    (side-condition (term
-                    (upper_boound? t_1 t_2)))
+                    (upper_bound? t_1 t_2)))
    ]
   )
+; given t_1 t_2 returns true if t_1 is an upper bound of t_2
 (define-metafunction crystal-lang
-  upper_boound? : t t -> boolean
-  [(upper_boound? t ()) #true]
-  [(upper_boound? st_1 st_1) #true]
-  [(upper_boound? st_1 st_2) #false]
-  [(upper_boound? () (st_1 st_2 ...)) #false]
-  [(upper_boound? () st_1) #false]
-  [(upper_boound? (st_1 ...) (st_2 st_3 ...)) ,(and (term(upper_boound? (st_1 ...) (st_3 ...))) (term(in st_2 (st_1 ...))))]
-  [(upper_boound? (st_1 st_2 ...) st_3) ,(term (in st_3 (st_1 st_2 ...)))]
+  upper_bound? : t t -> boolean
+  [(upper_bound? t ()) #true]
+  [(upper_bound? st_1 st_1) #true]
+  [(upper_bound? st_1 st_2) #false]
+  [(upper_bound? () (st_1 st_2 ...)) #false]
+  [(upper_bound? () st_1) #false]
+  [(upper_bound? (st_1 ...) (st_2 st_3 ...)) ,(and (term(upper_bound? (st_1 ...) (st_3 ...))) (term(in st_2 (st_1 ...))))]
+  [(upper_bound? (st_1 st_2 ...) st_3) ,(term (in st_3 (st_1 st_2 ...)))]
   )
 (define-metafunction crystal-lang
   in : st t -> boolean
