@@ -23,6 +23,36 @@
   (test-equal(term (supreme-Σ ((ref 0) : (String Bool) ·) ((ref 0) : (String) ·)))
              (term ((ref 0) : (String Bool) ·))
              )
+  
+  ;value calls
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) x Int32 (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) (ref 0) Int32 (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) 10 Int32 (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) true Bool (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) "asas" String (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) nil Nil (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
+  
+  ;basic functions
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) (1 + 1) Int32 (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) (true and false) Bool (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) (- 1) Int32 (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) (- false) Bool (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Bool ·) ((ref 0) : Int32 ·) ((ref 0) = x) Bool (x : Bool ·) ((ref 0) : Bool ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) · (let x = true in ((ref 0) = x)) Bool (x : Int32 ·) ((ref 0) : Bool ·))) #t)
+  
+  ;while
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) (while (x == 1) ((ref 0) = true))
+                                  Bool
+                                  (x : Int32 ·)
+                                  ((ref 0) : (Bool Int32) ·)))
+              #t)
+  
+  ;if
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) (if (x == 1) ((ref 0) = true) ((ref 0) = String))
+                                  Bool
+                                  (x : Int32 ·)
+                                  ((ref 0) : (Bool String Int32) ·)))
+              #t)
   )
   
 

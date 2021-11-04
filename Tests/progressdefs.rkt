@@ -7,6 +7,8 @@
 (define-extended-language crystal-lang+Γ crystal-lang
   [Γ · (Name : t Γ)]
   [Σ · (r : t Σ)]
+  [arithop + - * / ^ %]
+  [relop < <= > >= ==]
   )
 
 (define-judgment-form
@@ -30,10 +32,20 @@
    [(TR Γ Σ P_1 Bool Γ_1 Σ_1)
    (TR Γ_1 Σ_1 P_2 t_1 Γ_2 Σ_2)
    (TR Γ_1 Σ_1 P_3 t_2 Γ_3 Σ_3)
+   (where t_3 (supreme-t t_1 t_2))
+   (where Γ_4 (supreme-Γ Γ_2 Γ_3))
+   (where Σ_4 (supreme-Σ Σ_2 Σ_3))
    -----------------------------
-   (TR Γ Σ (if P_1 then P_2 else P_3) (supreme-t t_1 t_2) (supreme-Γ Γ_2 Γ_3) (supreme-Σ Σ_2 Σ_3))]
+   (TR Γ Σ (if P_1 then P_2 else P_3) t_3 Γ_4 Σ_4)]
 
-  [(TR Γ Σ P t_1 Γ Σ_1)
+  [(TR Γ Σ P t_1 Γ Σ)
+   (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Σ Σ r))))
+   (where Σ_1 (r : t_1 (remove-Σ Σ r)))
+   -----------------------------
+   (TR Γ Σ (r = P) t_1 Γ Σ_1)]
+
+  [(TR Γ Σ P t_1 Γ Σ)
+   (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Σ Σ r))))
    (where Σ_1 (r : t_1 Σ))
    -----------------------------
    (TR Γ Σ (r = P) t_1 Γ Σ_1)]
@@ -48,29 +60,47 @@
   [(TR Γ Σ P_1 Bool Γ_1 Σ_1)
    (TR Γ_1 Σ_1 P_2 t Γ_2 Σ_2)
    -----------------------------
-   (TR Γ Σ (while P_1 P_2) t Γ_2 Σ_2)]
+   (TR Γ Σ (while P_1 P_2) t (supreme-Γ Γ Γ_2) (supreme-Σ Σ Σ_2))]
 
+  [(TR Γ Σ P_1 Int32 Γ Σ)
+   (TR Γ Σ P_2 Int32 Γ Σ)
+   -----------------------------
+   (TR Γ Σ (P_1 arithop P_2) Int32 Γ Σ)]
+  
   [(TR Γ Σ P_1 t Γ Σ)
    (TR Γ Σ P_2 t Γ Σ)
    -----------------------------
-   (TR Γ Σ (P_1 binop P_2) t Γ Σ)]
+   (TR Γ Σ (P_1 relop P_2) Bool Γ Σ)]
+  
+  [(TR Γ Σ P_1 Bool Γ Σ)
+   (TR Γ Σ P_2 Bool Γ Σ)
+   -----------------------------
+   (TR Γ Σ (P_1 shortbinop P_2) Bool Γ Σ)]
 
   [(TR Γ Σ P_1 t Γ Σ)
    -----------------------------
    (TR Γ Σ (unop P_1) t Γ Σ)]
 
-  [(side-condition (redex-match? crystal-lang+Γ (#t _) (term (in-Σ Σ r))))
+  [(side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Σ Σ r))))
    (where t (typeof-Σ Σ r))
    -----------------------------
    (TR Γ Σ r t Γ Σ)]
   
   [(TR Γ Σ P_1 t_1 Γ Σ)
+   (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
    (where Γ_1 (Name : t_1 Γ))
-   (TR Γ_1 Σ P_2 t_2 Γ Σ_1)
+   (TR Γ_1 Σ P_2 t_2 Γ_2 Σ_1)
+   -----------------------------
+   (TR Γ Σ (let Name = P_1 in P_2) t_2 Γ Σ_1)]
+  
+  [(TR Γ Σ P_1 t_1 Γ Σ)
+   (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Γ Γ Name))))
+   (where Γ_1 (Name : t_1 (remove-Γ Γ Name)))
+   (TR Γ_1 Σ P_2 t_2 Γ_2 Σ_1)
    -----------------------------
    (TR Γ Σ (let Name = P_1 in P_2) t_2 Γ Σ_1)]
 
-  [(side-condition (redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
+  [(side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
    (where t (typeof-Γ Γ Name))
    -----------------------------
    (TR Γ Σ Name t Γ Σ)]
@@ -81,7 +111,6 @@
   )
 
 
-; agregar caso en el que los t no son listas y usar codigo redexds en vez de racket dentro de las funciones
 (define-metafunction crystal-lang+Γ
   supreme-t : t t -> t
   [(supreme-t st_1 st_1) st_1]
@@ -162,6 +191,12 @@
    t (where (_ t) (in-Σ Σ r_1))
    ])
 
+(define-metafunction crystal-lang
+  [(is_a? v) Int32 (side-condition (is_int32? (term v)))]
+  [(is_a? v) Bool (side-condition (is_bool? (term v)))]
+  [(is_a? v) String (side-condition (is_string? (term v)))]
+  [(is_a? v) Nil (side-condition (is_nil? (term v)))]
+  )
 
 (provide (all-defined-out))
 ;(provide WF)

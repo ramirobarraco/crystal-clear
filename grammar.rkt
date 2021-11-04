@@ -68,6 +68,7 @@
         ; relop 
         < <= > >= ==
         ]
+  
 
   [shortbinop and or]
 
@@ -86,7 +87,7 @@
   )
 (provide crystal-lang)
 
-(define is_int?
+(define is_int32?
   (redex-match? crystal-lang
                 int32))
 
@@ -102,14 +103,6 @@
   (redex-match? crystal-lang
                 bool))
 
-(define-metafunction crystal-lang
-  is_a? : v -> t
-  [(is_a? v) Int32 (side-condition (is_int? v))]
-  [(is_a? v) Bool (side-condition (is_bool? v))]
-  [(is_a? v) String (side-condition (is_string? v))]
-  [(is_a? v) Nil (side-condition (is_nil? v))]
-      )
-
 (define is_false?
   (redex-match? crystal-lang
                 false))
@@ -122,9 +115,9 @@
   (redex-match? crystal-lang
                 strictbinop))
 
-(define (is_false_cond? t)
-  (or (is_false? t)
-      (is_nil? t)))
+(define (is_false_cond? P)
+  (or (is_false? P)
+      (is_nil? P)))
 
 
 (provide (all-defined-out))

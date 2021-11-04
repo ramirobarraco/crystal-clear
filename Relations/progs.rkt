@@ -50,7 +50,7 @@
 
    [-->P (- v)
          (δ - v)
-         (side-condition (is_int? (term v)))]
+         (side-condition (is_int32? (term v)))]
 
    [-->P (not v)
          (δ not v)
