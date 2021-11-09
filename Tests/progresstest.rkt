@@ -48,12 +48,11 @@
               #t)
   
   ;if
-  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) (if (x == 1) ((ref 0) = true) ((ref 0) = String))
-                                  Bool
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) (if (x == 1) then ((ref 0) = true) else ((ref 0) = "asaS"))
+                                  (Bool String)
                                   (x : Int32 ·)
-                                  ((ref 0) : (Bool String Int32) ·)))
+                                  ((ref 0) : (String Bool) ·)))
               #t)
   )
-  
 
 (supremes-test-suite)

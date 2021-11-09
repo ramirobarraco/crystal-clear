@@ -15,28 +15,24 @@
   crystal-lang+Γ
   #:mode (TR I I I O O O)
   #:contract (TR Γ Σ P t Γ Σ)
-;TODO implement suprem and typeof for reference
 
   [--------------------------------
-   (TR Γ Σ Nil Nil Γ Σ)]
+   (TR Γ Σ nil Nil Γ Σ)]
 
   [--------------------------------
-   (TR Γ Σ Bool Bool Γ Σ)]
+   (TR Γ Σ bool Bool Γ Σ)]
 
   [--------------------------------
-   (TR Γ Σ Int32 Int32 Γ Σ)]
+   (TR Γ Σ int32 Int32 Γ Σ)]
 
   [--------------------------------
-   (TR Γ Σ String String Γ Σ)]
+   (TR Γ Σ str String Γ Σ)]
 
    [(TR Γ Σ P_1 Bool Γ_1 Σ_1)
    (TR Γ_1 Σ_1 P_2 t_1 Γ_2 Σ_2)
    (TR Γ_1 Σ_1 P_3 t_2 Γ_3 Σ_3)
-   (where t_3 (supreme-t t_1 t_2))
-   (where Γ_4 (supreme-Γ Γ_2 Γ_3))
-   (where Σ_4 (supreme-Σ Σ_2 Σ_3))
    -----------------------------
-   (TR Γ Σ (if P_1 then P_2 else P_3) t_3 Γ_4 Σ_4)]
+   (TR Γ Σ (if P_1 then P_2 else P_3) (supreme-t t_1 t_2) (supreme-Γ Γ_2 Γ_3) (supreme-Σ Σ_2 Σ_3))]
 
   [(TR Γ Σ P t_1 Γ Σ)
    (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Σ Σ r))))
@@ -49,7 +45,7 @@
    (where Σ_1 (r : t_1 Σ))
    -----------------------------
    (TR Γ Σ (r = P) t_1 Γ Σ_1)]
-
+;TODO new judgment form for this pattern
   [(TR Γ Σ P_1 t_1 Γ_1 Σ_1)
    (TR Γ_1 Σ_1 P_2 t_2 Γ_2 Σ_2)
    ...
@@ -104,12 +100,19 @@
    (where t (typeof-Γ Γ Name))
    -----------------------------
    (TR Γ Σ Name t Γ Σ)]
-
-  [(where t_1 (is_a? v))
-   ----------------------------
-   (TR Γ Σ v t_1 Γ Σ)]
+;IF is_a? add to grammar and how to check the Γ
+;  [(where t_1 (is_a? v))
+;   ----------------------------
+;   (TR Γ Σ (is_a? v t) t_1 Γ Σ)]
   )
 
+(define-metafunction crystal-lang+Γ
+  recursion : Γ Σ (P_1 P_2 ...) -> (t Γ Σ)
+  [(recursion Γ Σ (P_1)) (t Γ_1 Σ_1)
+                       (where ((t Γ_1 Σ_1)) ,(judgment-holds (TR Γ Σ P_1 t_2 Γ_2 Σ_2) (t_2 Γ_2 Σ_2)))]
+  
+  [(recursion Γ Σ (P_1 P_2 P_3 ...)) (recursion Γ_1 Σ_1 (P_2 P_3 ...)) (where (Γ_1 Σ_1) ,(judgment-holds (TR Γ Σ P_1 t Γ_2 Σ_2) (Σ_2 Γ_2)))]
+  )
 
 (define-metafunction crystal-lang+Γ
   supreme-t : t t -> t
@@ -192,10 +195,10 @@
    ])
 
 (define-metafunction crystal-lang
-  [(is_a? v) Int32 (side-condition (is_int32? (term v)))]
-  [(is_a? v) Bool (side-condition (is_bool? (term v)))]
-  [(is_a? v) String (side-condition (is_string? (term v)))]
-  [(is_a? v) Nil (side-condition (is_nil? (term v)))]
+  [(is_a? int32) Int32]
+  [(is_a? bool) Bool]
+  [(is_a? str) String]
+  [(is_a? nil) Nil]
   )
 
 (provide (all-defined-out))
