@@ -15,6 +15,7 @@
      (unop P)
      (let Name = P in P)
      (let t Name = P in P)
+     (isa? t var)
      v
      )
 ; next instruction to compute
@@ -49,7 +50,7 @@
   ;Type definition
   [v nil bool int32 str]
   ;last type is the union of types
-  [t Nil Bool Int32 String union]
+  [t Nil Bool Int32 String union Unit]
   [st Nil Bool Int32 String]
   [union (st ...)]
 

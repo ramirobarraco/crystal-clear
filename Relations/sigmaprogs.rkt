@@ -16,7 +16,7 @@
 
    [-->σ/P (((r_1 v_1) ... (r v) (r_2 v_2) ...) : (r = v_3))
          (((r_1 v_1) ... (r v_3) (r_2 v_2) ...) : \;)
-         Local-Assgn]
+         Local-REAssgn]
    
    [-->σ/P (σ_1 : (let Name = v_2 in P))
          (σ_2 : (subst P ((Name r_2))))
