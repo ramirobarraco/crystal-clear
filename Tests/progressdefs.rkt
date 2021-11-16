@@ -45,6 +45,8 @@
    (where Σ_1 (r : t_1 Σ))
    -----------------------------
    (TR Γ Σ (r = P) t_1 Γ Σ_1)]
+  
+  ;TODO name = var
 
   [(concat Γ_1 Σ_1 (P_2 P_3 ...) P_1 t_1 Γ_2 Σ_2)
    --------------------------------------------------------------
@@ -126,18 +128,18 @@
 
   [(where t_1 ,(redex-match crystal-lang+Γ (#t t) (term (in-Γ Γ_1 Name))))
    (where Γ_2 (Name : t_2 (remove-Γ Γ_1 Name)))
-   (where Γ_3 (Name : (complement (t_1 t_2)) (remove-Γ Γ_1 Name)))
+   (where Γ_3 (Name : (remove-t (t_1 t_2)) (remove-Γ Γ_1 Name)))
    --------------------------------------------------------------------
    (IF Γ_1 Σ_1 (isa? t_2 Name) Γ_2 Σ_1 Γ_3 Σ_1)]
   
   [(where t_1 ,(redex-match crystal-lang+Γ (#t t_1) (term (in-Σ Σ_1 Name))))
    (where Σ_2 (r : t_2 (remove-Σ Σ_1 r)))
-   (where Σ_3 (r : (complement(t_1 t_2)) (remove-Σ Σ_1 r)))
+   (where Σ_3 (r : (remove-t (t_1 t_2)) (remove-Σ Σ_1 r)))
    --------------------------------------------------------------------
    (IF Γ_1 Σ_1 (isa? t_2 r) Γ_1 Σ_2 Γ_1 Σ_3)]
   
   [(IF Γ_1 Σ_1 P_1 Γ_2 Σ_2 Γ_3 Σ_3)
-   (IF Γ_1 Σ_1 P_2 Γ_2 Σ_2 Γ_3 Σ_3)
+   (IF Γ_2 Σ_2 P_2 Γ_4 Σ_4 Γ_5 Σ_5)
    --------------------------------------------------------------------
    (IF Γ_1 Σ_1 (P_1 relop P_2) Γ_2 Σ_2 Γ_3 Σ_3)]
   
@@ -185,22 +187,6 @@
   [(supreme-Σ Σ_1 (r_1 : t_1 Σ_2)) (r_1 : t_1 (supreme-Σ Σ_1 Σ_2))
                                    (side-condition (redex-match? crystal-lang+Γ (#f _) (term (in-Σ Σ_1 r_1))))
                                    ]
-  )
-(define-metafunction crystal-lang+Γ
-  complement-t : t t -> t
-  [(complement-t st_1 st_1) Nil]
-  [(complement-t st_1 st_2) Nil]
-  [(complement-t (st_1 st_2 ...) st_3) (remove-t (st_1 st_2 ...) st_3) (side-condition (term (in-t (st_1 st_2 ...) st_3)))]
-  )
-(define-metafunction crystal-lang+Γ
-  complement-Σ : Σ Σ -> Σ
-  [(complement-Σ Σ_1 (r_1 : t_1 Σ_2)) (r_1 : (complement-t t_1 t_2) (complement-Σ (remove-Σ Σ_1 r_1) Σ_2))
-                                      (side-condition (redex-match? crystal-lang+Γ (#t _) (term (in-Σ Σ_1 r_1))))
-                                      (where (#t t_2) (in-Σ Σ_1 r_1))
-                                      ]
-  [(complement-Σ Σ_1 (r_1 : t_1 Σ_2)) (r_1 : t_1 (complement-Σ Σ_1 Σ_2))
-                                      (side-condition (redex-match? crystal-lang+Γ (#f _) (term (in-Σ Σ_1 r_1))))
-                                      ]
   )
 
 (define-metafunction crystal-lang+Γ
