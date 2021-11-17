@@ -28,11 +28,11 @@
   [--------------------------------
    (TR Γ Σ str String Γ Σ)]
 
-  [(TR Γ Σ P_1 Bool Γ_1 Σ_1)
-   (TR Γ_1 Σ_1 P_2 t_1 Γ_2 Σ_2)
-   (TR Γ_1 Σ_1 P_3 t_2 Γ_3 Σ_3)
+  [(IF Γ Σ P_1 Γ_1 Σ_1 Γ_2 Σ_2)
+   (TR Γ_1 Σ_1 P_2 t_1 Γ_3 Σ_3)
+   (TR Γ_2 Σ_2 P_3 t_2 Γ_4 Σ_4)
    -----------------------------
-   (TR Γ Σ (if P_1 then P_2 else P_3) (supreme-t t_1 t_2) (supreme-Γ Γ_2 Γ_3) (supreme-Σ Σ_2 Σ_3))]
+   (TR Γ Σ (if P_1 then P_2 else P_3) (supreme-t t_1 t_2) (supreme-Γ Γ_3 Γ_4) (supreme-Σ Σ_3 Σ_4))]
 
   [(TR Γ Σ P t_1 Γ Σ)
    (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Σ Σ r))))
@@ -46,7 +46,17 @@
    -----------------------------
    (TR Γ Σ (r = P) t_1 Γ Σ_1)]
   
-  ;TODO name = var
+  [(TR Γ Σ P t_1 Γ Σ)
+   (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Γ Γ Name))))
+   (where Γ_1 (Name : t_1 Γ))
+   -----------------------------
+   (TR Γ Σ (Name = P) t_1 Γ_1 Σ)]
+  
+  [(TR Γ Σ P t_1 Γ Σ)
+   (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
+   (where Γ_1 (Name : t_1 (remove-Γ Γ Name)))
+   -----------------------------
+   (TR Γ Σ (Name = P) t_1 Γ_1 Σ)]
 
   [(concat Γ_1 Σ_1 (P_2 P_3 ...) P_1 t_1 Γ_2 Σ_2)
    --------------------------------------------------------------
@@ -99,10 +109,12 @@
    (where t (typeof-Γ Γ Name))
    -----------------------------
    (TR Γ Σ Name t Γ Σ)]
-  ;IF is_a? add to grammar and how to check the Γ
-  ;  [(where t_1 (is_a? v))
-  ;   ----------------------------
-  ;   (TR Γ Σ (is_a? v t) t_1 Γ Σ)]
+  
+  [
+   ----------------------------
+   (TR Γ Σ (isa? t var) Bool Γ Σ)]
+
+  
   )
 
 (define-judgment-form
@@ -126,26 +138,38 @@
   #:mode (IF I I I O O O O)
   #:contract (IF Γ Σ P Γ Σ Γ Σ)
 
-  [(where t_1 ,(redex-match crystal-lang+Γ (#t t) (term (in-Γ Γ_1 Name))))
+  [(where t_1 (typeof-Γ Γ_1 Name))
    (where Γ_2 (Name : t_2 (remove-Γ Γ_1 Name)))
-   (where Γ_3 (Name : (remove-t (t_1 t_2)) (remove-Γ Γ_1 Name)))
+   (where Γ_3 (Name : t_2 (remove-Γ Γ_1 Name)))
    --------------------------------------------------------------------
-   (IF Γ_1 Σ_1 (isa? t_2 Name) Γ_2 Σ_1 Γ_3 Σ_1)]
+   (IF Γ_1 Σ_1 (isa? t_2 Name) Γ_2 Σ_1 Γ_1 Σ_1)]
   
-  [(where t_1 ,(redex-match crystal-lang+Γ (#t t_1) (term (in-Σ Σ_1 Name))))
+  [(where t_1 (typeof-Σ Σ_1 r))
    (where Σ_2 (r : t_2 (remove-Σ Σ_1 r)))
-   (where Σ_3 (r : (remove-t (t_1 t_2)) (remove-Σ Σ_1 r)))
+   (where Σ_3 (r : (remove-t t_1 t_2) (remove-Σ Σ_1 r)))
    --------------------------------------------------------------------
    (IF Γ_1 Σ_1 (isa? t_2 r) Γ_1 Σ_2 Γ_1 Σ_3)]
   
   [(IF Γ_1 Σ_1 P_1 Γ_2 Σ_2 Γ_3 Σ_3)
    (IF Γ_2 Σ_2 P_2 Γ_4 Σ_4 Γ_5 Σ_5)
    --------------------------------------------------------------------
-   (IF Γ_1 Σ_1 (P_1 relop P_2) Γ_2 Σ_2 Γ_3 Σ_3)]
+   (IF Γ_1 Σ_1 (P_1 relop P_2) (supreme-Γ Γ_2 Γ_4) (supreme-Σ Σ_2 Σ_4) (supreme-Γ Γ_3 Γ_5) (supreme-Σ Σ_3 Σ_5))]
   
-  ;[
-  ; --------------------------------------------------------------------
-  ; (IF Γ_1 Σ_1 (P_1 shortbinop P_2) Γ_2 Σ_2 Γ_3 Σ_3)]
+  [(IF Γ_1 Σ_1 P_1 Γ_2 Σ_2 Γ_3 Σ_3)
+   (IF Γ_1 Σ_1 P_2 Γ_4 Σ_4 Γ_5 Σ_5)
+   --------------------------------------------------------------------
+   (IF Γ_1 Σ_1 (P_1 and P_2) (supreme-Γ Γ_2 Γ_4) (supreme-Σ Σ_2 Σ_4) (supreme-Γ Γ_3 Γ_5) (supreme-Σ Σ_3 Σ_5))]
+
+  [(IF Γ_1 Σ_1 P_1 Γ_2 Σ_2 Γ_3 Σ_3)
+   (IF Γ_1 Σ_1 P_2 Γ_4 Σ_4 Γ_5 Σ_5)
+   --------------------------------------------------------------------
+   (IF Γ_1 Σ_1 (P_1 or P_2) (supreme-Γ Γ_2 Γ_4) (supreme-Σ Σ_2 Σ_4) (supreme-Γ Γ_3 Γ_5) (supreme-Σ Σ_3 Σ_5))]
+
+ [(TR Γ_1 Σ_1 P t Γ_2 Σ_2)
+  ------------------------------------------------------
+  (IF Γ_1 Σ_1 P  Γ_2 Σ_2 Γ_2 Σ_2)]
+
+  
 
   )
 
@@ -188,7 +212,7 @@
                                    (side-condition (redex-match? crystal-lang+Γ (#f _) (term (in-Σ Σ_1 r_1))))
                                    ]
   )
-
+; removes from the first t the second t
 (define-metafunction crystal-lang+Γ
   [(remove-t (st_1 ...) ()) (st_1 ...)]
   [(remove-t (st_1 st_2 ...) st_1) (st_2 ...)]
@@ -239,12 +263,6 @@
    t (where (_ t) (in-Σ Σ r_1))
    ])
 
-(define-metafunction crystal-lang
-  [(is_a? int32) Int32]
-  [(is_a? bool) Bool]
-  [(is_a? str) String]
-  [(is_a? nil) Nil]
-  )
 
 (provide (all-defined-out))
 ;(provide WF)

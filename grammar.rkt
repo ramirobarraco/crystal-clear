@@ -120,5 +120,15 @@
   (or (is_false? P)
       (is_nil? P)))
 
+(define-metafunction crystal-lang
+  is-a? : t v -> bool
+  [(is-a? Int32 int32) true]
+  [(is-a? Bool bool) true]
+  [(is-a? String str) true]
+  [(is-a? Nil nil) true]
+  [(is-a? _ _) false]
+  )
+
+
 
 (provide (all-defined-out))

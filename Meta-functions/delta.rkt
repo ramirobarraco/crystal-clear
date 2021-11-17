@@ -69,5 +69,5 @@
   [(toBool #t)
    true]
   
-  [(toBool any)
+  [(toBool #f)
    false])

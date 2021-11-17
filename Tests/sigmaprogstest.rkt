@@ -26,8 +26,25 @@
                          (let bar = 1 in (bar + 1))))
             
             (term ((((ref 0) 1))
-                   : ((ref 0) + 1)))))
+                   : ((ref 0) + 1))))
   
-  )
+  (test--> σ-rel (term ((((ref 0) true) )
+                        :
+                        (isa? Bool (ref 0))))
+            
+           (term ((((ref 0) true) )
+                        :
+                        true)))
 
+  (test--> σ-rel (term ((((ref 0) true) )
+                        :
+                        (isa? Int32 (ref 0))))
+            
+           (term ((((ref 0) true) )
+                        :
+                        false)))
+
+
+  )
+  
 (sigma-progs-test-suite)
