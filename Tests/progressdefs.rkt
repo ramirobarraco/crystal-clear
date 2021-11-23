@@ -114,6 +114,10 @@
    ----------------------------
    (TR Γ Σ (isa? t var) Bool Γ Σ)]
 
+  [
+   -----------------------------
+   (TR Γ Σ \; Nil Γ Σ)]
+
   
   )
 
@@ -202,13 +206,14 @@
 
 (define-metafunction crystal-lang+Γ
   supreme-Σ : Σ Σ -> Σ
-  [(supreme-Σ · Σ) Σ]
-  [(supreme-Σ Σ ·) Σ]
+  [(supreme-Σ · ·) ·]
+  [(supreme-Σ · (r_1 : t_1 Σ)) (r_1 : (supreme-t t_1 Nil) (supreme-Σ · Σ))]
+  [(supreme-Σ (r_1 : t_1 Σ) ·) (r_1 : (supreme-t t_1 Nil) (supreme-Σ · Σ))]
   [(supreme-Σ Σ_1 (r_1 : t_1 Σ_2)) (r_1 : (supreme-t t_1 t_2) (supreme-Σ (remove-Σ Σ_1 r_1) Σ_2))
                                    (side-condition (redex-match? crystal-lang+Γ (#t _) (term (in-Σ Σ_1 r_1))))
                                    (where (#t t_2) (in-Σ Σ_1 r_1))
                                    ]
-  [(supreme-Σ Σ_1 (r_1 : t_1 Σ_2)) (r_1 : t_1 (supreme-Σ Σ_1 Σ_2))
+  [(supreme-Σ Σ_1 (r_1 : t_1 Σ_2)) (r_1 : (supreme-t t_1 Nil) (supreme-Σ Σ_1 Σ_2))
                                    (side-condition (redex-match? crystal-lang+Γ (#f _) (term (in-Σ Σ_1 r_1))))
                                    ]
   )
@@ -221,10 +226,12 @@
   )
 
 (define-metafunction crystal-lang+Γ
+  [(remove-Γ · Name) ·]
   [(remove-Γ (Name_1 : t Γ) Name_1) Γ]
   [(remove-Γ (Name_1 : t Γ) Name_2) (Name_1 : t (remove-Γ Γ Name_2))]
   )
 (define-metafunction crystal-lang+Γ
+  [(remove-Σ · r) ·]
   [(remove-Σ (r_1 : t Σ) r_1) Σ]
   [(remove-Σ (r_1 : t Σ) r_2) (r_1 : t (remove-Σ Σ r_2))]
   )
@@ -265,7 +272,6 @@
 
 
 (provide (all-defined-out))
-;(provide WF)
 
 ;(define (WF? P)
 ;  (not (null? (judgment-holds (WF · () ,P ())

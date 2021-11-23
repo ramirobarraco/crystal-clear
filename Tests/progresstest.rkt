@@ -60,6 +60,74 @@
                                   (x : (Int32 String) ·)
                                   ((ref 0) : (String Int32) ·)))
               #t)
+  
+;a = 1
+;if some_condition
+;  a = "hello"
+;else
+;  a = true
+;end
+;# a : String | Bool
+  (test-equal (judgment-holds (TR ·  ·
+                                  (let a = 1 in
+                                    ((if (a > 0)
+                                         then
+                                         (a = "hello")
+                                         else
+                                         (a = true)) a))
+                                  (Bool String)
+                                  ·
+                                  ·))
+              #t)
+
+;b = 1
+;if some_condition
+;  b = "hello"
+;end
+;# b : Int32 | String
+  (test-equal (judgment-holds (TR ·  ·
+                                  (let b = 1 in
+                                    ((if (b > 0)
+                                         then
+                                         (b = "hello")
+                                         else
+                                         \;) b))
+                                  (Int32 String)
+                                  ·
+                                  ·))
+              #t)
+  
+;if some_condition
+;  c = 1
+;else
+;  c = "hello"
+;end
+;# c : Int32 | String
+  (test-equal (judgment-holds (TR ·  ((ref  0) : Int32 ·)
+                                    ((if (1 == 1)
+                                         then
+                                         ((ref 0) = 1)
+                                         else
+                                         ((ref 0) = "hello")) (ref 0 ))
+                                  (String Int32)
+                                  ·
+                                  ((ref 0) : (String Int32) ·)))
+              #t)
+
+;if some_condition
+;  d = 1
+;end
+;# d : Int32 | Nil
+  (test-equal (judgment-holds (TR ·   ·
+                                  ((if (1 == 1)
+                                       then
+                                       ((ref 0) = 1)
+                                       else
+                                       \;)(ref 0))
+                                  (Int32 Nil)
+                                  ·
+                                  ((ref 0) : (Int32 Nil) ·)))
+              #t)
   )
 
 (supremes-test-suite)
