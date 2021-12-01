@@ -2,6 +2,7 @@
 (require redex
          "../grammar.rkt"
          "../Relations/fullprogs.rkt"
+         "../Relations/subtyping.rkt"
          )
 
 (define-extended-language crystal-lang+Γ crystal-lang
@@ -36,24 +37,28 @@
 
   [(TR Γ Σ P t_1 Γ Σ)
    (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Σ Σ r))))
+   (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
    (where Σ_1 (r : t_1 (remove-Σ Σ r)))
    -----------------------------
    (TR Γ Σ (r = P) t_1 Γ Σ_1)]
 
   [(TR Γ Σ P t_1 Γ Σ)
    (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Σ Σ r))))
+   (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
    (where Σ_1 (r : t_1 Σ))
    -----------------------------
    (TR Γ Σ (r = P) t_1 Γ Σ_1)]
   
   [(TR Γ Σ P t_1 Γ Σ)
    (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Γ Γ Name))))
+   (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
    (where Γ_1 (Name : t_1 Γ))
    -----------------------------
    (TR Γ Σ (Name = P) t_1 Γ_1 Σ)]
   
   [(TR Γ Σ P t_1 Γ Σ)
    (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
+   (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
    (where Γ_1 (Name : t_1 (remove-Γ Γ Name)))
    -----------------------------
    (TR Γ Σ (Name = P) t_1 Γ_1 Σ)]
@@ -116,7 +121,7 @@
 
   [
    -----------------------------
-   (TR Γ Σ \; Nil Γ Σ)]
+   (TR Γ Σ \; Unit Γ Σ)]
 
   
   )
@@ -144,9 +149,9 @@
 
   [(where t_1 (typeof-Γ Γ_1 Name))
    (where Γ_2 (Name : t_2 (remove-Γ Γ_1 Name)))
-   (where Γ_3 (Name : t_2 (remove-Γ Γ_1 Name)))
+   (where Γ_3 (Name : (remove-t t_1 t_2) (remove-Γ Γ_1 Name)))
    --------------------------------------------------------------------
-   (IF Γ_1 Σ_1 (isa? t_2 Name) Γ_2 Σ_1 Γ_1 Σ_1)]
+   (IF Γ_1 Σ_1 (isa? t_2 Name) Γ_2 Σ_1 Γ_3 Σ_1)]
   
   [(where t_1 (typeof-Σ Σ_1 r))
    (where Σ_2 (r : t_2 (remove-Σ Σ_1 r)))
@@ -189,7 +194,10 @@
   [(supreme-t (st_1 ...) (st_2 ...)) t_3 (where t_3 ,(remove-duplicates (append (term (st_1 ...)) (term (st_2 ...)))))]
   )
 
-
+(define-metafunction crystal-lang+Γ
+  equal-t : t t -> boolean
+  [(equal-t t_1 t_2) ,(and (term (upper_bound? t_1 t_2)) (term (upper_bound? t_2 t_1)))] 
+  )
 
 (define-metafunction crystal-lang+Γ
   supreme-Γ : Γ Γ -> Γ
@@ -273,24 +281,59 @@
 
 (provide (all-defined-out))
 
-;(define (WF? P)
-;  (not (null? (judgment-holds (WF · () ,P ())
-;                              #t))))
+(define-metafunction crystal-lang+Γ
+  typeof-v : v -> t
+  [(typeof-v int32) Int32]
+  [(typeof-v str) String]
+  [(typeof-v bool) Bool]
+  [(typeof-v nil) Nil]
+  )
 
-;(define v? (redex-match? crystal-lang v))
+(define-metafunction crystal-lang+Γ
+  upper-σ : σ -> Σ
+  [(upper-σ ()) ·]
+  [(upper-σ ((r_1 v_1) (r_2 v_2) ... )) (r_1 : (typeof-v v_1) (upper-σ ((r_2 v_2) ... )))]
+  
+  )
 
-;(define (reduces? P)
-;  (not (null? (apply-reduction-relation
-;               full-rel
-;               (term (() : P))))))
+(define-metafunction crystal-lang
+  get-σ : sigmaprog -> σ
+  [(get-σ (σ : P)) σ]
+  )
 
-;(define (progress-holds? P)
-;  (if (WF? P)
-;      (or (v? P)
-;          (reduces? P))
-;      #t))
+(define-metafunction crystal-lang
+  get-P : sigmaprog -> P
+  [(get-P (σ : P)) P]
+  )
 
-;(redex-check crystal-lang P (progress-holds? (term P)))
+(define (TR? sigmaprog)
+  (not (null? (judgment-holds (TR · (upper-σ (get-σ ,sigmaprog)) (get-P ,sigmaprog) t Γ Σ)
+                              (t Γ Σ))))
+  )
+
+(define v? (redex-match? crystal-lang v))
+
+(define skip? (redex-match? crystal-lang \;))
+
+(define (reduces? sigmaprog)
+  (not (null? (apply-reduction-relation
+               full-rel
+               (term ,sigmaprog)))))
+
+(define (progress-holds? sigmaprog)
+  (if (TR? sigmaprog)
+      (or (v? (term (get-P ,sigmaprog)))
+          (skip? (term (get-P ,sigmaprog)))
+          (reduces? sigmaprog))
+      #t))
+
+(redex-check crystal-lang+Γ sigmaprog (progress-holds?  (term sigmaprog)))
+;(define (progress_tr rel attempts debug)
+;  (redex-check  crystal-lang any
+;                (soundness_wfc_pred (term any) debug)
+;                #:prepare close_conf
+;                #:attempts attempts
+;                #:source rel))
 
 
 
