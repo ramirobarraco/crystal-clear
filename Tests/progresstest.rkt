@@ -24,6 +24,9 @@
              (term ((ref 0) : (String Bool) ·))
              )
   
+  ;Concat judgment form
+  (test-equal (judgment-holds (concat (x : Int32 ·) ((ref 0) : Int32 ·) (\; \; \;) \; Int32 (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
+  
   ;value calls
   (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) x Int32 (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
   (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) (ref 0) Int32 (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
@@ -118,6 +121,7 @@
 ;  d = 1
 ;end
 ;# d : Int32 | Nil
+;divergence becouse of diference with how we modeled the enviroment
   (test-equal (judgment-holds (TR ·   ·
                                   ((if (1 == 1)
                                        then
@@ -128,6 +132,19 @@
                                   ·
                                   ((ref 0) : (Int32 Nil) ·)))
               #t)
+  
+  (test-equal (judgment-holds (TR ·   ·
+                                  ((if ((ref 0) = (isa? Int32 (ref 0)))
+                                       then
+                                       (ref 0)
+                                       else
+                                       \;)(ref 0))
+                                  Bool
+                                  ·
+                                  ((ref 0) : Bool ·)))
+              #t)
+  
+  (test-results)
   )
 
 (supremes-test-suite)

@@ -6,8 +6,16 @@
   
   (P ::=
      (P P P ...)
-     \;
+     e
+     s
+     )
+  (e ::=
+     (e e e ...)
+     v
      var
+   )
+  (s ::=
+     \;
      (var = P)
      (while P P)
      (P binop P)
@@ -16,7 +24,6 @@
      (let Name = P in P)
      (let t Name = P in P)
      (isa? t var)
-     v
      )
 ; next instruction to compute
   
@@ -83,6 +90,7 @@
   [rp (r v)]
 
   [σ (rp ...)]
+  [sigmaprog (σ : P)]
   ; Name can be anything except a keyword of the language
   [Name variable-not-otherwise-mentioned]
   )

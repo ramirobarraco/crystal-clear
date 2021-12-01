@@ -27,3 +27,4 @@
   [(in st_1 (st_2 ...)) #false])
 
 (provide subtype)
+(provide upper_bound?)
