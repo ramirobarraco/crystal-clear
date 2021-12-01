@@ -15,10 +15,52 @@ En esta tesis se trabaja con la intención de definir un lenguaje formal llamado
 Otro objetivo de esta tesis es testear dicha formalización y convencernos de que
  Crystal-Clear realmente modela la parte del lenguaje que decidimos trabajar.
  Una vez estemos seguros de esto podremos utilizar herramientas como redex-check
- para probar que esté inferior cumple con la propiedad safety (definida en pierce).
+ para probar que esté inferidor cumple con la propiedad safety(definida en pierce).
 
-\section{Motivación}
+ \section{Motivación}
+ 
+ Crystal es un lenguaje de programación que fue lanzado en 2021, como tal todavía
+ tiene un largo camino por recorrer en temas como comunidad y desarrollo. Para ello
+ un paso importante es conseguir una formalización completa de su lenguaje.
+ En especial el inferidor de tipos que agrega nuevas cualidades no observadas en otros
+ lenguajes ya trabajados.
 
+\section{Herramientas}
+
+En el trabajo de esta tesis se utilizaron múltiples herramientas tanto prácticas
+ como teóricas. En la parte teórica utilizamos conceptos como gramáticas, (TODO).
+ En cuanto a herramientas prácticas empleamos un lenguaje de programación
+ llamado Racket basado en Lisp. La utilización de esta herramienta es debido a
+ la existencia  de su librería redex, que nos permite definir estos objetos teóricos
+ y usar las mismas para probar propiedades y desarrollar tests para convencernos de
+ los resultados obtenidos.
+
+\section{Estructura de la tesis}
+
+La tesis estará dividida en 6 capítulos.
+
+En el primero hablaremos de Crystal
+ y Racket/Redex, Explicaremos propiedades interesantes de ambos lenguajes y
+ se intentará transmitir un entendimiento acerca de las sintaxis de ambos.
+
+ En el segundo se explicarán conceptos teóricos utilizados que servirán
+ para entender el trabajo de la tesis.
+ 
+ En el tercero se hablará de la gramática
+ y semántica de Crystal-Clear nuestra formalización.
+ 
+ Luego seguiremos
+ a la mecanización donde intentaremos comparar nuestro lenguaje a Crystal,
+ observaremos resultados obtenidos y hablaremos de su utilidad para la comunidad,
+ también comentaremos sobre carencias de la documentación.
+ 
+ En el penúltimo capítulos
+ comentaremos trabajos relacionados, ya sea de otras formalizaciones
+ de otros lenguajes como de conceptos teóricos similares desarrollados por otros
+ investigadores.
+ 
+ Por último daremos a conocer nuestras conclusiones y posibles
+ trabajos futuros.
 
 \section{The Main Ideas}
 

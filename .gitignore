@@ -10,6 +10,5 @@ Relations/compiled/drracket/errortrace/progs_rkt.zo
 *.dep
 *.zo
 *.2
-*.pdf
 *.ps
 *.1
