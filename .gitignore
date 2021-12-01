@@ -12,3 +12,15 @@ Relations/compiled/drracket/errortrace/progs_rkt.zo
 *.2
 *.ps
 *.1
+*.aux
+*.lof
+*.log
+*.lot
+*.fls
+*.out
+*.toc
+*.fmt
+*.fot
+*.cb
+*.cb2
+.*.lb
