@@ -1,0 +1,19 @@
+[0] Config.pm:304> INFO - This is Biber 2.14 (beta)
+[0] Config.pm:307> INFO - Logfile is 'main.blg'
+[73] biber:322> INFO - === Tue Oct 12, 2021, 17:44:30
+[86] Biber.pm:415> INFO - Reading 'main.bcf'
+[145] Biber.pm:943> INFO - Found 4 citekeys in bib section 0
+[158] Biber.pm:4256> INFO - Processing section 0
+[158] Utils.pm:75> INFO - Globbing data source 'main.bib'
+[158] Utils.pm:91> INFO - Globbed data source 'main.bib' to main.bib
+[169] Biber.pm:4455> INFO - Looking for bibtex format file 'main.bib' for section 0
+[172] bibtex.pm:1653> INFO - LaTeX decoding ...
+[218] bibtex.pm:1471> INFO - Found BibTeX data source 'main.bib'
+[279] Utils.pm:293> WARN - ISBN '1549-5469 (Electronic)$\backslash$r1088-9051 (Linking)' in entry 'Battle2014' is invalid - run biber with '--validate_datamodel' for details.
+[287] Utils.pm:293> WARN - ISBN '1369-7412' in entry 'Zou2005' is invalid - run biber with '--validate_datamodel' for details.
+[298] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'variable = shifted' with 'variable = non-ignorable'
+[298] UCollate.pm:68> INFO - Overriding locale 'es-ES' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[298] Biber.pm:4084> INFO - Sorting list 'none/global//global/global' of type 'entry' with template 'none' and locale 'es-ES'
+[305] bbl.pm:652> INFO - Writing 'main.bbl' with encoding 'UTF-8'
+[312] bbl.pm:755> INFO - Output to main.bbl
+[312] Biber.pm:128> INFO - WARNINGS: 2

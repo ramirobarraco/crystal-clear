@@ -2,8 +2,8 @@
 input = 1
 
 if input = input.is_a?(Int32)
-    puts input
     puts typeof(input)
+    puts input
 else
     puts input
 end 
