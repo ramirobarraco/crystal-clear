@@ -29,7 +29,14 @@
    [-->P (\; P_1 P_2 P_3 ...)
          (P_1 P_2 P_3 ...)
          more-skip]
+
+   [-->P (e P_1)
+         P_1
+         1-e]
    
+   [-->P (e P_1 P_2 P_3 ...)
+         (P_1 P_2 P_3 ...)
+         more-e]
 
    [-->P (while P_1 P_2)
          (if P_1 then (P_2 \; (while P_1 P_2)) else \;)

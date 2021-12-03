@@ -25,7 +25,7 @@
              )
   
   ;Concat judgment form
-  (test-equal (judgment-holds (concat (x : Int32 ·) ((ref 0) : Int32 ·) (\; \; \;) \; Int32 (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
+  (test-equal (judgment-holds (concat (x : Int32 ·) ((ref 0) : Int32 ·) (\; \; \;) \; Nil (x : Int32 ·) ((ref 0) : Int32 ·))) #t)
   
   ;value calls
   (test-equal (judgment-holds (TR (x : Int32 ·) ((ref 0) : Int32 ·) x Int32 (x : Int32 ·) ((ref 0) : Int32 ·))) #t)

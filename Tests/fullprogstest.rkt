@@ -23,6 +23,14 @@
             
             (term ((((ref 1) true))
                    : \;)))
+  
+  (test-->> full-rel
+            (term ((((ref 1) false) )
+                   : (1 1)))
+            
+            (term ((((ref 1) false))
+                   : 1)))
   )
+
 
 (full-progs-rel-test-suite)
