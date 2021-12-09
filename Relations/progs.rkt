@@ -30,11 +30,11 @@
          (P_1 P_2 P_3 ...)
          more-skip]
 
-   [-->P (e P_1)
+   [-->P (v P_1)
          P_1
          1-e]
    
-   [-->P (e P_1 P_2 P_3 ...)
+   [-->P (v P_1 P_2 P_3 ...)
          (P_1 P_2 P_3 ...)
          more-e]
 
@@ -62,6 +62,10 @@
    [-->P (not v)
          (δ not v)
          (side-condition (is_bool? (term v)))]
+   
+   [-->P (isa? t v)
+         (is-a? t v)
+           ]
 
    ))
 (provide progs-rel)
