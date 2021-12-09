@@ -125,7 +125,7 @@
 
   [
    -----------------------------
-   (TR Γ Σ \; Nil Γ Σ)]
+   (TR Γ Σ \; Unit Γ Σ)]
 
   
   )
@@ -184,7 +184,8 @@
    (IF Γ_1 Σ_1 (P_1 or P_2) (supreme-Γ Γ_2 Γ_4) (supreme-Σ Σ_2 Σ_4) (supreme-Γ Γ_3 Γ_5) (supreme-Σ Σ_3 Σ_5))]
 
  [(TR Γ_1 Σ_1 P t Γ_2 Σ_2)
-  ------------------------------------------------------
+  (side-condition (not (redex-match? crystal-lang Unit (term t))))
+  ------------------------------------------------------"IF-P"
   (IF Γ_1 Σ_1 P  Γ_2 Σ_2 Γ_2 Σ_2)]
 
   
@@ -195,6 +196,8 @@
 
 (define-metafunction crystal-lang+Γ
   supreme-t : t t -> t
+  [(supreme-t Unit t) t]
+  [(supreme-t t Unit) t]
   [(supreme-t st_1 st_1) st_1]
   [(supreme-t st_1 st_2) (st_1 st_2)]
   [(supreme-t st_1 (st_2 ...)) (st_2 ...) (side-condition (term(in-t (st_2 ...) st_1))) ]
@@ -315,6 +318,16 @@
   [(get-P (σ : P)) P]
   )
 
+(define-metafunction crystal-lang
+  fix-free-refs : sigmaprog -> sigmaprog
+  [(fix-free-refs (σ : (Name = P))) (σ_1 : Name = P) (where (σ_1 _) (addVal σ_1 (v_2))) ]
+  [(fix-free-refs (σ : P)) (σ : P) ]
+  )
+
+(define (fix_clousure sigmaprog)
+  (term (fix-free-refs (unquote sigmaprog)))
+  )
+
 (define (TR? sigmaprog)
   (not (null? (judgment-holds (TR · (upper-σ (get-σ ,sigmaprog)) (get-P ,sigmaprog) t Γ Σ)
                               (t Γ Σ))))
@@ -336,8 +349,9 @@
           (reduces? sigmaprog))
       #t))
 
-(redex-check crystal-lang+Γ sigmaprog (progress-holds?  (term sigmaprog)))
-; a is not defined (() : (a = nil)) --> TODO DEBUG
+
+
+(redex-check crystal-lang+Γ sigmaprog (progress-holds?  (term sigmaprog)) #:prepare fix_clousure )
 ;(define (progress_tr rel attempts debug)
 ;  (redex-check  crystal-lang any
 ;                (soundness_wfc_pred (term any) debug)

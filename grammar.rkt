@@ -12,17 +12,17 @@
   (e ::=
      v
      var
+     (isa? t var)
+     (var = P)
+     (unop P)
+     (P binop P)
    )
   (s ::=
      \;
-     (var = P)
      (while P P)
-     (P binop P)
      (if P then P else P)
-     (unop P)
      (let Name = P in P)
      (let t Name = P in P)
-     (isa? t var)
      )
 ; next instruction to compute
   
