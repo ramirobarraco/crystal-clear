@@ -27,6 +27,14 @@
   (test-->> progs-rel
             (term (while false (bar = 1)))
             (term \;))
+
+  (test--> progs-rel
+           (term (isa? Bool true))
+           (term true))
+
+  (test--> progs-rel
+           (term (isa? Int32 true))
+           (term false))
 )
 
 (progs-rel-test-suite)

@@ -12,7 +12,7 @@
   (e ::=
      v
      var
-     (isa? t var)
+     (isa? t P)
      (var = P)
      (unop P)
      (P binop P)
@@ -31,6 +31,7 @@
      (E binop P)
      (v strictbinop E)
      (E P P ...)
+     (isa? t E)
      (if E then P else P)
      (var = E)
      (let Name = E in P)
@@ -46,6 +47,7 @@
      (hole P P ...)
      (if hole then P else P)
      (var = hole)
+     (isa t hole)
        )
 
   (var ::=
@@ -87,9 +89,12 @@
   [r (ref natural)]
   ;reference pair
   [rp (r v)]
+  ;reference name
+  [rn (r Name)]
 
+  [ϵ (rn ...)]
   [σ (rp ...)]
-  [sigmaprog (σ : P)]
+  [σϵprog (σ : ϵ : P)]
   ; Name can be anything except a keyword of the language
   [Name variable-not-otherwise-mentioned]
   )
