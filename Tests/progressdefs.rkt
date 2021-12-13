@@ -309,27 +309,27 @@
   )
 
 (define-metafunction crystal-lang
-  get-σ : sigmaprog -> σ
-  [(get-σ (σ : P)) σ]
+  get-σ : σϵprog -> σ
+  [(get-σ (σ : ϵ : P)) σ]
   )
 
 (define-metafunction crystal-lang
-  get-P : sigmaprog -> P
-  [(get-P (σ : P)) P]
+  get-P : σϵprog -> P
+  [(get-P (σ : ϵ : P)) P]
   )
 
 (define-metafunction crystal-lang
-  fix-free-refs : sigmaprog -> sigmaprog
-  [(fix-free-refs (σ : (Name = P))) (σ_1 : Name = P) (where (σ_1 _) (addVal σ_1 (v_2))) ]
-  [(fix-free-refs (σ : P)) (σ : P) ]
+  fix-free-refs : σϵprog -> σϵprog
+  [(fix-free-refs (σ : ϵ : (Name = P))) (σ_1 : ϵ : Name = P) (where (σ_1 _) (addVal σ_1 (v_2))) ]
+  [(fix-free-refs (σ : ϵ : P)) (σ : ϵ : P) ]
   )
 
-(define (fix_clousure sigmaprog)
-  (term (fix-free-refs (unquote sigmaprog)))
+(define (fix_clousure σϵprog)
+  (term (fix-free-refs (unquote σϵprog)))
   )
 
-(define (TR? sigmaprog)
-  (not (null? (judgment-holds (TR · (upper-σ (get-σ ,sigmaprog)) (get-P ,sigmaprog) t Γ Σ)
+(define (TR? σϵprog)
+  (not (null? (judgment-holds (TR · (upper-σ (get-σ ,σϵprog)) (get-P ,σϵprog) t Γ Σ)
                               (t Γ Σ))))
   )
 
@@ -337,21 +337,21 @@
 
 (define skip? (redex-match? crystal-lang \;))
 
-(define (reduces? sigmaprog)
+(define (reduces? σϵprog)
   (not (null? (apply-reduction-relation
                full-rel
-               (term ,sigmaprog)))))
+               (term ,σϵprog)))))
 
-(define (progress-holds? sigmaprog)
-  (if (TR? sigmaprog)
-      (or (v? (term (get-P ,sigmaprog)))
-          (skip? (term (get-P ,sigmaprog)))
-          (reduces? sigmaprog))
+(define (progress-holds? σϵprog)
+  (if (TR? σϵprog)
+      (or (v? (term (get-P ,σϵprog)))
+          (skip? (term (get-P ,σϵprog)))
+          (reduces? σϵprog))
       #t))
 
 
 
-(redex-check crystal-lang+Γ sigmaprog (progress-holds?  (term sigmaprog)) #:prepare fix_clousure )
+(redex-check crystal-lang+Γ σϵprog (progress-holds?  (term σϵprog)) )
 ;(define (progress_tr rel attempts debug)
 ;  (redex-check  crystal-lang any
 ;                (soundness_wfc_pred (term any) debug)

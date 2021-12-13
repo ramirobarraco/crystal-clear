@@ -14,6 +14,7 @@
      var
      (isa? t P)
      (var = P)
+     (t var = P)
      (unop P)
      (P binop P)
    )
@@ -21,8 +22,6 @@
      \;
      (while P P)
      (if P then P else P)
-     (let Name = P in P)
-     (let t Name = P in P)
      )
 ; next instruction to compute
   
@@ -34,8 +33,7 @@
      (isa? t E)
      (if E then P else P)
      (var = E)
-     (let Name = E in P)
-     (let t Name = E in P)
+     (t var = E)
      hole
      )
   
@@ -47,6 +45,7 @@
      (hole P P ...)
      (if hole then P else P)
      (var = hole)
+     (t var = hole)
      (isa t hole)
        )
 
