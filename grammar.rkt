@@ -19,7 +19,7 @@
      (P binop P)
    )
   (s ::=
-     \;
+     ;\;
      (while P P)
      (if P then P else P)
      )
@@ -47,6 +47,7 @@
      (var = hole)
      (t var = hole)
      (isa t hole)
+     hole
        )
 
   (var ::=
@@ -89,15 +90,23 @@
   ;reference pair
   [rp (r v)]
   ;reference name
-  [rn (r Name)]
+  [rn (Name r)]
 
-  [ϵ (rn ...)]
-  [σ (rp ...)]
+  [ϵ ((Name_!_1 r) ...)]
+  [σ ((r_!_1 v) ...)]
   [σϵprog (σ : ϵ : P)]
   ; Name can be anything except a keyword of the language
   [Name variable-not-otherwise-mentioned]
   )
 (provide crystal-lang)
+
+(define-extended-language crystal-lang+Γ crystal-lang
+  [Γ · (Name : t Γ)]
+  [arithop + - * / ^ %]
+  [relop < <= > >= ==]
+  )
+
+(provide crystal-lang+Γ)
 
 (define is_int32?
   (redex-match? crystal-lang

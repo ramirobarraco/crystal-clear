@@ -1,192 +1,149 @@
 #lang racket
 (require redex
+         racket/trace
          "../grammar.rkt"
          "../Relations/fullprogs.rkt"
          "../Relations/subtyping.rkt"
+         "../Meta-functions/aux_fun.rkt"
          )
 
-(define-extended-language crystal-lang+Γ crystal-lang
-  [Γ · (Name : t Γ)]
-  [Σ · (r : t Σ)]
-  [arithop + - * / ^ %]
-  [relop < <= > >= ==]
-  )
+
 
 (define-judgment-form
   crystal-lang+Γ
-  #:mode (TR I I I O O O)
-  #:contract (TR Γ Σ P t Γ Σ)
+  #:mode (TR I  I O O )
+  #:contract (TR Γ P t Γ)
 
   [--------------------------------
-   (TR Γ Σ nil Nil Γ Σ)]
+   (TR Γ nil Nil Γ)]
 
   [--------------------------------
-   (TR Γ Σ bool Bool Γ Σ)]
+   (TR Γ bool Bool Γ)]
 
   [--------------------------------
-   (TR Γ Σ int32 Int32 Γ Σ)]
+   (TR Γ int32 Int32 Γ)]
 
   [--------------------------------
-   (TR Γ Σ str String Γ Σ)]
+   (TR Γ str String Γ)]
 
-  [(IF Γ Σ P_1 Γ_1 Σ_1 Γ_2 Σ_2)
-   (TR Γ_1 Σ_1 P_2 t_1 Γ_3 Σ_3)
-   (TR Γ_2 Σ_2 P_3 t_2 Γ_4 Σ_4)
+  [(IF Γ P_1 Γ_1 Γ_2)
+   (TR Γ_1 P_2 t_1 Γ_3)
+   (TR Γ_2 P_3 t_2 Γ_4)
    -----------------------------
-   (TR Γ Σ (if P_1 then P_2 else P_3) (supreme-t t_1 t_2) (supreme-Γ Γ_3 Γ_4) (supreme-Σ Σ_3 Σ_4))]
-
-  [(TR Γ Σ P t_1 Γ Σ)
-   (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Σ Σ r))))
-   (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
-   (where Σ_1 (r : t_1 (remove-Σ Σ r)))
-   -----------------------------
-   (TR Γ Σ (r = P) t_1 Γ Σ_1)]
-
-  [(TR Γ Σ P t_1 Γ Σ)
-   (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Σ Σ r))))
-   (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
-   (where Σ_1 (r : t_1 Σ))
-   -----------------------------
-   (TR Γ Σ (r = P) t_1 Γ Σ_1)]
+   (TR Γ (if P_1 then P_2 else P_3) (supreme-t t_1 t_2) (supreme-Γ Γ_3 Γ_4))]
   
-  [(TR Γ Σ P t_1 Γ Σ)
+  [(TR Γ P t_1 Γ)
    (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Γ Γ Name))))
    (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
    (where Γ_1 (Name : t_1 Γ))
    -----------------------------
-   (TR Γ Σ (Name = P) t_1 Γ_1 Σ)]
+   (TR Γ (Name = P) t_1 Γ_1)]
   
-  [(TR Γ Σ P t_1 Γ Σ)
+  [(TR Γ P t_1 Γ)
    (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
    (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
    (where Γ_1 (Name : t_1 (remove-Γ Γ Name)))
    -----------------------------
-   (TR Γ Σ (Name = P) t_1 Γ_1 Σ)]
+   (TR Γ (Name = P) t_1 Γ_1)]
 
-  [(concat Γ_1 Σ_1 P_2 P_1 t_1 Γ_2 Σ_2)
+  [(concat Γ_1 P_2 P_1 t_1 Γ_2)
    --------------------------------------------------------------
-   (TR Γ_1 Σ_1 (P_1 P_2) t_1 Γ_2 Σ_2)]
+   (TR Γ_1 (P_1 P_2) t_1 Γ_2)]
 
-  [(concat Γ_1 Σ_1 (P_2 P_3 P_4 ...) P_1 t_1 Γ_2 Σ_2)
+  [(concat Γ_1 (P_2 P_3 P_4 ...) P_1 t_1 Γ_2)
    --------------------------------------------------------------
-   (TR Γ_1 Σ_1 (P_1 P_2 P_3 P_4 ...) t_1 Γ_2 Σ_2)]
+   (TR Γ_1 (P_1 P_2 P_3 P_4 ...) t_1 Γ_2)]
 
-  [(TR Γ Σ P_1 Bool Γ_1 Σ_1)
-   (TR Γ_1 Σ_1 P_2 t Γ_2 Σ_2)
+  [(TR Γ P_1 Bool Γ_1)
+   (TR Γ_1 P_2 t Γ_2)
    -----------------------------
-   (TR Γ Σ (while P_1 P_2) t (supreme-Γ Γ Γ_2) (supreme-Σ Σ Σ_2))]
+   (TR Γ (while P_1 P_2) t (supreme-Γ Γ Γ_2))]
 
-  [(TR Γ Σ P_1 Int32 Γ Σ)
-   (TR Γ Σ P_2 Int32 Γ Σ)
+  [(TR Γ P_1 Int32 Γ)
+   (TR Γ P_2 Int32 Γ)
    -----------------------------
-   (TR Γ Σ (P_1 arithop P_2) Int32 Γ Σ)]
+   (TR Γ (P_1 arithop P_2) Int32 Γ)]
   
-  [(TR Γ Σ P_1 t Γ Σ)
-   (TR Γ Σ P_2 t Γ Σ)
+  [(TR Γ P_1 Int32 Γ)
+   (TR Γ P_2 Int32 Γ)
    -----------------------------
-   (TR Γ Σ (P_1 relop P_2) Bool Γ Σ)]
+   (TR Γ (P_1 relop P_2) Bool Γ)]
   
-  [(TR Γ Σ P_1 Bool Γ Σ)
-   (TR Γ Σ P_2 Bool Γ Σ)
+  [(TR Γ P_1 Bool Γ)
+   (TR Γ P_2 Bool Γ)
    -----------------------------
-   (TR Γ Σ (P_1 shortbinop P_2) Bool Γ Σ)]
+   (TR Γ (P_1 shortbinop P_2) Bool Γ)]
 
-  [(TR Γ Σ P_1 t Γ Σ)
+  [(TR Γ P_1 Bool Γ)
    -----------------------------
-   (TR Γ Σ (unop P_1) t Γ Σ)]
+   (TR Γ (not P_1) Bool Γ)]
 
-  [(side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Σ Σ r))))
-   (where t (typeof-Σ Σ r))
+  [(TR Γ P_1 Int32 Γ)
    -----------------------------
-   (TR Γ Σ r t Γ Σ)]
-  
-  [(TR Γ Σ P_1 t_1 Γ Σ)
-   (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
-   (where Γ_1 (Name : t_1 Γ))
-   (TR Γ_1 Σ P_2 t_2 Γ_2 Σ_1)
-   -----------------------------
-   (TR Γ Σ (let Name = P_1 in P_2) t_2 Γ Σ_1)]
-  
-  [(TR Γ Σ P_1 t_1 Γ Σ)
-   (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Γ Γ Name))))
-   (where Γ_1 (Name : t_1 (remove-Γ Γ Name)))
-   (TR Γ_1 Σ P_2 t_2 Γ_2 Σ_1)
-   -----------------------------
-   (TR Γ Σ (let Name = P_1 in P_2) t_2 Γ Σ_1)]
+   (TR Γ (- P_1) Int32 Γ)]
 
   [(side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
    (where t (typeof-Γ Γ Name))
    -----------------------------
-   (TR Γ Σ Name t Γ Σ)]
+   (TR Γ Name t Γ)]
   
   [
    ----------------------------
-   (TR Γ Σ (isa? t var) Bool Γ Σ)]
+   (TR Γ (isa? t var) Bool Γ)]
 
   [
    -----------------------------
-   (TR Γ Σ \; Unit Γ Σ)]
+   (TR Γ \; Unit Γ)]
 
   
   )
 
 (define-judgment-form
   crystal-lang+Γ
-  #:mode (concat I I I I O O O)
-  #:contract (concat Γ Σ P P t Γ Σ)
+  #:mode (concat I I I O O)
+  #:contract (concat Γ P P t Γ)
 
-    [(TR Γ_1 Σ_1 P_1 t_1 Γ_2 Σ_2)
-   (concat Γ_2 Σ_2 P_3 P_2 t_2 Γ_3 Σ_3)
+  [(TR Γ_1 P_1 t_1 Γ_2)
+   (concat Γ_2 P_3 P_2 t_2 Γ_3)
    --------------------------------------------------------------------
-   (concat Γ_1 Σ_1 (P_2 P_3) P_1 t_2 Γ_3 Σ_3)]
+   (concat Γ_1 (P_2 P_3) P_1 t_2 Γ_3)]
 
-  [(TR Γ_1 Σ_1 P_1 t_1 Γ_2 Σ_2)
-   (concat Γ_2 Σ_2 (P_3 P_4 P_5 ...) P_2 t_2 Γ_3 Σ_3)
+  [(TR Γ_1 P_1 t_1 Γ_2)
+   (concat Γ_2 (P_3 P_4 P_5 ...) P_2 t_2 Γ_3)
    --------------------------------------------------------------------
-   (concat Γ_1 Σ_1  (P_2 P_3 P_4 P_5 ...) P_1 t_2 Γ_3 Σ_3)]
+   (concat Γ_1  (P_2 P_3 P_4 P_5 ...) P_1 t_2 Γ_3)]
 
-  [(TR Γ_1 Σ_1 P_1 t_1 Γ_2 Σ_2)
-   (TR Γ_2 Σ_2 P_2 t_2 Γ_3 Σ_3)
+  [(TR Γ_1 P_1 t_1 Γ_2)
+   (TR Γ_2 P_2 t_2 Γ_3)
    --------------------------------------------------------------------
-   (concat Γ_1 Σ_1 P_2 P_1 t_2 Γ_3 Σ_3)]
+   (concat Γ_1 P_2 P_1 t_2 Γ_3)]
   )
 
 (define-judgment-form
   crystal-lang+Γ
-  #:mode (IF I I I O O O O)
-  #:contract (IF Γ Σ P Γ Σ Γ Σ)
+  #:mode (IF I I O O)
+  #:contract (IF Γ P Γ Γ)
 
   [(where t_1 (typeof-Γ Γ_1 Name))
    (where Γ_2 (Name : t_2 (remove-Γ Γ_1 Name)))
    (where Γ_3 (Name : (remove-t t_1 t_2) (remove-Γ Γ_1 Name)))
    --------------------------------------------------------------------
-   (IF Γ_1 Σ_1 (isa? t_2 Name) Γ_2 Σ_1 Γ_3 Σ_1)]
+   (IF Γ_1 (isa? t_2 Name) Γ_2 Γ_3)]
   
-  [(where t_1 (typeof-Σ Σ_1 r))
-   (where Σ_2 (r : t_2 (remove-Σ Σ_1 r)))
-   (where Σ_3 (r : (remove-t t_1 t_2) (remove-Σ Σ_1 r)))
+  [(IF Γ_1 P_1 Γ_2 Γ_3)
+   (IF Γ_1 P_2 Γ_4 Γ_5)
    --------------------------------------------------------------------
-   (IF Γ_1 Σ_1 (isa? t_2 r) Γ_1 Σ_2 Γ_1 Σ_3)]
-  
-  [(IF Γ_1 Σ_1 P_1 Γ_2 Σ_2 Γ_3 Σ_3)
-   (IF Γ_2 Σ_2 P_2 Γ_4 Σ_4 Γ_5 Σ_5)
-   --------------------------------------------------------------------
-   (IF Γ_1 Σ_1 (P_1 relop P_2) (supreme-Γ Γ_2 Γ_4) (supreme-Σ Σ_2 Σ_4) (supreme-Γ Γ_3 Γ_5) (supreme-Σ Σ_3 Σ_5))]
-  
-  [(IF Γ_1 Σ_1 P_1 Γ_2 Σ_2 Γ_3 Σ_3)
-   (IF Γ_1 Σ_1 P_2 Γ_4 Σ_4 Γ_5 Σ_5)
-   --------------------------------------------------------------------
-   (IF Γ_1 Σ_1 (P_1 and P_2) (supreme-Γ Γ_2 Γ_4) (supreme-Σ Σ_2 Σ_4) (supreme-Γ Γ_3 Γ_5) (supreme-Σ Σ_3 Σ_5))]
+   (IF Γ_1 (P_1 and P_2) (supreme-Γ Γ_2 Γ_4) (supreme-Γ Γ_3 Γ_5) )]
 
-  [(IF Γ_1 Σ_1 P_1 Γ_2 Σ_2 Γ_3 Σ_3)
-   (IF Γ_1 Σ_1 P_2 Γ_4 Σ_4 Γ_5 Σ_5)
+  [(IF Γ_1 P_1 Γ_2 Γ_3)
+   (IF Γ_1 P_2 Γ_4 Γ_5)
    --------------------------------------------------------------------
-   (IF Γ_1 Σ_1 (P_1 or P_2) (supreme-Γ Γ_2 Γ_4) (supreme-Σ Σ_2 Σ_4) (supreme-Γ Γ_3 Γ_5) (supreme-Σ Σ_3 Σ_5))]
+   (IF Γ_1 (P_1 or P_2) (supreme-Γ Γ_2 Γ_4) (supreme-Γ Γ_3 Γ_5))]
 
   [(side-condition ,(not (redex-match? crystal-lang \; (term P))))
-   (TR Γ_1 Σ_1 P t Γ_2 Σ_2)
+   (TR Γ_1 P t Γ_2)
    ------------------------------------------------------"IF-P"
-   (IF Γ_1 Σ_1 P Γ_2 Σ_2 Γ_2 Σ_2)]
+   (IF Γ_1 P Γ_2 Γ_2)]
 
   
 
@@ -213,32 +170,21 @@
 
 (define-metafunction crystal-lang+Γ
   supreme-Γ : Γ Γ -> Γ
-  [(supreme-Γ · Γ) Γ]
-  [(supreme-Γ Γ ·) Γ]
-  [(supreme-Γ Γ_1 (Name_1 : t_1 Γ_2)) (Name_1 : (supreme-t t_1 t_2) (supreme-Γ (remove-Γ Γ_1 Name_1) Γ_2))
-                                      (side-condition (redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ_1 Name_1))))
-                                      (where (#t t_2) (in-Γ Γ_1 Name_1))
-                                      ]
-  [(supreme-Γ Γ_1 (Name_1 : t_1 Γ_2)) (Name_1 : t_1 (supreme-Γ Γ_1 Γ_2))
-                                      (side-condition (redex-match? crystal-lang+Γ (#f _) (term (in-Γ Γ_1 Name_1))))
-                                      ]
+  [(supreme-Γ · ·) ·]
+  [(supreme-Γ · (Name_1 : t_1 Γ_1)) (Name_1 : (supreme-t t_1 Nil) (supreme-Γ · Γ_1))]
+  [(supreme-Γ (Name_1 : t_1 Γ_1) ·) (Name_1 : (supreme-t t_1 Nil) (supreme-Γ Γ_1 ·))]
+  [(supreme-Γ (Name_1 : t_1 Γ_1) (Name_1 : t_2 Γ_2))
+   (Name_1 : (supreme-t t_1 t_2) (supreme-Γ Γ_1  Γ_2))]
+  [(supreme-Γ (Name_1 : t_1 Γ_1) (Name_2 : t_2 Γ_2))
+   (Name_1 : (supreme-t t_1 t_3) (Name_2 : (supreme-t t_2 t_4) (supreme-Γ (remove-Γ Γ_1 Name_2) (remove-Γ Γ_2 Name_1))))
+   (where (_ t_3) (in-Γ (Name_2 : t_2 Γ_2) Name_1))
+   (where (_ t_4) (in-Γ (Name_1 : t_1 Γ_1) Name_2))
+   ]
   )
 
-(define-metafunction crystal-lang+Γ
-  supreme-Σ : Σ Σ -> Σ
-  [(supreme-Σ · ·) ·]
-  [(supreme-Σ · (r_1 : t_1 Σ)) (r_1 : (supreme-t t_1 Nil) (supreme-Σ · Σ))]
-  [(supreme-Σ (r_1 : t_1 Σ) ·) (r_1 : (supreme-t t_1 Nil) (supreme-Σ · Σ))]
-  [(supreme-Σ Σ_1 (r_1 : t_1 Σ_2)) (r_1 : (supreme-t t_1 t_2) (supreme-Σ (remove-Σ Σ_1 r_1) Σ_2))
-                                   (side-condition (redex-match? crystal-lang+Γ (#t _) (term (in-Σ Σ_1 r_1))))
-                                   (where (#t t_2) (in-Σ Σ_1 r_1))
-                                   ]
-  [(supreme-Σ Σ_1 (r_1 : t_1 Σ_2)) (r_1 : (supreme-t t_1 Nil) (supreme-Σ Σ_1 Σ_2))
-                                   (side-condition (redex-match? crystal-lang+Γ (#f _) (term (in-Σ Σ_1 r_1))))
-                                   ]
-  )
 ; removes from the first t the second t
 (define-metafunction crystal-lang+Γ
+  [(remove-t t_1 t_1) Nil]
   [(remove-t (st_1 ...) ()) (st_1 ...)]
   [(remove-t (st_1 st_2 ...) st_1) (st_2 ...)]
   [(remove-t (st_1 st_2 ...) st_3) t_1 (where t_1 ,(remove (term st_3) (term (st_1 st_2 ...))))]
@@ -250,11 +196,7 @@
   [(remove-Γ (Name_1 : t Γ) Name_1) Γ]
   [(remove-Γ (Name_1 : t Γ) Name_2) (Name_1 : t (remove-Γ Γ Name_2))]
   )
-(define-metafunction crystal-lang+Γ
-  [(remove-Σ · r) ·]
-  [(remove-Σ (r_1 : t Σ) r_1) Σ]
-  [(remove-Σ (r_1 : t Σ) r_2) (r_1 : t (remove-Σ Σ r_2))]
-  )
+
 
 (define-metafunction crystal-lang+Γ
   [(in-Γ (Name_1 : t_1 Γ) Name_1)
@@ -266,15 +208,6 @@
    (in-Γ Γ Name_1)])
 
 (define-metafunction crystal-lang+Γ
-  [(in-Σ (r_1 : t_1 Σ) r_1)
-   (#t t_1)
-   ]
-  [(in-Σ · r_1)
-   (#f Nil)]
-  [(in-Σ (r : t Σ) r_1)
-   (in-Σ Σ r_1)])
-
-(define-metafunction crystal-lang+Γ
   [(in-t (st_1 st_2 ...) st_1) #t]
   [(in-t () st_1) #f]
   [(in-t (st st_1 ...) st_2) (in-t (st_1 ...) st_2)]
@@ -283,11 +216,6 @@
 (define-metafunction crystal-lang+Γ
   [(typeof-Γ Γ Name_1)
    t (where (_ t) (in-Γ Γ Name_1))
-   ])
-
-(define-metafunction crystal-lang+Γ
-  [(typeof-Σ Σ r_1)
-   t (where (_ t) (in-Σ Σ r_1))
    ])
 
 
@@ -302,10 +230,14 @@
   )
 
 (define-metafunction crystal-lang+Γ
-  upper-σ : σ -> Σ
-  [(upper-σ ()) ·]
-  [(upper-σ ((r_1 v_1) (r_2 v_2) ... )) (r_1 : (typeof-v v_1) (upper-σ ((r_2 v_2) ... )))]
+  make-Γ : σϵprog -> Γ
+  [(make-Γ (σ : () : P)) · ]
   
+  [(make-Γ (((r v) ... (r_1 v_1) (r v) ...) : ((Name_1 r_1) (Name_2 r_2) ...) : P))
+   (Name_1 : (typeof-v v_1) (make-Γ (((r v) ... (r_1 v_1) (r v) ...) : ((Name_2 r_2) ...) : P)))]
+  
+  [(make-Γ (((r v) ...) : ((Name_1 r_1) (Name_2 r_2) ...) : P))
+   (Name_1 : Nil (make-Γ (((r v) ...) : ((Name_2 r_2) ...) : P)))]
   )
 
 (define-metafunction crystal-lang
@@ -314,23 +246,74 @@
   )
 
 (define-metafunction crystal-lang
+  get-ϵ : σϵprog -> ϵ
+  [(get-ϵ (σ : ϵ : P)) ϵ]
+  )
+
+(define-metafunction crystal-lang
   get-P : σϵprog -> P
   [(get-P (σ : ϵ : P)) P]
   )
 
 (define-metafunction crystal-lang
-  fix-free-refs : σϵprog -> σϵprog
-  [(fix-free-refs (σ : ϵ : (Name = P))) (σ_1 : ϵ : Name = P) (where (σ_1 _) (addVal σ_1 (v_2))) ]
-  [(fix-free-refs (σ : ϵ : P)) (σ : ϵ : P) ]
+  [(check-σ ()) #t]
+  [(check-σ ((r_1 v_1) (r_2 v_2) ...))
+   (check-σ ((r_2 v_2) ...))
+   (side-condition (not (term (r-in-σ? ((r_2 v_2) ...) r_1))))
+   or
+   #f])
+
+(define-metafunction crystal-lang
+  [(check-ϵ ()) #t]
+  [(check-ϵ ((Name_1 r_1) (Name_2 r_2) ...))
+   (check-ϵ ((Name_2 r_2) ...))
+   (side-condition (not (term (name-in? ((Name_2 r_2) ...) Name_1))))
+   or
+   #f])
+
+(define-metafunction crystal-lang
+  [(fix_missing_values_σ () ((Name_1 r_1) ...))
+   ()]
+  
+  [(fix_missing_values_σ ((r_1 v_1) ...) ())
+   ((r_1 v_1) ...)
+   ]
+  
+  [(fix_missing_values_σ ((r_1 v_1) ...) ((Name_1 r_2) (Name_2 r_3) ...))
+   (fix_missing_values_σ ((r_2 v_2) (r_1 v_1) ...) ((Name_2 r_3) ...))
+   (side-condition (not (term (r_in_σ (((r_1 v_1) ...)) r_2))))]
+
+
+
   )
 
-(define (fix_clousure σϵprog)
-  (term (fix-free-refs (unquote σϵprog)))
+(define-metafunction crystal-lang
+  [(fix_missing_values () ())
+   (() ())
+   ]
+  [(fix_missing_values ((r_1 v_1) ...) ())
+   (((r_1 v_1) ...) ())
+   ]
+  
+  [(fix_missing_values ((r_1 v_1) ...) ((Name_1 r_2) (Name_2 r_3) ...))
+   (σ ((Name_1 r_2) (Name_2 r_3) ...))
+   (where σ (fix_missing_values_σ ((r_1 v_1) ...) ((Name_1 r_2) (Name_2 r_3) ...)))
+   ]
+  
   )
+
+(define (prepare σϵprog)
+  (if (and (term (check-σ (get-σ ,σϵprog))) (term (check-ϵ (get-ϵ ,σϵprog))))
+      (let*-values ([(σ ϵ) (term (fix_missing_values (get-σ ,σϵprog) (get-ϵ ,σϵprog)))]
+                    [(P) (term (get-P ,σϵprog))])
+            (term (σ : ϵ : P)))
+      
+      (println (term ,σϵprog))))
+
 
 (define (TR? σϵprog)
-  (not (null? (judgment-holds (TR · (upper-σ (get-σ ,σϵprog)) (get-P ,σϵprog) t Γ Σ)
-                              (t Γ Σ))))
+  (not (null? (judgment-holds (TR (make-Γ ,σϵprog) (get-P ,σϵprog) t Γ)
+                              (t Γ))))
   )
 
 (define v? (redex-match? crystal-lang v))
@@ -351,7 +334,7 @@
 
 
 
-(redex-check crystal-lang+Γ σϵprog (progress-holds?  (term σϵprog)) )
+(redex-check crystal-lang+Γ σϵprog (progress-holds?  (term σϵprog)) #:prepare prepare  #:attempts 1000)
 ;(define (progress_tr rel attempts debug)
 ;  (redex-check  crystal-lang any
 ;                (soundness_wfc_pred (term any) debug)

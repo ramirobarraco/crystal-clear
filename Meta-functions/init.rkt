@@ -16,10 +16,10 @@
 
 
 (define-metafunction crystal-lang
-  addVal : σ (v ...) -> (σ (r ...))
+  addVal : σ (v_1 ...) -> (σ (r_1 ...))
   ; Base case
-  [(addVal ((r v) ...) ())
-   (((r v) ...) ())]
+  [(addVal ((r_1 v_1) ...) ())
+   (((r_1 v_1) ...) ())]
   
   ; Inductive case
   [(addVal (rp ...) (v_1 v_2 ...))
