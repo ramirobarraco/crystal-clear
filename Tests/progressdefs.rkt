@@ -1,10 +1,11 @@
 #lang racket
 (require redex
-         racket/trace
          "../grammar.rkt"
          "../Relations/fullprogs.rkt"
          "../Relations/subtyping.rkt"
          "../Meta-functions/aux_fun.rkt"
+         "../Relations/sigmaprogs.rkt"
+         "../Relations/progs.rkt"
          )
 
 
@@ -54,10 +55,10 @@
    --------------------------------------------------------------
    (TR Γ_1 (P_1 P_2 P_3 P_4 ...) t_1 Γ_2)]
 
-  [(TR Γ P_1 Bool Γ_1)
+  [(IF Γ P_1 Γ_1 Γ_3)
    (TR Γ_1 P_2 t Γ_2)
    -----------------------------
-   (TR Γ (while P_1 P_2) t (supreme-Γ Γ Γ_2))]
+   (TR Γ (while P_1 P_2) t (supreme-Γ Γ_3 Γ_2))]
 
   [(TR Γ P_1 Int32 Γ)
    (TR Γ P_2 Int32 Γ)
@@ -87,9 +88,9 @@
    -----------------------------
    (TR Γ Name t Γ)]
   
-  [
+  [(TR Γ P t Γ)
    ----------------------------
-   (TR Γ (isa? t var) Bool Γ)]
+   (TR Γ (isa? t P) Bool Γ)]
 
   [
    -----------------------------
@@ -185,6 +186,8 @@
 ; removes from the first t the second t
 (define-metafunction crystal-lang+Γ
   [(remove-t t_1 t_1) Nil]
+  [(remove-t Nil t_1) Nil]
+  [(remove-t t_1 t_2) Nil]
   [(remove-t (st_1 ...) ()) (st_1 ...)]
   [(remove-t (st_1 st_2 ...) st_1) (st_2 ...)]
   [(remove-t (st_1 st_2 ...) st_3) t_1 (where t_1 ,(remove (term st_3) (term (st_1 st_2 ...))))]
@@ -221,13 +224,7 @@
 
 (provide (all-defined-out))
 
-(define-metafunction crystal-lang+Γ
-  typeof-v : v -> t
-  [(typeof-v int32) Int32]
-  [(typeof-v str) String]
-  [(typeof-v bool) Bool]
-  [(typeof-v nil) Nil]
-  )
+
 
 (define-metafunction crystal-lang+Γ
   make-Γ : σϵprog -> Γ
@@ -272,31 +269,44 @@
    #f])
 
 (define-metafunction crystal-lang
-  [(fix_missing_values_σ () ((Name_1 r_1) ...))
-   ()]
+  [(fix_missing_values_σ () ((Name_1 r_1) (Name_2 r_2) ...))
+   (fix_missing_values_σ ((r_1 nil)) ((Name_2 r_2) ...))]
   
   [(fix_missing_values_σ ((r_1 v_1) ...) ())
    ((r_1 v_1) ...)
    ]
+
+  [(fix_missing_values_σ ((r_1 v_1) ...) ((Name_1 r_2)))
+   ((r_2 nil) (r_1 v_1) ...)
+   (side-condition (not (term (r-in-σ? ((r_1 v_1) ...) r_2))))]
   
   [(fix_missing_values_σ ((r_1 v_1) ...) ((Name_1 r_2) (Name_2 r_3) ...))
-   (fix_missing_values_σ ((r_2 v_2) (r_1 v_1) ...) ((Name_2 r_3) ...))
-   (side-condition (not (term (r_in_σ (((r_1 v_1) ...)) r_2))))]
-
-
+   (fix_missing_values_σ ((r_2 nil) (r_1 v_1) ...) ((Name_2 r_3) ...))
+   (side-condition (not (term (r-in-σ? ((r_1 v_1) ...) r_2))))]
+  
+  [(fix_missing_values_σ ((r_1 v_1) ...) ((Name_1 r_2)))
+   ((r_1 v_1) ...)
+   (side-condition (term (r-in-σ? ((r_1 v_1) ...) r_2)))]
+  
+  [(fix_missing_values_σ ((r_1 v_1) ...) ((Name_1 r_2) (Name_2 r_3) ...))
+   (fix_missing_values_σ ((r_1 v_1) ...) ((Name_2 r_3) ...))
+   (side-condition (term (r-in-σ? ((r_1 v_1) ...) r_2)))]
 
   )
 
 (define-metafunction crystal-lang
-  [(fix_missing_values () ())
-   (() ())
-   ]
-  [(fix_missing_values ((r_1 v_1) ...) ())
-   (((r_1 v_1) ...) ())
+  fix_missing_values : σϵprog -> σϵprog
+  
+  [(fix_missing_values (() : () : P))
+   (() : () : P)
    ]
   
-  [(fix_missing_values ((r_1 v_1) ...) ((Name_1 r_2) (Name_2 r_3) ...))
-   (σ ((Name_1 r_2) (Name_2 r_3) ...))
+  [(fix_missing_values (((r_1 v_1) ...) : () : P))
+   (((r_1 v_1) ...) : () : P)
+   ]
+  
+  [(fix_missing_values (((r_1 v_1) ...) : ((Name_1 r_2) (Name_2 r_3) ...) : P))
+   (σ : ((Name_1 r_2) (Name_2 r_3) ...) : P)
    (where σ (fix_missing_values_σ ((r_1 v_1) ...) ((Name_1 r_2) (Name_2 r_3) ...)))
    ]
   
@@ -304,9 +314,9 @@
 
 (define (prepare σϵprog)
   (if (and (term (check-σ (get-σ ,σϵprog))) (term (check-ϵ (get-ϵ ,σϵprog))))
-      (let*-values ([(σ ϵ) (term (fix_missing_values (get-σ ,σϵprog) (get-ϵ ,σϵprog)))]
-                    [(P) (term (get-P ,σϵprog))])
-            (term (σ : ϵ : P)))
+      
+      (let ([x (term (fix_missing_values  ,σϵprog))])
+         (term ,x))
       
       (println (term ,σϵprog))))
 
@@ -334,7 +344,7 @@
 
 
 
-(redex-check crystal-lang+Γ σϵprog (progress-holds?  (term σϵprog)) #:prepare prepare  #:attempts 1000)
+(redex-check crystal-lang σϵprog (progress-holds?  (term σϵprog)) #:prepare prepare  #:attempts 10000)
 ;(define (progress_tr rel attempts debug)
 ;  (redex-check  crystal-lang any
 ;                (soundness_wfc_pred (term any) debug)

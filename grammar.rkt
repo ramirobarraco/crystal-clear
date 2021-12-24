@@ -46,13 +46,13 @@
      (if hole then P else P)
      (var = hole)
      (t var = hole)
-     (isa t hole)
+     (isa? t hole)
      hole
        )
 
   (var ::=
    Name
-   r
+   ;r
    )
   
   ;Type definition
@@ -60,7 +60,7 @@
   ;last type is the union of types
   [t Nil Bool Int32 String union Unit]
   [st Nil Bool Int32 String]
-  [union (st ...)]
+  [union (st_!_1 st_!_1 st_!_1 ...)]
 
   [bool true false]
 

@@ -34,17 +34,29 @@
                                       (x = 0)))
             
            (term ((((ref 0) 1) ((ref 1) 0)):
-                                           ((x (ref 1)) (bar (ref 0))): \;)))
+                                           ((x (ref 1)) (bar (ref 0))): nil)))
  
   (test--> σϵ-rel (term ((((ref 0) nil)) : ((b (ref 0)) (a (ref 0))) : a))
-           (term ((((ref 0) nil)) : ((b (ref 0)) (a (ref 0))) : nil))
-                        
+           
+           (term ((((ref 0) nil)) : ((b (ref 0)) (a (ref 0))) : nil))             
            )
 
-    (test--> σϵ-rel (term ((((ref 0) nil)) : ((b (ref 0)) (a (ref 0))) : (a = nil)))
-           (term ((((ref 0) nil)) : ((b (ref 0)) (a (ref 0))) : \;))
-                        
+  (test--> σϵ-rel (term ((((ref 0) nil)) : ((b (ref 0)) (a (ref 0))) : (a = nil)))
+       
+           (term ((((ref 0) nil)) : ((b (ref 0)) (a (ref 0))) : nil))            
            )
+  
+  (test--> σϵ-rel (term ((((ref 0) nil)) : ((b (ref 0)) (a (ref 0))) : ( Nil a = nil)))
+           
+           (term ((((ref 0) nil)) : ((b (ref 0)) (a (ref 0))) : nil))
+           )
+
+  (test--> σϵ-rel (term (() : () : (x = 0)))
+         
+           (term ((((ref 0) 0)): ((x (ref 0))): nil))
+           )
+
+  (test-results)
   )
   
 (sigma-progs-test-suite)
