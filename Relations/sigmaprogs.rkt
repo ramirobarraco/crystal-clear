@@ -7,6 +7,7 @@
          "../Meta-functions/aux_fun.rkt"
          )
 
+; TODOM: documentación e indentación del código
 (define σϵ-rel
   (reduction-relation
    crystal-lang
@@ -26,7 +27,8 @@
             (where (σ_2 (r_2)) (addVal σ_1 (v_2)))
             Naming]
 
-   
+   ; TODOM: acordate que esto lo vamos a tener dependiendo de si hacemos type
+   ; erasure o no
    [-->σϵ/P (((r_2 v_2) ... (r_1 v_1) (r_3 v_3) ... ) : ((Name_2 r_4) ... (Name_1 r_1) (Name_3 r_5) ...) : (t Name_1 = v))
             (((r_2 v_2) ... (r_1 v) (r_3 v_3) ... ) : ((Name_2 r_4) ... (Name_1 r_1) (Name_3 r_5) ...) : nil)
             typed-reAssgn]

@@ -3,6 +3,8 @@
          "../grammar.rkt"
          )
 
+;TODOM: documentación!
+
 (define-metafunction crystal-lang
   init : σ -> r
   [(init ())
@@ -14,7 +16,9 @@
    (where number_2 ,(+ (argmax max (term (number_1 ...))) 1))]
   )
 
-
+; TODOM: notar que este addVal es útil para cuando tenés que alojar en el
+; almacenamiento más de un valor en simultaneo; de otro modo no tiene
+; mucho sentido hacerlo así
 (define-metafunction crystal-lang
   addVal : σ (v_1 ...) -> (σ (r_1 ...))
   ; Base case

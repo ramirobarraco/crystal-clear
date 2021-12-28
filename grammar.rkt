@@ -1,5 +1,5 @@
 #lang racket
-
+; TODOM: mínimo comentario describiendo qué hay en este módulo
 (require redex)
 ;TODO add unit to grammar
 (define-language crystal-lang
@@ -13,6 +13,12 @@
      v
      var
      (isa? t P)
+     ; TODOM: la idea de dividir entre s y e no era para poder
+     ; indicar que en el lado derecho de = puede ir cualquiera
+     ; cosa que sea un e?
+     ; aunque habiendo eliminado el \; me pregunto si sigue haciendo
+     ; falta la distinción entre s y e, ya que todo puede generar
+     ; un valor: al menos nil
      (var = P)
      (t var = P)
      (unop P)
@@ -23,6 +29,10 @@
      (while P P)
      (if P then P else P)
      )
+
+; TODOM: es cierto que E tiene la siguiente instrucción a ejecutar,
+; pero más en general, E contiene todo lo que resta por computar,
+; no sólo la siguiente instrucción
 ; next instruction to compute
   
   (E ::=
@@ -36,6 +46,13 @@
      (t var = E)
      hole
      )
+
+; TODOM: estos no son contextos ordinarios, sino que son contextos que
+; señalan donde puede estar un Name que puede ser "desreferenciado"
+; sin embargo, dado que en la categoría E no tenemos un contexto que
+; sea (E = P) no hay riesgo de que la operación de desreferenciado
+; ocurra sobre un Name que esté en el lado izquierdo de =; podrías
+; descartar Ev y simplificar la regla de "desreferenciado" implícito
   
 ; Context
   (Ev ::=
@@ -54,12 +71,19 @@
    Name
    ;r
    )
+
+  ; TODOM: espaciá las cosas
   
   ;Type definition
   [v nil bool int32 str]
   ;last type is the union of types
   [t Nil Bool Int32 String union Unit]
   [st Nil Bool Int32 String]
+  ; TODOM: no es necesario el subíndice 1, y de hecho, puede confundir
+  ; porque normalmente utilizamos subíndices para indicar que ciertos
+  ; subtérminos tienen que ser iguales, cosa que acá no ocurre por la semántica
+  ; de _!_. Más aún, si patrón fuera otro sería un error tener p_1 y "p_1 ..." en
+  ; un mismo patrón es un error.
   [union (st_!_1 st_!_1 st_!_1 ...)]
 
   [bool true false]
@@ -84,7 +108,7 @@
   [unop - not
         ;typeof
         ]
-
+  ; TODOM: espacios
   ;r is a reference
   [r (ref natural)]
   ;reference pair
@@ -140,6 +164,8 @@
   (or (is_false? P)
       (is_nil? P)))
 
+; TODOM: esto tiene más que ver con semántica que con sintaxis,
+; pasarlo a otro módulo
 (define-metafunction crystal-lang
   is-a? : t v -> bool
   [(is-a? Int32 int32) true]

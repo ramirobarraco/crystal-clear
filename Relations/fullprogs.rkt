@@ -6,6 +6,7 @@
          "../Relations/progs.rkt"
          "../Relations/sigmaprogs.rkt"
          )
+; TODOM: documentación!
 (define full-rel
   (reduction-relation
    crystal-lang
