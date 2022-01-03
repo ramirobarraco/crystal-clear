@@ -1,7 +1,7 @@
 #lang racket
 ; TODOM: mínimo comentario describiendo qué hay en este módulo
 (require redex)
-;TODO add unit to grammar
+;TODO ADD context for while break
 (define-language crystal-lang
   
   (P ::=
@@ -25,7 +25,6 @@
      (P binop P)
    )
   (s ::=
-     ;\;
      (while P P)
      (if P then P else P)
      )
@@ -76,6 +75,7 @@
   
   ;Type definition
   [v nil bool int32 str]
+  
   ;last type is the union of types
   [t Nil Bool Int32 String union Unit]
   [st Nil Bool Int32 String]
@@ -84,7 +84,7 @@
   ; subtérminos tienen que ser iguales, cosa que acá no ocurre por la semántica
   ; de _!_. Más aún, si patrón fuera otro sería un error tener p_1 y "p_1 ..." en
   ; un mismo patrón es un error.
-  [union (st_!_1 st_!_1 st_!_1 ...)]
+  [union (st_!_ st_!_ st_!_ ...)]
 
   [bool true false]
 

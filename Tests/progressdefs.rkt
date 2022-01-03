@@ -92,9 +92,6 @@
    ----------------------------
    (TR Γ (isa? t P) Bool Γ)]
 
-  [
-   -----------------------------
-   (TR Γ \; Unit Γ)]
 
   
   )
@@ -185,10 +182,11 @@
 
 ; removes from the first t the second t
 (define-metafunction crystal-lang+Γ
+  remove-t : t t -> t
   [(remove-t t_1 t_1) Nil]
   [(remove-t Nil t_1) Nil]
-  [(remove-t t_1 t_2) Nil]
-  [(remove-t (st_1 ...) ()) (st_1 ...)]
+  [(remove-t (st_1 st_2) st_2) st_1]
+  [(remove-t (st_1 st_2) st_1) st_2]
   [(remove-t (st_1 st_2 ...) st_1) (st_2 ...)]
   [(remove-t (st_1 st_2 ...) st_3) t_1 (where t_1 ,(remove (term st_3) (term (st_1 st_2 ...))))]
   [(remove-t (st_1 st_2 ...) (st_3 st_4 ...))(remove-t t_1 (st_4 ...)) (where t_1 ,(remove (term st_3) (term (st_1 st_2 ...))))]
@@ -316,7 +314,7 @@
   (if (and (term (check-σ (get-σ ,σϵprog))) (term (check-ϵ (get-ϵ ,σϵprog))))
       
       (let ([x (term (fix_missing_values  ,σϵprog))])
-         (term ,x))
+        (term ,x))
       
       (println (term ,σϵprog))))
 
@@ -328,7 +326,6 @@
 
 (define v? (redex-match? crystal-lang v))
 
-(define skip? (redex-match? crystal-lang \;))
 
 (define (reduces? σϵprog)
   (not (null? (apply-reduction-relation
@@ -338,19 +335,29 @@
 (define (progress-holds? σϵprog)
   (if (TR? σϵprog)
       (or (v? (term (get-P ,σϵprog)))
-          (skip? (term (get-P ,σϵprog)))
           (reduces? σϵprog))
+      (begin (printf "checking ~s\n\n" σϵprog)
+      #t)))
+
+
+;checks that if its well typed then it only has one or less reductions
+(define (reduce1 σϵprog)
+  (if (TR? σϵprog)
+      (<= (length (apply-reduction-relation full-rel (term ,σϵprog)))
+     1)
       #t))
 
+(define (reducestyped? σϵprog)
+  (TR? (apply-reduction-relation
+               full-rel
+               (term ,σϵprog))))
 
-
-(redex-check crystal-lang σϵprog (progress-holds?  (term σϵprog)) #:prepare prepare  #:attempts 10000)
-;(define (progress_tr rel attempts debug)
-;  (redex-check  crystal-lang any
-;                (soundness_wfc_pred (term any) debug)
-;                #:prepare close_conf
-;                #:attempts attempts
-;                #:source rel))
+(define (preservation-holds? σϵprog)
+  (if (TR? σϵprog)
+      (or (v? (term (get-P ,σϵprog)))
+          (reducestyped? σϵprog))
+      (begin (printf "checking ~s\n\n" σϵprog)
+      #t)))
 
 
 

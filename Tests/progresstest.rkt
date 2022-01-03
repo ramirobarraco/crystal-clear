@@ -17,12 +17,12 @@
   (test-equal (term (supreme-t (String Int32) Int32))
               (term (String Int32))
               )
-  (test-equal (term (supreme-Γ (x : (String Bool) ·) (x : (String) ·)))
+  (test-equal (term (supreme-Γ (x : (String Bool) ·) (x : String ·)))
               (term (x : (String Bool) ·))
               )
   
   ;Concat judgment form
-  (test-equal (judgment-holds (concat (x : Int32 ·) (\; \; \;) \; Unit (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (concat (x : Int32 ·) (nil nil nil) nil Nil (x : Int32 ·))) #t)
   
   ;value calls
   (test-equal (judgment-holds (TR (x : Int32 ·) x Int32 (x : Int32 ·))) #t)
@@ -35,7 +35,6 @@
   (test-equal (judgment-holds (TR (x : Int32 ·) (1 + 1) Int32 (x : Int32 ·))) #t)
   (test-equal (judgment-holds (TR (x : Int32 ·) (true and false) Bool (x : Int32 ·))) #t)
   (test-equal (judgment-holds (TR (x : Int32 ·) (- 1) Int32 (x : Int32 ·))) #t)
-  (test-equal (judgment-holds (TR (x : Int32 ·)(- false) Bool (x : Int32 ·))) #t)
   (test-equal (judgment-holds (TR (x : Bool ·) (a = x) Bool (a : Bool (x : Bool ·)))) #t)
   (test-equal (judgment-holds (TR (x : Int32 ·) (x + 1) Int32 (x : Int32 ·))) #t)
   
@@ -51,7 +50,7 @@
                                   (a : (Bool String) (x : Int32 ·))))
               #t)
   
-  (test-equal (judgment-holds (TR (x : (Int32 String) ·) (if (isa? Int32 x) then (x + 1) else (a = "asaS"))
+  (test-equal (judgment-holds (TR (x : (String Int32) ·) (if (isa? Int32 x) then (x + 1) else (a = "asaS"))
                                   (Int32 String)
                                   (x : (Int32 String) (a : (String Nil) ·))))
               #t)
@@ -64,11 +63,11 @@
   ;end
   ;# a : String | Bool
   (test-equal (judgment-holds (TR (a : Int32 ·)
-                                    ((if (a > 0)
-                                         then
-                                         (a = "hello")
-                                         else
-                                         (a = true)) a)
+                                  ((if (a > 0)
+                                       then
+                                       (a = "hello")
+                                       else
+                                       (a = true)) a)
                                   (String Bool)
                                   (a : (String Bool) ·)))
               #t)
@@ -79,11 +78,11 @@
   ;end
   ;# b : Int32 | String
   (test-equal (judgment-holds (TR (b : Int32 ·)
-                                    ((if (b > 0)
-                                         then
-                                         (b = "hello")
-                                         else
-                                         \;) b)
+                                  ((if (b > 0)
+                                       then
+                                       (b = "hello")
+                                       else
+                                       nil) b)
                                   (String Int32)
                                   (b : (String Int32) ·)))
               #t)
@@ -114,19 +113,19 @@
                                        then
                                        (d = 1)
                                        else
-                                       \;)d)
+                                       nil)d)
                                   (Int32 Nil)
                                   (d : (Int32 Nil) ·)))
               #t)
   
-  (test-equal (judgment-holds (TR ·
-                                  ((if (a = (isa? Int32 (ref 0)))
+  (test-equal (judgment-holds (TR (x : Int32 ·) 
+                                  ((if (a = (isa? Int32 x))
                                        then
                                        a
                                        else
-                                       \;)a)
+                                       nil)a)
                                   Bool
-                                  (a : Bool ·)))
+                                  (a : Bool (x : Int32 ·))))
               #t)
   
   (test-results)

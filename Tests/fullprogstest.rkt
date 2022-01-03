@@ -9,41 +9,41 @@
   ; full "while" loop
   (test-->> full-rel
             (term ((((ref 1) 3) ):
-                   (((ref 1) x))  :
-                                 (while (1 < (ref 1))
-                                        ((ref 1) = ((ref 1) - 1))
+                   ((x (ref 1)))  :
+                                 (while (1 < x)
+                                        (x = (x - 1))
                                         )))
             
             (term ((((ref 1) 1)):
-                   (((ref 1) x))  :
-                    \;)))
+                   ((x (ref 1)))  :
+                    nil)))
   
   (test-->> full-rel
             (term ((((ref 1) false) ):
-                  (((ref 1) x))  :
-                                     (if (ref 1)
-                                         then ((ref 1) = false) else ((ref 1) = true))))
+                  ((x (ref 1)))  :
+                                     (if x
+                                         then (x = false) else (x = true))))
             
             (term ((((ref 1) true)):
-                   (((ref 1) x))  :
-                    \;)))
+                   ((x (ref 1)))  :
+                    nil)))
   
   (test-->> full-rel
             (term ((((ref 1) false) ):
-                   (((ref 1) x))  :
+                   ((x (ref 1)))  :
                     (1 1)))
             
             (term ((((ref 1) false)):
-                   (((ref 1) x))  :
+                   ((x (ref 1)))  :
                     1)))
   
   (test-->> full-rel
             (term ((((ref 1) false) ):
-                                     (((ref 1) x))  :
+                                     ((x (ref 1)))  :
                                      (isa? Int32 x)))
             
             (term ((((ref 1) false)):
-                                    (((ref 1) x))  :
+                                    ((x (ref 1)))  :
                                     false)))
   )
 

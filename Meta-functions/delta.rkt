@@ -5,18 +5,15 @@
 
 (define-metafunction crystal-lang
   ; arithmetic operations
-  ; coercion
 
-  ; TODOM: el comentario "coercion" no corresponde
   [(δ + int32_1 int32_2)
    ,(+ (term int32_1) (term int32_2))]
 
   [(δ - int32_1 int32_2)
    ,(- (term int32_1) (term int32_2))]
 
-  ; TODOM: no hace falta el subíndice _1
-  [(δ - int32_1)
-   ,(- (term int32_1))]
+  [(δ - int32)
+   ,(- (term int32))]
   
   [(δ * int32_1 int32_2)
    ,(* (term int32_1) (term int32_2))]
@@ -25,6 +22,7 @@
   ; en tal caso, emular cómo actua crystal: qué hace? De otro modo estamos
   ; explicando esa situación errónea en términos de lo que hace la / de racket,
   ; que puede ser correcto o no
+  ; TODO: No es IEEE 754 investigar como esta definido
   [(δ / int32_1 int32_2)
    ,(/ (term int32_1) (term int32_2))]
   

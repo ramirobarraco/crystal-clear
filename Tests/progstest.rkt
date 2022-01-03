@@ -17,16 +17,16 @@
             (term 2))
 
   (test-->> progs-rel
-            (term (\; (1 + 1)))
+            (term (nil (1 + 1)))
             (term 2))
   
   (test-->> progs-rel
-            (term (\; (1 + 1) (2 + 2) (3 + 3)))
+            (term (nil (1 + 1) (2 + 2) (3 + 3)))
             (term ((1 + 1) (2 + 2) (3 + 3))))
 
   (test-->> progs-rel
             (term (while false (bar = 1)))
-            (term \;))
+            (term nil))
 
   (test--> progs-rel
            (term (isa? Bool true))
@@ -35,6 +35,8 @@
   (test--> progs-rel
            (term (isa? Int32 true))
            (term false))
-)
+
+  (test-results)
+  )
 
 (progs-rel-test-suite)
