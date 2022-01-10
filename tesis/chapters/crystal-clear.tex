@@ -1,0 +1,74 @@
+\setchapterpreamble[u]{\margintoc}
+\chapter{Crystal-Clear}
+\labch{intro}
+
+\section{Especificación}
+
+\section{Seguridad}
+
+En esta seccion intentaremos demostrar que Crystal-Clear cumple con la propiedad
+seguridad.
+
+\begin{definition}
+\labdef{SEGURIDAD}
+    SEGURIDAD: para cualquier termino bien tipado del lenguaje no es
+    posible llegar a un estado atascado siguiendo las reglas de reduccion.
+     Esto significa que el programa no es un valor final pero tampoco se 
+    pueda aplicar las reglas de reduccion definidas.
+\end{definition}
+
+Para ello definiremos dos propiedades.
+
+\begin{definition}
+\labdef{Progreso}
+    PROGRESO: para cualquier termino si esta bien tipado entonces el termino no es atascado.
+\end{definition}
+\begin{definition}
+\labdef{Preservacion}
+    PRESERVACION: para cualquier termino si este esta bien tipado y sigue un paso de las reglas
+    de reduccion entonces el resultado esta bien tipado.
+\end{definition}
+
+Comenzemos demostrando progreso. Primero definamos que significa el predicado
+con nuestros objetos matematicos.
+
+\begin{theorem}[Progreso]
+    supongamos que P es cerrado y bien  tipado(eso es que
+    \Typetup{$\Gamma$}{P}{t} para algun t y $\Gamma$)
+    entonces P es un valor o para algun $\sigma$ y $\epsilon$ tal que
+    $\Gamma \vdash \sigma$ existen P' , $\sigma$' y $\epsilon$' 
+
+    \sigmaprog{$\sigma$}{$\epsilon$}{P} $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{P'}.
+
+\end{theorem}
+\begin{proof}
+Esto se puede probar haciendo induccion en todos los posibles programas de nuestra
+gramatica. Para T-NIL, T-BOOL, T-INT32 y T-STRING la prueba es trivial ya que son valores.
+T-NAME En principio es facil observar que si P es de la forma \Var{Name}
+y al estar bien tipado entonces \Var{Name} tiene que estar en $\Gamma$. Por lo que lo 
+que \Var{Name} tambien estaria en $\sigma, \epsilon$ y el paso que se haria nos devolveria
+$\sigma[\epsilon[\Var{Name}]]$
+\end{proof}
+
+\begin{theorem}[Preservacion]
+    si
+
+    \Typetup{$\Gamma$}{P}{t}
+
+    $\Gamma \vdash \sigma$
+
+    \sigmaprog{$\sigma$}{$\epsilon$}{P}  $\rightarrow$ 
+     \sigmaprog{$\sigma'$}{$\epsilon'$}{P'} 
+
+    entonces, para algun $\Gamma' \supseteq  \Gamma$
+
+    \Typetup{$\Gamma'$}{P'}{t}
+
+    $\Gamma' \vdash \sigma'$
+
+\end{theorem}
+
+\begin{proof}
+
+\end{proof}
+
