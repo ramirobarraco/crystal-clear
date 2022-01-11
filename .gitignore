@@ -1,4 +1,14 @@
 
+tesis/main.blg 
+tesis/main.fdb_latexmk 
+tesis/main.glo
+tesis/main.idx 
+tesis/main.ind 
+tesis/main.nlo 
+tesis/main.synctex.gz 
+tesis/main.xdy 
+tesis/tesis.pdf 
+tesis/tesis.synctex.gz
 compiled/drracket/errortrace/grammar_rkt.zo
 compiled/drracket/errortrace/grammar_rkt.dep
 Meta-functions/compiled/drracket/errortrace/delta_rkt.dep
