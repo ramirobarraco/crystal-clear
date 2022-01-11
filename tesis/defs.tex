@@ -1,0 +1,113 @@
+\definecolor{mygreen}{rgb}{0,0.6,0}
+
+% \lstdefinelanguage{Lua}{
+% 	alsoletter = -,
+%   keywords={function,local,end,break,if,return,nil,
+%   in,else,then,void,not,--,while,do,;,
+%   \$builtIn,
+%   FuncCall},
+% }
+\lstset{
+  inputencoding=utf8,
+  escapeinside={(*@}{@*)},
+  basicstyle=\sffamily,
+  aboveskip=3mm,
+  belowskip=3mm,
+  numbers=left,
+  numbersep=2pt,
+  numberstyle=\footnotesize\color{mygreen},
+  stepnumber=1,
+  numberfirstline=true,
+  columns=flexible,
+  breaklines=true,
+  tabsize=3,
+  commentstyle=\color{mygreen},
+  morecomment=[l]{--},
+  captionpos=b,
+  xleftmargin=2.5ex,
+  keywords={function,local,end,break,if,return,nil,
+  in,else,then,void,not,--,while,do,;,$statFcall, $builtIn}
+  }
+\renewcommand{\lstlistingname}{\textbf{Figure}}
+\newcommand{\lstln}[1]{\lstinline{#1}}
+
+\newif\ifprintcomments
+
+\newcommand{\betaz}[1]{\textbf{\color{red}[BZ: #1]}}
+
+
+\newcommand{\slabel}[1]{\label{sec:#1}}
+\newcommand{\sref}[1]{\S\ref{sec:#1}}
+\newcommand{\flabel}[1]{\label{fig:#1}}
+\newcommand{\fref}[1]{Figure~\ref{fig:#1}}
+
+%\newcommand{\ie}{\emph{i.e.}, }
+%\newcommand{\eg}{\emph{e.g.}, }
+\newcommand{\cf}{\emph{c.f.}, }
+%\newcommand{\etc}{\emph{etc.}\xspace}
+
+\newcommand{\KW}[1]{\textsf{\textbf{#1}}}
+
+\newcommand{\Label}[1]{{\footnotesize\textsc{#1}}}
+
+% service's label
+\newcommand{\Svc}[1]{\textsf{#1}}
+
+\newcommand{\nil}{\KW{nil}}
+\newcommand{\false}{\KW{false}}
+\newcommand{\true}{\KW{true}}
+
+\newcommand{\Var}[1]{\textsf{\textit{#1}}}
+
+\newcommand{\NT}[1]{\textsf{\textit{#1}}}
+
+\newcommand{\T}[1]{\textsf{\textbf{#1}}}
+
+\newcommand{\Tu}[3]{(#1 | #2 | #3)}
+
+\newcommand{\Typetup}[3]{#1 $\vdash$ #2 : #3}
+
+\newcommand{\sigmaprog}[3]{#1 : #2 : #3}
+
+\newcommand{\MT}[1]{$\boldsymbol{#1}$}
+
+\newcommand{\funcall}[1]{\llparenthesis{#1}\rrparenthesis_{\KW{FunCall}}}
+
+\newcommand{\LabelCons}[2]{\llparenthesis{\;#1\;}\rrparenthesis_{\Label{#2}}}
+
+\newcommand{\Rule}[1]{\textsf{#1}}
+
+\newcommand{\inhole}[2]{#1 \; [\![ \; #2 \; ]\!]}
+
+\newcommand{\hole}{[\![ \; ]\!]}
+
+
+%separator for grammar
+\newcommand{\sep}{\textbar\;}
+
+%double quotation for code
+\newcommand{\dbq}[1]{``#1"}
+
+\newcommand{\dom}[1]{\ensuremath{\mathsf{dom}(#1)}}
+
+\newcommand{\refs}[1]{\ensuremath{\mathsf{refs}(#1)}}
+
+% computation rules
+\newcommand{\luastep}{\overset{L}{\mapsto}}
+\newcommand{\gcstep}{\overset{GC}{\mapsto}}
+\newcommand{\finstep}{\overset{F}{\mapsto}}
+\newcommand{\weakstep}{\overset{W}{\mapsto}}
+\newcommand{\luagcstep}{\overset{L+GC}{\mapsto}}
+\newcommand{\luaweakstep}{\overset{L+W}{\mapsto}}
+
+% equivalences
+\newcommand{\rcheq}{\overset{rch}{\sim}}
+\newcommand{\strcheq}{\overset{strch}{\sim}}
+
+% claims
+%\newenvironment{claim}[1]{\par\noindent\underline{Claim:}\space#1}{}
+\newenvironment{claimproof}[1]{\par\noindent\underline{Proof:}\space#1}{\hfill $\blacksquare$}
+
+% well-formedness
+\newcommand{\wft}[0]{\vdash_{wft}}
+\newcommand{\wfc}[0]{\vdash_{wfc}}
