@@ -15,81 +15,81 @@
   #:mode (TR I  I O O )
   #:contract (TR Γ P t Γ)
 
-  [--------------------------------
+  [--------------------------------"T-NIL"
    (TR Γ nil Nil Γ)]
 
-  [--------------------------------
+  [--------------------------------"T-BOOL"
    (TR Γ bool Bool Γ)]
 
-  [--------------------------------
+  [--------------------------------"T-INT32"
    (TR Γ int32 Int32 Γ)]
 
-  [--------------------------------
+  [--------------------------------"T-STRING"
    (TR Γ str String Γ)]
 
   [(IF Γ P_1 Γ_1 Γ_2)
    (TR Γ_1 P_2 t_1 Γ_3)
    (TR Γ_2 P_3 t_2 Γ_4)
-   -----------------------------
+   -----------------------------"T-IF"
    (TR Γ (if P_1 then P_2 else P_3) (supreme-t t_1 t_2) (supreme-Γ Γ_3 Γ_4))]
   
   [(TR Γ P t_1 Γ)
    (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Γ Γ Name))))
    (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
    (where Γ_1 (Name : t_1 Γ))
-   -----------------------------
+   -----------------------------"T-DEFINE"
    (TR Γ (Name = P) t_1 Γ_1)]
   
   [(TR Γ P t_1 Γ)
    (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
    (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
    (where Γ_1 (Name : t_1 (remove-Γ Γ Name)))
-   -----------------------------
+   -----------------------------"T-REDEFINE"
    (TR Γ (Name = P) t_1 Γ_1)]
 
   [(concat Γ_1 P_2 P_1 t_1 Γ_2)
-   --------------------------------------------------------------
+   --------------------------------------------------------------"T-2P"
    (TR Γ_1 (P_1 P_2) t_1 Γ_2)]
 
   [(concat Γ_1 (P_2 P_3 P_4 ...) P_1 t_1 Γ_2)
-   --------------------------------------------------------------
+   --------------------------------------------------------------"T-CONCAT"
    (TR Γ_1 (P_1 P_2 P_3 P_4 ...) t_1 Γ_2)]
 
   [(IF Γ P_1 Γ_1 Γ_3)
    (TR Γ_1 P_2 t Γ_2)
-   -----------------------------
+   -----------------------------"T-WHILE"
    (TR Γ (while P_1 P_2) t (supreme-Γ Γ_3 Γ_2))]
 
   [(TR Γ P_1 Int32 Γ)
    (TR Γ P_2 Int32 Γ)
-   -----------------------------
+   -----------------------------"T-ARITHOP"
    (TR Γ (P_1 arithop P_2) Int32 Γ)]
   
   [(TR Γ P_1 Int32 Γ)
    (TR Γ P_2 Int32 Γ)
-   -----------------------------
+   -----------------------------"T-RELOP"
    (TR Γ (P_1 relop P_2) Bool Γ)]
   
   [(TR Γ P_1 Bool Γ)
    (TR Γ P_2 Bool Γ)
-   -----------------------------
+   -----------------------------"T-SHORTBINOP"
    (TR Γ (P_1 shortbinop P_2) Bool Γ)]
 
   [(TR Γ P_1 Bool Γ)
-   -----------------------------
+   -----------------------------"T-NOT"
    (TR Γ (not P_1) Bool Γ)]
 
   [(TR Γ P_1 Int32 Γ)
-   -----------------------------
+   -----------------------------"T-NEGATIVE"
    (TR Γ (- P_1) Int32 Γ)]
 
   [(side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
    (where t (typeof-Γ Γ Name))
-   -----------------------------
+   -----------------------------"T-NAME"
    (TR Γ Name t Γ)]
   
   [(TR Γ P t Γ)
-   ----------------------------
+   ----------------------------"T-ISA?"
    (TR Γ (isa? t P) Bool Γ)]
 
 
@@ -303,9 +303,9 @@
    (((r_1 v_1) ...) : () : P)
    ]
   
-  [(fix_missing_values (((r_1 v_1) ...) : ((Name_1 r_2) (Name_2 r_3) ...) : P))
-   (σ : ((Name_1 r_2) (Name_2 r_3) ...) : P)
-   (where σ (fix_missing_values_σ ((r_1 v_1) ...) ((Name_1 r_2) (Name_2 r_3) ...)))
+  [(fix_missing_values (((r_1 v_1) ...) : ϵ_1 : P))
+   (σ : ϵ_1 : P)
+   (where σ (fix_missing_values_σ ((r_1 v_1) ...) ϵ_1))
    ]
   
   )
@@ -336,29 +336,31 @@
   (if (TR? σϵprog)
       (or (v? (term (get-P ,σϵprog)))
           (reduces? σϵprog))
-      (begin (printf "checking ~s\n\n" σϵprog)
-      #t)))
+             #t))
 
 
 ;checks that if its well typed then it only has one or less reductions
 (define (reduce1 σϵprog)
   (if (TR? σϵprog)
       (<= (length (apply-reduction-relation full-rel (term ,σϵprog)))
-     1)
+          1)
       #t))
 
 (define (reducestyped? σϵprog)
-  (TR? (apply-reduction-relation
-               full-rel
-               (term ,σϵprog))))
+  (TR? (list-ref (apply-reduction-relation
+                  full-rel
+                  (term ,σϵprog)) 0)))
 
 (define (preservation-holds? σϵprog)
   (if (TR? σϵprog)
       (or (v? (term (get-P ,σϵprog)))
           (reducestyped? σϵprog))
-      (begin (printf "checking ~s\n\n" σϵprog)
-      #t)))
+             #t))
 
-
-
+(define (safety? σϵprog)
+  (and
+   (progress-holds? (term ,σϵprog))
+   (reduce1 (term ,σϵprog))
+   (preservation-holds? (term ,σϵprog)))
+  )
 

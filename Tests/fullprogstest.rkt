@@ -45,6 +45,19 @@
             (term ((((ref 1) false)):
                                     ((x (ref 1)))  :
                                     false)))
+
+    (test--> full-rel (term ((((ref 1) 1))  :
+                                        ((x (ref 1)))  :
+                                        (x + 1)))
+           (term ((((ref 1) 1)):
+                               ((x (ref 1))): (1 + 1))))
+  
+  (test--> σϵ-rel (term ((((ref 1) 3))  :
+                                        ((x (ref 1)))  :
+                                        (x < 1 )))
+            
+           (term ((((ref 1) 3)):
+                               ((x (ref 1))): (3 < 1))))
   )
 
 

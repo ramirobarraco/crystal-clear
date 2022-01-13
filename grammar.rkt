@@ -54,17 +54,17 @@
 ; descartar Ev y simplificar la regla de "desreferenciado" implícito
   
 ; Context
-  (Ev ::=
-     (unop hole)
-     (hole binop P)
-     (v strictbinop hole)
-     (hole P P ...)
-     (if hole then P else P)
-     (var = hole)
-     (t var = hole)
-     (isa? t hole)
-     hole
-       )
+;  (Ev ::=
+;     (unop hole)
+;     (hole binop P)
+;     (v strictbinop hole)
+;     (hole P P ...)
+;     (if hole then P else P)
+;     (var = hole)
+;     (t var = hole)
+;     (isa? t hole)
+;     hole
+;       )
 
   (var ::=
    Name

@@ -9,18 +9,7 @@
          )
 
 (define (sigma-progs-test-suite)
-  (test--> σϵ-rel (term ((((ref 1) 1))  :
-                                        ((x (ref 1)))  :
-                                        (x + 1)))
-           (term ((((ref 1) 1)):
-                               ((x (ref 1))): (1 + 1))))
-  
-  (test--> σϵ-rel (term ((((ref 1) 3))  :
-                                        ((x (ref 1)))  :
-                                        (x < 1 )))
-            
-           (term ((((ref 1) 3)):
-                               ((x (ref 1))): (3 < 1))))
+
   
   (test--> σϵ-rel (term ((((ref 0) 1)):
                                       ((bar (ref 0))):
