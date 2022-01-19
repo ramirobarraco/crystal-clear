@@ -29,6 +29,7 @@
   [(upper_bound? (st_1 ...) (st_2 st_3 ...)) ,(and (term(upper_bound? (st_1 ...) (st_3 ...))) (term(in st_2 (st_1 ...))))]
   [(upper_bound? (st_1 st_2 ...) st_3) ,(term (in st_3 (st_1 st_2 ...)))]
   )
+
 (define-metafunction crystal-lang
   in : st t -> boolean
   [(in st_1 (st_2 ... st_1 st_3 ...)) #true]

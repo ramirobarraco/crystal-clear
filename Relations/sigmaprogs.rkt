@@ -13,8 +13,9 @@
    crystal-lang
    #:domain (σ : ϵ : P)
    #:arrow -->σϵ/P
-   [-->σϵ/P (((r_2 v_2) ... (r_1 v_1) (r_3 v_3) ...) : ((Name_2 r_4) ... (Name_1 r_1) (Name_3 r_5) ...) : (in-hole Ev Name_1))
-            (((r_2 v_2) ... (r_1 v_1) (r_3 v_3) ...) : ((Name_2 r_4) ... (Name_1 r_1) (Name_3 r_5) ...) : (in-hole Ev v_1))
+   
+   [-->σϵ/P (((r_2 v_2) ... (r_1 v_1) (r_3 v_3) ...) : ((Name_2 r_4) ... (Name_1 r_1) (Name_3 r_5) ...) : Name_1)
+            (((r_2 v_2) ... (r_1 v_1) (r_3 v_3) ...) : ((Name_2 r_4) ... (Name_1 r_1) (Name_3 r_5) ...) : v_1)
             Dename]
 
    [-->σϵ/P (((r_2 v_2) ... (r_1 v_1) (r_3 v_3) ... ) : ((Name_2 r_4) ... (Name_1 r_1) (Name_3 r_5) ...) : (Name_1 = v))

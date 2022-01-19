@@ -9,14 +9,12 @@
          "progressdefs.rkt"
          )
 
-;(redex-check crystal-lang+Γ σϵprog (progress-holds?  (term σϵprog)) #:prepare prepare  #:attempts 1000)
-;(redex-check crystal-lang+Γ σϵprog (reduce1  (term σϵprog)) #:prepare prepare  #:attempts 1000)
-(redex-check crystal-lang+Γ σϵprog (preservation-holds?  (term σϵprog)) #:prepare prepare  #:attempts 1000)
+;(redex-check crystal-lang+Γ σϵprog (progress-holds?  (term σϵprog)) #:prepare prepare  #:attempts 10000)
+;(redex-check crystal-lang+Γ σϵprog (reduce1  (term σϵprog)) #:prepare prepare  #:attempts 10000)
+;(redex-check crystal-lang+Γ σϵprog (preservation-holds?  (term σϵprog)) #:prepare prepare  #:attempts 10000)
+;(redex-check crystal-lang+Γ σϵprog (safety?  (term σϵprog)) #:prepare prepare  #:attempts 10000)
 
-
-;(define (progress_tr rel attempts debug)
-;  (redex-check  crystal-lang any
-;                (soundness_wfc_pred (term any) debug)
-;                #:prepare close_conf
-;                #:attempts attempts
-;                #:source rel))
+(let ([c (make-coverage full-rel)])
+    (parameterize ([relation-coverage (list c)])
+      (redex-check crystal-lang+Γ σϵprog (safety?  (term σϵprog)) #:prepare prepare  #:attempts 100000))
+    (covered-cases c))
