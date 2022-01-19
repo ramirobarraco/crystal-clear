@@ -36,18 +36,86 @@ con nuestros objetos matematicos.
     supongamos que P es cerrado y bien  tipado(eso es que
     \Typetup{$\Gamma$}{P}{t} para algun t y $\Gamma$)
     entonces P es un valor o para algun $\sigma$ y $\epsilon$ tal que
-    $\Gamma \vdash \sigma$ existen P' , $\sigma$' y $\epsilon$' 
+    $\Gamma \vdash \sigma, \epsilon$ existe una unica configuracion $\sigma$' : $\epsilon$' : P'.  
 
-    \sigmaprog{$\sigma$}{$\epsilon$}{P} $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{P'}.
+    \sigmaprog{$\sigma$}{$\epsilon$}{P} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{P'}.
 
 \end{theorem}
 \begin{proof}
 Esto se puede probar haciendo induccion en todos los posibles programas de nuestra
-gramatica. Para T-NIL, T-BOOL, T-INT32 y T-STRING la prueba es trivial ya que son valores.
-T-NAME En principio es facil observar que si P es de la forma \Var{Name}
-y al estar bien tipado entonces \Var{Name} tiene que estar en $\Gamma$. Por lo que lo 
-que \Var{Name} tambien estaria en $\sigma, \epsilon$ y el paso que se haria nos devolveria
-$\sigma[\epsilon[\Var{Name}]]$
+gramatica. Para T-NIL, T-BOOL, T-INT32 y T-STRING son valores por lo tanto ya quedan demostrados que cumplen.
+
+T-NAME: En principio es facil observar que si P es de la forma \Var{Name}
+y \Typetup{$\Gamma$}{\Var{Name}}{t} Entonces \Var{Name} tiene que estar en $\Gamma$. Como $\Gamma 
+\vdash \sigma, \epsilon$ solo se puede aplicar la regla de reduccion \Var{Dename}
+\sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name}} \fullarrow \sigmaprog{$\sigma$}{$\epsilon$}{v}
+donde v es el valor relacionado con \Var{Name}
+
+Sea P igual \Var{Name} = P' entonces cuando decimos 
+\Typetup{$\Gamma$}{\Var{Name} = P'}{t} pueden pasar 2 cosas:
+
+    1. $\Gamma$ contiene \Var{Name} por lo tanto la regla que se aplica es
+    T-Define.
+
+    2. $\Gamma$ no contiene \Var{Name} por lo tanto la regla que se aplica
+    es T-Redefine.
+
+Veamos que en ambos casos se cumple que solo hay un unico paso de reduccion.
+
+Por hipotesis inductiva P' es un valor o se puede aplicar alguna 
+reduccion sobre P'. Si P' es un valor v y $\Gamma \vdash \sigma, \epsilon$
+ donde $\Gamma$ no contiene a \Var{Name} entonces solo podemos aplicar 
+ la regla de Naming y nos queda:
+
+\sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name} = v} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{nil}
+
+donde $\sigma'$ contiene una nueva referencia con valor v y $\epsilon'$
+ contiene a Name con esta nueva referencia.
+Si \Var{Name} se encontraba dentro de $\Gamma$ entonces $\sigma'$
+ tendria el nuevo valor asociado a la referencia
+que ya existia en $\epsilon$ mientras que este quedaria igual.
+
+Si P' no es un valor entonces se puede aplicar una regla de reduccion tal que
+ \sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name} = P'} \fullarrow \sigmaprog{$\sigma''$}{$\epsilon''$}{\Var{Name} = P''}.
+
+T-CONCAT: Si P = $P_{1}$ $P_{2}$ ... $P_{N}$ es facil ver que si
+ \Typetup{$\Gamma$}{$P_{1}$ $P_{2}$ ... $P_{N}$}{t}
+entonces \Typetup{$\Gamma$}{$P_{i}$}{t} para todo i entre 1 y n.
+ Por hipotesis inductiva $P_{1}$ es un valor o existe
+una regla de reduccion tal que.
+
+\sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$'}
+
+Por lo tanto si $P_{1}$ es un valor entonces P quedaria $P_{2}$ ... $P_{N}$
+o $P_{1}$ no es un valor y P = $P_{1}$' $P_{2}$ ... $P_{N}$
+
+T-ARITHOP Si P = $P_{1}$ \Var{Arithop} $P_{2}$ Entonces por HI solo tenemos dos casos
+ 
+$P_{1}$ es un valor de tipo Int32 por lo que se busca hole $P_{2}$
+
+$P_{1}$ no es un valor por lo tanto \sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$'}
+y \sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$ \Var{Arithop} $P_{2}$} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$' \Var{Arithop} $P_{2}$}
+
+T-RELOP y T-SHORTBINOP son analogos a T-ARITHOP.
+
+T-NOT Si P = \Var{not} $P_{1}$ sabemos que \Typetup{$\Gamma$}{P}{Bool} y por HI
+sabemos que $P_{1}$ es un valor booleano o existe una unica regla de reduccion tal que.
+
+\sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$'}
+
+y P' = \Var{not} $P_{1}$'
+
+T-NEGATIVE es parecido a T-NOT pero \Typetup{$\Gamma$}{$P_{1}$}{Int32}
+
+T-ISA? si P = isa? \Var{t} $P_{1}$ entonces \Typetup{$\Gamma$}{isa? t $P_{1}$}{Bool}
+y por hipotesis inductiva $P_{1}$ es un valor o existe una unica regla de reduccion.
+Si P es un valor entonces se aplica la regla de isa? devolviendo un BOOL.
+Si P no es un valor se aplica 
+
+\sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$'}
+
+y P' = \Var{isa?} \Var{t} $P_{1}$'.
+
 \end{proof}
 
 \begin{theorem}[Preservacion]
