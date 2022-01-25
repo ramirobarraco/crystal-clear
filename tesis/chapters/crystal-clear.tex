@@ -33,8 +33,7 @@ Comenzemos demostrando progreso. Primero definamos que significa el predicado
 con nuestros objetos matematicos.
 
 \begin{theorem}[Progreso]
-    supongamos que P es cerrado y bien  tipado(eso es que
-    \Typetup{$\Gamma$}{P}{t} para algun t y $\Gamma$)
+    supongamos que P es cerrado y \Typetup{$\Gamma$}{P}{t}
     entonces P es un valor o para algun $\sigma$ y $\epsilon$ tal que
     $\Gamma \vdash \sigma, \epsilon$ existe una unica configuracion $\sigma$' : $\epsilon$' : P'.  
 
@@ -46,10 +45,13 @@ Esto se puede probar haciendo induccion en todos los posibles programas de nuest
 gramatica. Para T-NIL, T-BOOL, T-INT32 y T-STRING son valores por lo tanto ya quedan demostrados que cumplen.
 
 T-NAME: En principio es facil observar que si P es de la forma \Var{Name}
-y \Typetup{$\Gamma$}{\Var{Name}}{t} Entonces \Var{Name} tiene que estar en $\Gamma$. Como $\Gamma 
-\vdash \sigma, \epsilon$ solo se puede aplicar la regla de reduccion \Var{Dename}
-\sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name}} \fullarrow \sigmaprog{$\sigma$}{$\epsilon$}{v}
-donde v es el valor relacionado con \Var{Name}
+y \Typetup{$\Gamma$}{\Var{Name}}{t}. Entonces \Var{Name} tiene que estar en $\Gamma$. Como $\Gamma 
+\vdash \sigma, \epsilon$ por lo tanto \Var{Name} esta en $\epsilon$ y su referencia esta en $\sigma$.
+ Por otro lado P = E [\Var{Name}] tiene E vacio, por lemma solo esta descomposicion existe y solo se puede aplicar la regla Dename.
+
+\sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name}} \sigmaprogarrow \sigmaprog{$\sigma$}{$\epsilon$}{v}.
+
+Donde v es el valor relacionado con \Var{Name}. 
 
 Sea P igual \Var{Name} = P' entonces cuando decimos 
 \Typetup{$\Gamma$}{\Var{Name} = P'}{t} pueden pasar 2 cosas:
@@ -80,7 +82,7 @@ Si P' no es un valor entonces se puede aplicar una regla de reduccion tal que
 
 T-CONCAT: Si P = $P_{1}$ $P_{2}$ ... $P_{N}$ es facil ver que si
  \Typetup{$\Gamma$}{$P_{1}$ $P_{2}$ ... $P_{N}$}{t}
-entonces \Typetup{$\Gamma$}{$P_{i}$}{t} para todo i entre 1 y n.
+entonces \Typetup{$\Gamma$}{$P_{i}$}{$t_{i}$} para todo i entre 1 y n, $t_{n}$ = t
  Por hipotesis inductiva $P_{1}$ es un valor o existe
 una regla de reduccion tal que.
 
@@ -116,6 +118,8 @@ Si P no es un valor se aplica
 
 y P' = \Var{isa?} \Var{t} $P_{1}$'.
 
+T-IF si P = E [if $P_{1}$ then $P_{2}$ else $P_{3}$] entonces \Typetup{$\Gamma$}{if $P_{1}$ then $P_{2}$ else $P_{3}$}{t}
+
 \end{proof}
 
 \begin{theorem}[Preservacion]
@@ -140,3 +144,11 @@ y P' = \Var{isa?} \Var{t} $P_{1}$'.
 
 \end{proof}
 
+\begin{lemma}[Unico contexto de evaluacion]
+    Todo progama P es un valor, o existe un unico contexto de evaluacion E talque 
+    P = E [P'].
+\end{lemma}
+
+\begin{proof}
+
+\end{proof}
