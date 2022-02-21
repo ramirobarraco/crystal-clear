@@ -35,6 +35,7 @@
 	%overfullrule=true, % If uncommented, overly long lines will be marked by a black box; useful for correcting spacing problems
 ]{kaobook}
 
+
 % Set the language
 \usepackage[spanish]{babel} % Load characters and hyphenation
 \usepackage[english=british]{csquotes} % English quotes
@@ -51,6 +52,11 @@
 % Load mathematical packages for theorems and related environments. NOTE: choose only one between 'mdftheorems' and 'plaintheorems'.
 \usepackage{styles/mdftheorems}
 %\usepackage{styles/plaintheorems}
+\usepackage[
+    type={CC},
+    modifier={by-nc-sa},
+    version={4.0},
+]{doclicense}
 
 \graphicspath{{examples/documentation/images/}{images/}} % Paths in which to look for images
 
@@ -70,14 +76,18 @@
 %----------------------------------------------------------------------------------------
 %	BOOK INFORMATION
 %----------------------------------------------------------------------------------------
-
+\begin{titlepage}
 \titlehead{Crystal Lang}
 
 
 \title[Verificación de la inferencia de tipos en el lenguaje de programación {\normalfont\texttt{Crystal}}]{Verificación de la inferencia de tipos en el lenguaje de programación {\normalfont\texttt{Crystal}}}
 \subtitle{Presentado ante la Facultad de Matemática, Astronomía,
 Física y Computación, como trabajo de grado}
-
+% \begin{figure}[H]
+% \begin{center}
+% \includegraphics[width=.25\linewidth]{unc.jpg}
+% \end{center}
+% \end{figure}
 \author[Ramiro Barraco]{Por: Ramiro Barraco \and Director: Dr. Soldevila Raffa, Mallku Ernesto \and Director Representante: Dr. Ziliani, Beta}
 
 
@@ -86,8 +96,12 @@ Física y Computación, como trabajo de grado}
 
 \subject{Universidad de Córdoba}
 
-\publishers{\textcopyright FaMAF - UNC 2021}
+% \begin{center}
+% 	\doclicenseThis
+% \end{center}
 
+\publishers{\textcopyright FaMAF - UNC 2021}
+\end{titlepage}
 %----------------------------------------------------------------------------------------
 
 \frontmatter % Denotes the start of the pre-document content, uses roman numerals
@@ -195,9 +209,10 @@ Física y Computación, como trabajo de grado}
 \addpart{Crystal-Clear y mecanización}
 \pagelayout{margin} % Restore margins
 
-
+\pagelayout{wide}
 \input{chapters/crystal-clear.tex}
 \input{chapters/mecanizacion.tex}
+\pagelayout{margin} % Restore margins
 
 \pagelayout{wide} % No margins
 \addpart{Trabajo relacionado y conclusiones}

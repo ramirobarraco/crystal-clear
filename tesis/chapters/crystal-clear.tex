@@ -1,4 +1,3 @@
-\setchapterpreamble[u]{\margintoc}
 \chapter{Crystal-Clear}
 \labch{intro}
 
@@ -6,15 +5,15 @@
 
 \section{Seguridad}
 
-En esta seccion intentaremos demostrar que Crystal-Clear cumple con la propiedad
+En esta sección intentaremos demostrar que Crystal-Clear cumple con la propiedad
 seguridad.
 
 \begin{definition}
 \labdef{SEGURIDAD}
     SEGURIDAD: para cualquier termino bien tipado del lenguaje no es
-    posible llegar a un estado atascado siguiendo las reglas de reduccion.
+    posible llegar a un estado atascado siguiendo las reglas de reducción.
      Esto significa que el programa no es un valor final pero tampoco se 
-    pueda aplicar las reglas de reduccion definidas.
+    pueda aplicar las reglas de reducción definidas.
 \end{definition}
 
 Para ello definiremos dos propiedades.
@@ -25,33 +24,39 @@ Para ello definiremos dos propiedades.
 \end{definition}
 \begin{definition}
 \labdef{Preservacion}
-    PRESERVACION: para cualquier termino si este esta bien tipado y sigue un paso de las reglas
-    de reduccion entonces el resultado esta bien tipado.
+    PRESERVACIÓN: para cualquier termino si este esta bien tipado y sigue un paso de las reglas
+    de reducción entonces el resultado esta bien tipado.
 \end{definition}
 
-Comenzemos demostrando progreso. Primero definamos que significa el predicado
-con nuestros objetos matematicos.
+Comencemos demostrando progreso. Primero definamos que significa el predicado
+con nuestros objetos matemáticos.
 
 \begin{theorem}[Progreso]
     supongamos que P es cerrado y \Typetup{$\Gamma$}{P}{t}
-    entonces P es un valor o para algun $\sigma$ y $\epsilon$ tal que
-    $\Gamma \vdash \sigma, \epsilon$ existe una unica configuracion $\sigma$' : $\epsilon$' : P'.  
+    entonces P es un valor o para algún $\sigma$ y $\epsilon$ tal que
+    $\Gamma \vdash \sigma, \epsilon$ existe una única configuración $\sigma$' : $\epsilon$' : P'.  
 
     \sigmaprog{$\sigma$}{$\epsilon$}{P} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{P'}.
 
 \end{theorem}
 \begin{proof}
-Esto se puede probar haciendo induccion en todos los posibles programas de nuestra
-gramatica. Para T-NIL, T-BOOL, T-INT32 y T-STRING son valores por lo tanto ya quedan demostrados que cumplen.
+Esto se puede probar haciendo inducción en el árbol de la prueba de  \Typetup{$\Gamma$}{P}{t}.
+ Para T-NIL, T-BOOL, T-INT32 y T-STRING son valores por lo tanto ya quedan demostrados que cumplen.
+% Estos son los arboles mas chicos ya que tienen un solo nivel%
 
-T-NAME: En principio es facil observar que si P es de la forma \Var{Name}
-y \Typetup{$\Gamma$}{\Var{Name}}{t}. Entonces \Var{Name} tiene que estar en $\Gamma$. Como $\Gamma 
-\vdash \sigma, \epsilon$ por lo tanto \Var{Name} esta en $\epsilon$ y su referencia esta en $\sigma$.
- Por otro lado P = E [\Var{Name}] tiene E vacio, por lemma solo esta descomposicion existe y solo se puede aplicar la regla Dename.
+T-NAME: En principio es fácil observar que si P es de la forma \Var{Name}
+y \Typetup{$\Gamma$}{\Var{Name}}{t}. Entonces $\Var{Name} \in dom(\Gamma)$. Como $\Gamma 
+\vdash \sigma, \epsilon$ por lo tanto  $\Var{Name} \in Dom(\epsilon)$ y su referencia $\Var{ref} \in Dom(\sigma)$. Por lo tanto:
 
-\sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name}} \sigmaprogarrow \sigmaprog{$\sigma$}{$\epsilon$}{v}.
+\sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name}} \sigmaprogarrow \sigmaprog{$\sigma$}{$\epsilon$}{v} por Dename.
 
-Donde v es el valor relacionado con \Var{Name}. 
+Donde v es el valor relacionado con \Var{Name}. Por otro lado P = \inhole{E}{\Var{Name}} con E = \hole.
+ Entonces aplica:
+
+\sigmaprog{$\sigma$}{$\epsilon$}{[\Var{Name}]} \fullarrow \sigmaprog{$\sigma$}{$\epsilon$}{[v]} por $FWD-\sigma$.
+
+por lemma 3.2.3 sabemos que esta es la única forma de descomponer este P y, dado que demostramos que se pueden aplicar reglas de $\sigma-progs$ solo se usan reglas de esta relación.
+restaría demostrar que no hay otra regla aplicable de $\sigma-progs$. Esto se cumple ya que solo una regla es igual a este P.
 
 Sea P igual \Var{Name} = P' entonces cuando decimos 
 \Typetup{$\Gamma$}{\Var{Name} = P'}{t} pueden pasar 2 cosas:
@@ -62,10 +67,10 @@ Sea P igual \Var{Name} = P' entonces cuando decimos
     2. $\Gamma$ no contiene \Var{Name} por lo tanto la regla que se aplica
     es T-Redefine.
 
-Veamos que en ambos casos se cumple que solo hay un unico paso de reduccion.
+Veamos que en ambos casos se cumple que solo hay un único paso de reducción.
 
-Por hipotesis inductiva P' es un valor o se puede aplicar alguna 
-reduccion sobre P'. Si P' es un valor v y $\Gamma \vdash \sigma, \epsilon$
+Por hipótesis inductiva P' es un valor o se puede aplicar alguna 
+reducción sobre P'. Si P' es un valor v y $\Gamma \vdash \sigma, \epsilon$
  donde $\Gamma$ no contiene a \Var{Name} entonces solo podemos aplicar 
  la regla de Naming y nos queda:
 
@@ -74,51 +79,75 @@ reduccion sobre P'. Si P' es un valor v y $\Gamma \vdash \sigma, \epsilon$
 donde $\sigma'$ contiene una nueva referencia con valor v y $\epsilon'$
  contiene a Name con esta nueva referencia.
 Si \Var{Name} se encontraba dentro de $\Gamma$ entonces $\sigma'$
- tendria el nuevo valor asociado a la referencia
-que ya existia en $\epsilon$ mientras que este quedaria igual.
+ tendría el nuevo valor asociado a la referencia
+que ya existía en $\epsilon$ mientras que este quedaría igual.
 
-Si P' no es un valor entonces se puede aplicar una regla de reduccion tal que
- \sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name} = P'} \fullarrow \sigmaprog{$\sigma''$}{$\epsilon''$}{\Var{Name} = P''}.
+Si P' no es un valor entonces se puede aplicar una regla de reducción tal que.
 
-T-CONCAT: Si P = $P_{1}$ $P_{2}$ ... $P_{N}$ es facil ver que si
+ \sigmaprog{$\sigma$}{$\epsilon$}{\inhole{\Var{Name} =}{P'}} \fullarrow \sigmaprog{$\sigma''$}{$\epsilon''$}{\inhole{\Var{Name} =}{P''}} ya sea por $FWD-\sigma$ o FWD-pure.
+
+En esta ocasión conseguimos 2 reducciones para el mismo P, pero es fácil darse cuenta que las configuraciones \sigmaprog{$\sigma$}{$\epsilon$}{P} tienen diferentes $\sigma y \epsilon$
+
+T-CONCAT: Si P = $P_{1}$ $P_{2}$ ... $P_{N}$ es fácil ver que si
  \Typetup{$\Gamma$}{$P_{1}$ $P_{2}$ ... $P_{N}$}{t}
-entonces \Typetup{$\Gamma$}{$P_{i}$}{$t_{i}$} para todo i entre 1 y n, $t_{n}$ = t
- Por hipotesis inductiva $P_{1}$ es un valor o existe
-una regla de reduccion tal que.
+entonces \Typetup{$\Gamma$}{$P_{i}$}{$t_{i}$} para todo i entre 1 y n, $t_{n}$ = t.
+ Por hipótesis inductiva $P_{1}$ es un valor o existe una regla de reducción tal que.
 
 \sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$'}
 
-Por lo tanto si $P_{1}$ es un valor entonces P quedaria $P_{2}$ ... $P_{N}$
-o $P_{1}$ no es un valor y P = $P_{1}$' $P_{2}$ ... $P_{N}$
+Por lo tanto si $P_{1}$ es un valor entonces P quedaría $P_{2}$ ... $P_{N}$ debido a 
+
+\sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$ $P_{2}$ ... $P_{N}$}  \progarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{2}$ ... $P_{N}$} debido a more-e
+
+o $P_{1}$ no es un valor entonces P se puede descomponer en P = \inhole{$P_{2}$ ... $P_{N}$}{$P_{1}$}. Entonces :
+
+\sigmaprog{$\sigma$}{$\epsilon$}{\inhole{$P_{2}$ ... $P_{N}$}{$P_{1}$}} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_1$' $P_{2}$ ... $P_{N}$}
 
 T-ARITHOP Si P = $P_{1}$ \Var{Arithop} $P_{2}$ Entonces por HI solo tenemos dos casos
  
-$P_{1}$ es un valor de tipo Int32 por lo que se busca hole $P_{2}$
+$P_{1}$ es un valor de tipo Int32 por lo que se puede descomponer en P = \inhole{v \Var{Arithop}}{$P_{2}$}. Entonces
 
-$P_{1}$ no es un valor por lo tanto \sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$'}
-y \sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$ \Var{Arithop} $P_{2}$} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$' \Var{Arithop} $P_{2}$}
+\sigmaprog{$\sigma$}{$\epsilon$}{\inhole{v \Var{Arithop}}{$P_{2}$}} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{v \Var{Arithop} $P_{2}$'}
 
-T-RELOP y T-SHORTBINOP son analogos a T-ARITHOP.
+$P_{1}$ no es un valor por lo tanto P = \inhole{$\Var{Arithop} P_{2}$}{$P_{1}$}. Entonces
+
+\sigmaprog{$\sigma$}{$\epsilon$}{\inhole{$\Var{Arithop} \; P_{2}$}{$P_{1}$}} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$' \Var{Arithop} $P_{2}$}
+
+
+T-RELOP y T-SHORTBINOP son análogos a T-ARITHOP.
 
 T-NOT Si P = \Var{not} $P_{1}$ sabemos que \Typetup{$\Gamma$}{P}{Bool} y por HI
-sabemos que $P_{1}$ es un valor booleano o existe una unica regla de reduccion tal que.
+sabemos que $P_{1}$ es un valor booleano o existe una única regla de reducción tal que.
 
 \sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$'}
 
 y P' = \Var{not} $P_{1}$'
 
-T-NEGATIVE es parecido a T-NOT pero \Typetup{$\Gamma$}{$P_{1}$}{Int32}
+T-NEGATIVE es parecido a T-NOT pero \Typetup{$\Gamma$}{$P_{1}$}{Int32}.
 
-T-ISA? si P = isa? \Var{t} $P_{1}$ entonces \Typetup{$\Gamma$}{isa? t $P_{1}$}{Bool}
-y por hipotesis inductiva $P_{1}$ es un valor o existe una unica regla de reduccion.
-Si P es un valor entonces se aplica la regla de isa? devolviendo un BOOL.
-Si P no es un valor se aplica 
+T-ISA? si P = \T{isa?} t $P_{1}$ entonces \Typetup{$\Gamma$}{\T{isa?} t $P_{1}$}{Bool}
+y por hipótesis inductiva $P_{1}$ es un valor o existe una única regla de reducción.
+Si $P_{1}$ es un valor entonces se aplica la regla de isa? devolviendo un BOOL.
+Si $P_{1}$ no es un valor se aplica 
 
-\sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$'}
+\sigmaprog{$\sigma$}{$\epsilon$}{\inhole{\T{isa?} t}{$P_{1}$}} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{\T{isa?} t $P_{1}$'}
 
-y P' = \Var{isa?} \Var{t} $P_{1}$'.
+y P' = \T{isa?} t $P_{1}$'.
 
-T-IF si P = E [if $P_{1}$ then $P_{2}$ else $P_{3}$] entonces \Typetup{$\Gamma$}{if $P_{1}$ then $P_{2}$ else $P_{3}$}{t}
+T-IF si P = \T{if} $P_{1}$ \T{then} $P_{2}$ \T{else} $P_{3}$ entonces \Typetup{$\Gamma$}{\T{if} $P_{1}$ \T{then} $P_{2}$ \T{else} $P_{3}$}{t}.
+Por HI tenemos que $P_{1}$ tiene 2 opciones:
+
+\sigmaprog{$\sigma$}{$\epsilon$}{\T{if}[\![ $P_{1}$ ]\!] \T{then} $P_{2}$ \T{else} $P_{3}$} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{\T{if} [\![$P_{1}$']\!] \T{then} $P_{2}$ \T{else} $P_{3}$}
+
+
+\sigmaprog{$\sigma$}{$\epsilon$}{\T{if}[\![ \Var{v} ]\!] \T{then} $P_{2}$ \T{else} $P_{3}$} \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{P'}
+
+Donde P' es un $P_{1} o P_{2}$ dependiendo del valor de \Var{v}. 
+
+T-WHILE si P = \T{while} $P_{1} \; P_{2}$  entonces \Typetup{$\Gamma$}{\T{while} $P_{1} \; P_{2}$}{t}.
+Por HI tenemos que $P_{1}$ tiene 1 opción:
+
+\sigmaprog{$\sigma$}{$\epsilon$}{\T{while} $[\![ P_{1} ]\!] \; P_{2}$ } \fullarrow \sigmaprog{$\sigma'$}{$\epsilon'$}{\T{if} $P_{1}$ \T{then} ($P_{2}$ (\T{while} $P_{1} \; P_{2}$)) \T{else} nil)}
 
 \end{proof}
 
@@ -127,28 +156,76 @@ T-IF si P = E [if $P_{1}$ then $P_{2}$ else $P_{3}$] entonces \Typetup{$\Gamma$}
 
     \Typetup{$\Gamma$}{P}{t}
 
-    $\Gamma \vdash \sigma$
+    $\Gamma \vdash \sigma, \epsilon$
 
     \sigmaprog{$\sigma$}{$\epsilon$}{P}  $\rightarrow$ 
      \sigmaprog{$\sigma'$}{$\epsilon'$}{P'} 
 
-    entonces, para algun $\Gamma' \supseteq  \Gamma$
+    entonces, para algún $\Gamma' \supseteq  \Gamma$
 
     \Typetup{$\Gamma'$}{P'}{t}
 
-    $\Gamma' \vdash \sigma'$
+    $\Gamma' \vdash \sigma', \epsilon'$
 
 \end{theorem}
 
 \begin{proof}
+Esto se puede probar haciendo inducción en todos los posibles programas de nuestra
+gramática. Para T-NIL, T-BOOL, T-INT32 y T-STRING son valores por lo tanto no hay un P' del cual preocuparnos.
 
+T-NAME: En principio es fácil observar que si P es de la forma \Var{Name} 
 \end{proof}
 
+\begin{definition}
+\labdef{PERTENECE}
+    Diremos que $P \in \Pat{Pat}$ si para cierto programa P y cierto patron \Pat{Pat}. \Pat{Pat} es el lado izquierdo de una de las reglas de la relación progs y P encaja con \Pat{Pat}
+    o para algún patron \sigmaprog{$\sigma$}{$\epsilon$}{\Pat{Pat}} del lado izquierdo de una regla de la relación $\sigma-progs$ P encaja con ese patron \Pat{Pat}.
+\end{definition}
+
 \begin{lemma}[Unico contexto de evaluacion]
-    Todo progama P es un valor, o existe un unico contexto de evaluacion E talque 
-    P = E [P'].
+    Todo programa P es un valor, o existe un único contexto de evaluación E talque 
+    P = \inhole{E}{P'} donde $P' \in \Pat{Pat}$.
 \end{lemma}
 
 \begin{proof}
+Se puede probar haciendo inducción en la estructura de los programas.
+Los casos bases P = int32 | bool | nil | string ya son valores y no hace falta demostrar nada.
+
+En caso de que P = \Var{Name} solo se puede descomponer en P = \inhole{}{\Var{Name}} por definición de E. Por regla DENAME esta en $\sigma-progs$
+
+En el caso de P igual a \Var{Name} = P'.
+Por HI P' es un valor o se puede descomponer en P' = \inhole{E}{P''}
+donde $P'' \in \Pat{Pat}$.
+Si P' es un valor v entonces P = \inhole{}{\Var{Name} = v}, $\Var{Name} = v \in \Pat{Pat}$ para alguna configuración \sigmaprog{$\sigma$}{$\epsilon$}{\Pat{Pat}}.
+Por reglas REASSIGN y ASSIGN de $\sigma-progs$
+
+En el caso P igual a $P_{1}$ $P_{2}$ ... $P_{n}$. Tenemos multiples formas de descomponer pero la única que se encuentra en E es
+$[\![P_{1}]\!] \; P_{2} ... P_{n}$. Por HI P' es un valor o existe un único contexto de evaluación E' tal que cumpla con estas propiedades.
+Por lo tanto queda $[\![P_{1}]\!] \; E' P_{2} ... P_{n}$. En caso de que sea un valor v nos queda $[\![v]\!] \; P_{2} ... P_{n}$.
+
+En el caso P igual $P_{1} \; \Var{Binop} \; P_{2}$ tenemos dos posibles descomposiciones.
+
+P = $[\![P_{1}]\!] \; \Var{Binop} \; P_{2}$ 
+
+P = $\Var{v} \; \Var{Binop} \; [\![P_{2}]\!]$ En caso que $P_{1}$ sea \Var{v}.
+
+Notemos que en ambos caso por Hi se cumple que $P_{1}$ es un valor o encaja en el lado izquierdo de una de las reglas progs o $\sigma-progs$.
+
+En el caso de que P sea $P_{1} \; \Var{Shortbinop} \; P_{2}$ es analógico al caso de \Var{Binop}.
+
+Para P = \Var{Not} $P_{1}$ descomponemos solo tenemos una forma de descomponer P = \inhole{\Var{Not}}{$P_{1}$}.
+
+Para el caso de P = - $P_{1}$ es análogo al caso anterior.
+
+Cuando P es \T{isa?} t $P_{1}$ solo se puede descomponer de la forma P = \inhole{\T{isa?} t}{$P_{1}$}.
+
+En el caso de que P sea \T{if} $P_{1}$ \T{then} $P_{2}$ \T{else} $P_{3}$ solo tiene una forma de descomponer y esa es:
+
+P = \T{if} $[\![P_{1}]\!]$ \T{then} $P_{2}$ \T{else} $P_{3}$
+
+En el caso de que P = \T{while} $P_{1} \; P_{2}$ es análogo al caso del \T{if}.
+
+
+
 
 \end{proof}
