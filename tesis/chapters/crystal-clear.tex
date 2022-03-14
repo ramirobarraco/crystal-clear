@@ -158,8 +158,7 @@ Por HI tenemos que $P_{1}$ tiene 1 opción:
 
     $\Gamma \vdash \sigma, \epsilon$
 
-    \sigmaprog{$\sigma$}{$\epsilon$}{P}  $\rightarrow$ 
-     \sigmaprog{$\sigma'$}{$\epsilon'$}{P'} 
+    \sigmaprog{$\sigma$}{$\epsilon$}{P}  $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{P'} 
 
     entonces, para algún $\Gamma' \supseteq  \Gamma$
 
@@ -173,14 +172,35 @@ Por HI tenemos que $P_{1}$ tiene 1 opción:
 Esto se puede probar haciendo inducción en todos los posibles programas de nuestra
 gramática. Para T-NIL, T-BOOL, T-INT32 y T-STRING son valores por lo tanto no hay un P' del cual preocuparnos.
 
-T-NAME: En principio es fácil observar que si P es de la forma \Var{Name} 
+T-NAME: En principio es fácil observar que si P es de la forma \Var{Name} y \Typetup{$\Gamma$}{\Var{Name}}{t} con $\Gamma \vdash \sigma, \epsilon$.
+Por Progreso yo se que hay una única regla que aplica a este caso llamada Dename.
+
+\sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name}}  $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{\Var{v}} 
+
+Sabemos que esta regla no altera $\sigma ni \epsilon$.
+Por lo tanto puedo tomar $\Gamma' \sigma' \epsilon'$ como $\Gamma \sigma \epsilon$ respectivamente entonces se cumple que $\Gamma' \supseteq  \Gamma$
+y que \Typetup{$\Gamma'$}{\Var{v}}{t} ya que Gamma $\Gamma' \vdash \sigma', \epsilon'$
 \end{proof}
+
+queremos presentar de un lemma que habla sobre propiedades de términos que emanan de su estructura pero sin asumir si están bien tipado.
+Como no asumimos que el termino esta bien tipado no puedo asumir si es o no un redex
+de todos modos si puede suceder que un termino encaje con el lado izquierdo pero  que no sea un redex:
+ es decir que no satisfaga las condiciones laterales que se tienen que satisfacer para que se pueda aplicar una regla semántica.
+Nosotros queremos hablar solo de si un termino encaja con el lado izquierda o no. independientemente de el cumplimiento de las condiciones laterales.
+(por ejemplo caso True + 1)
+
+Para demostrar el lemma de descomposición único deberemos definir alguna forma de hablar sobre los redex que encontramos en el libro de PLT-redex.
+
+Pero en nuestro caso necesitamos hablar de un concepto mas general que redex ya que no sabemos si cumplimos con condiciones laterales.
+Por lo que crearemos un concepto de patrones mas amplio
 
 \begin{definition}
 \labdef{PERTENECE}
     Diremos que $P \in \Pat{Pat}$ si para cierto programa P y cierto patron \Pat{Pat}. \Pat{Pat} es el lado izquierdo de una de las reglas de la relación progs y P encaja con \Pat{Pat}
     o para algún patron \sigmaprog{$\sigma$}{$\epsilon$}{\Pat{Pat}} del lado izquierdo de una regla de la relación $\sigma-progs$ P encaja con ese patron \Pat{Pat}.
 \end{definition}
+
+Esto nos permite definir el siguiente Lemma.
 
 \begin{lemma}[Unico contexto de evaluacion]
     Todo programa P es un valor, o existe un único contexto de evaluación E talque 
@@ -200,8 +220,8 @@ Si P' es un valor v entonces P = \inhole{}{\Var{Name} = v}, $\Var{Name} = v \in 
 Por reglas REASSIGN y ASSIGN de $\sigma-progs$
 
 En el caso P igual a $P_{1}$ $P_{2}$ ... $P_{n}$. Tenemos multiples formas de descomponer pero la única que se encuentra en E es
-$[\![P_{1}]\!] \; P_{2} ... P_{n}$. Por HI P' es un valor o existe un único contexto de evaluación E' tal que cumpla con estas propiedades.
-Por lo tanto queda $[\![P_{1}]\!] \; E' P_{2} ... P_{n}$. En caso de que sea un valor v nos queda $[\![v]\!] \; P_{2} ... P_{n}$.
+$[\![P_{1}]\!] \; P_{2} ... P_{n}$. Por HI $P_{1}$ es un valor o existe un único contexto de evaluación E tal que cumpla con estas propiedades.
+Por lo tanto queda $[\![P_{1}]\!] \; E' P_{2} ... P_{n}$. En caso de que sea un valor v nos queda $[\![v]\!] \; P_{2} ... P_{n}$ y se aplica la regla de progs more-e.
 
 En el caso P igual $P_{1} \; \Var{Binop} \; P_{2}$ tenemos dos posibles descomposiciones.
 
