@@ -2,6 +2,47 @@
 \labch{intro}
 
 \section{Especificación}
+\begin{figure}[H]
+\centering
+    \begin{tabbing}
+          \NT{P} ::= \= \NT{P P P ...}\\
+          \> \sep \NT{e}\\
+          \> \sep \NT{s}\\\\
+          
+          \NT{e} ::= \= \NT{v} \sep \NT{var}
+          \sep \NT{isa? t P}\\
+          \> \sep \NT{var = P} \sep \NT{t var = P}\\
+          \> \sep \NT{unop P} \sep \NT{P binop P}
+          \\\\
+
+          \NT{s} ::= \= \NT{while P P} \\
+          \sep \NT{if P then P else P}\\\\
+
+          \NT{var} ::= \= \NT{x} 
+          \sep \NT{e} \T{[} \NT{e} \T{]}\\\\
+
+          \NT{svc} ::= \= nombres de servicios de librería \\\\
+          
+          \NT{field} ::= \NT{e} \sep \T{[} \NT{e} \T{] =} \NT{e}\\\\
+          
+          \NT{efield} ::= \NT{v} 
+          \sep \T{[} \NT{v} \T{] =} \NT{v}\\\\
+          
+          \NT{strictbinop} ::= \=\;\;\T{+} \sep \T{-}
+          \sep \T{*} \sep \T{/} 
+          \sep \T{$\hat{}$} \sep \T{\%}\\
+          \> \sep \T{..} \sep \T{<}
+          \sep \T{$\leq$} \sep \T{$>$} \sep \T{$\geq$}\\
+          \> \sep \T{==}\\\\
+    
+          \NT{binop} ::= \= \NT{strictbinop} \sep \KW{and}
+          \sep \KW{or}\\\\
+          
+          \NT{unop} ::=\;\;\T{-} \sep \KW{not} \sep \T{\#}
+    \end{tabbing}
+  \caption{Lenguaje.}
+\label{fig:test}
+\end{figure}
 
 \section{Seguridad}
 
@@ -180,6 +221,66 @@ Por Progreso yo se que hay una única regla que aplica a este caso llamada Denam
 Sabemos que esta regla no altera $\sigma ni \epsilon$.
 Por lo tanto puedo tomar $\Gamma' \sigma' \epsilon'$ como $\Gamma \sigma \epsilon$ respectivamente entonces se cumple que $\Gamma' \supseteq  \Gamma$
 y que \Typetup{$\Gamma'$}{\Var{v}}{t} ya que Gamma $\Gamma' \vdash \sigma', \epsilon'$
+
+T-DEFINE/T-REDEFINE: Sea la forma de P igual a  \Var{Name} = $P_{1}$. Si $P_{1}$ no es un valor entonces se cumple por HI que podemos aplicar una regla tal que:
+
+\sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name} = $P_{1}$}  $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{\Var{Name} = $P_{1}$'}
+
+Con $\sigma', \epsilon'$ tal que $\Gamma' \vdash \sigma', \epsilon'$ para algún $\Gamma' \supseteq  \Gamma$ y que $P_{1}$' cumple \Typetup{$\Gamma'$}{$P_{1}$'}{t}.
+Estos $\Gamma', \sigma', \epsilon'$ Cumplen también en el caso de P' como \Var{Name} = $P_{1}$'.
+En el caso de  que $P_{1}$ es un valor entonces hay 2 posibles reglas que se aplican:
+DEFINE es el caso en que \Var{Name} no este en $\Gamma$, por lo tanto, lo agrega creando $\Gamma' que cumple con \Gamma' \supseteq  \Gamma$.
+REDEFINE es el caso en el \Var{Name} este en $\Gamma$, por lo que cambia el valor, pero que solo cambia a $\Gamma$ si el tipo valor de $P_{1}$ es distinto
+al tipo que ya tenia definido en $\Gamma$. En los dos casos $\sigma' \epsilon'$ tendrán estos cambios ya sea agregando la variable y su valor o cambiando el valor
+de la variable ya asignada.
+
+T-CONCAT: P = $P_{1}$ $P_{2}$ ... $P_{n}$. En el caso de la concatenación la única regla que se puede aplicar solo se fija en $P_{1}$.
+Hay dos casos
+
+$P_{1}$ es un valor en cuyo caso: 
+
+\sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$ $P_{2}$ ... $P_{n}$}  $\rightarrow$ \sigmaprog{$\sigma$}{$\epsilon$}{ $P_{2}$ ... $P_{n}$}
+
+Podemos ver que al no cambiar los $\sigma \epsilon$ no hay necesidad de que $\Gamma$ cambie.
+
+$P_{1}$ no es un valor en cuyo caso:  
+
+\sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$ $P_{2}$ ... $P_{n}$}  $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$' $P_{2}$ ... $P_{n}$}
+
+Sabemos por HI que $\sigma' \epsilon'$ cumplen con $\Gamma' \vdash \sigma', \epsilon'$ y este $\Gamma'$ con 
+
+$\Gamma' \supseteq  \Gamma$ y \Typetup{$\Gamma'$}{P'}{t} con P' = $P_{1}$' $P_{2}$ ... $P_{n}$
+
+T-ARITHOP sea el caso de que P = $P_{1} \Var{Arithop} P_{2}$. Análogo a otras pruebas tenemos dos casos.
+El caso en el que $P_{1}$ es un valor v entonces se intenta usar reglas para reducir $P_{2}$, a su vez tenemos otros dos casos.
+Si $P_{2}$ es un valor, se ejecuta la operación pero $\sigma, \epsilon, \Gamma$ no reciben cambios asi que se puede usar la misma configuración.
+Si $P_{2}$ no es un valor entonces :
+
+\sigmaprog{$\sigma$}{$\epsilon$}{$ v \Var{Arithop} P_{2}$}  $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{$v \Var{Arithop} $} %caso de v + v = 5
+
+Por HI sabemos que $\sigma' \epsilon'$ tiene un $\Gamma' tal que \Gamma' \vdash \sigma', \epsilon'$,
+\Typetup{$\Gamma'$}{$P_{2}'$}{t} y $\Gamma' \supseteq  \Gamma$ por lo tanto podemos usar este $\Gamma'$ Para P'
+
+El caso en el que $P_{1}$ no es un valor es similar al caso de que $P_{2}$ no es un valor.
+
+T-RELOP y T-SHORTBINOP son análogos a T-ARITHOP. La única diferencia en el caso de SHORTBINOP, es que puede no ser necesario saber si $P_{2}$ es valor o no.
+
+T-NOT  sea P = \Var{Not} $P_{1}$. Parecido a otros casos si $P_{1}$ es un valor $\sigma, \epsilon, \Gamma$ no cambian.
+En el caso de que $P_{1}$ no sea un valor entonces por HI tenemos un paso de ejecución único que nos devuelve nuevos $\sigma', \epsilon', \Gamma'$ y utilizamos esos.
+
+T-NEGATIVE es parecido a T-NOT.
+
+T-ISA? Para P = \T{isa?} t $P_{1}$. De nuevo si $P_{1}$ es un valor entonces la configuraciones no cambian y podemos reutilizar el mismo $\Gamma$.
+En el caso de que $P_{1}$ no sea un valor, se ejecuta un paso y eso nos entrega nuevos $\sigma', \epsilon', \Gamma'$.
+
+T-IF en el caso que P = \T{if} $P_{1}$ \T{then} $P_{2}$ \T{else} $P_{3}$. 
+
+T-WHILE
+
+\sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name} = $P_{1}$}  $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{\Var{Name} = $P_{1}$'}
+
+ Vimos en progreso que solo se puede usar dos reglas Define y Redefine.
+También sabemos que la regla que utilizaremos depende de si $P_{1}$ es un valor   
 \end{proof}
 
 queremos presentar de un lemma que habla sobre propiedades de términos que emanan de su estructura pero sin asumir si están bien tipado.
