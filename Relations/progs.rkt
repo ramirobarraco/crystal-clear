@@ -31,9 +31,8 @@
          more-e]
 
    [-->P (while P_1 P_2)
-         ; TODOM: idem caso concatenación de sentencias, esto te va a
-         ; dar un error de dominio porque \; ya no es un P válido
          (if P_1 then (P_2 (while P_1 P_2)) else nil)
+         while
          ]
    
    [-->P (v_1 binop v_2)
@@ -48,10 +47,12 @@
          (side-condition (is_shortbinop? (term binop)))]
 
    [-->P (- v)
-         (δ - v)]
+         (δ - v)
+         minus]
 
    [-->P (not v)
-         (δ not v)]
+         (δ not v)
+         negation]
    
    [-->P (isa? t v)
          (is-a? t v)

@@ -14,7 +14,7 @@
 ;(redex-check crystal-lang+Γ σϵprog (preservation-holds?  (term σϵprog)) #:prepare prepare  #:attempts 10000)
 ;(redex-check crystal-lang+Γ σϵprog (safety?  (term σϵprog)) #:prepare prepare  #:attempts 10000)
 
-(let ([c (make-coverage full-rel)])
+(let ([c (make-coverage progs-rel)])
     (parameterize ([relation-coverage (list c)])
-      (redex-check crystal-lang+Γ σϵprog (safety?  (term σϵprog)) #:prepare prepare  #:attempts 100000))
+      (redex-check crystal-lang σϵprog (safety?  (term σϵprog)) #:prepare prepare  #:attempts 10000 #:source full-rel))
     (covered-cases c))

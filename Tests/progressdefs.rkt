@@ -336,7 +336,7 @@
   (if (TR? σϵprog)
       (or (v? (term (get-P ,σϵprog)))
           (reduces? σϵprog))
-             #t))
+             (begin (print ("progress failed ")) #t)))
 
 
 ;checks that if its well typed then it only has one or less reductions
@@ -344,7 +344,7 @@
   (if (TR? σϵprog)
       (<= (length (apply-reduction-relation full-rel (term ,σϵprog)))
           1)
-      #t))
+      (begin (print ("reduce1 failed ")) #t)))
 
 (define (reducestyped? σϵprog)
   (TR? (list-ref (apply-reduction-relation
@@ -355,7 +355,7 @@
   (if (TR? σϵprog)
       (or (v? (term (get-P ,σϵprog)))
           (reducestyped? σϵprog))
-             #t))
+             (begin (print ("preservation failed ")) #t)))
 
 (define (safety? σϵprog)
   (and
