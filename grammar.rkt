@@ -119,6 +119,9 @@
   [ϵ ((Name_!_1 r) ...)]
   [σ ((r_!_1 v) ...)]
   [σϵprog (σ : ϵ : P)]
+
+  ; we will use this symbol later on the type relation Γ
+  [reserved-symbol ·]
   ; Name can be anything except a keyword of the language
   [Name variable-not-otherwise-mentioned]
   )
