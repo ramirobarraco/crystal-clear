@@ -230,24 +230,24 @@ Por HI tenemos que $P_{1}$ tiene 1 opción:
 Esto se puede probar haciendo inducción en todos los posibles programas de nuestra
 gramática. Para T-NIL, T-BOOL, T-INT32 y T-STRING son valores por lo tanto no hay un P' del cual preocuparnos.
 
-T-NAME: En principio es fácil observar que si P es de la forma \Var{Name} y \Typetup{$\Gamma$}{\Var{Name}}{t} con $\Gamma \vdash \sigma, \epsilon$.
+T-NAME: En principio es fácil observar que P es de la forma \Var{Name} y \Typetup{$\Gamma$}{\Var{Name}}{t}{$\Gamma$'} con $\Gamma \vdash \sigma, \epsilon$.
 Por Progreso yo se que hay una única regla que aplica a este caso llamada Dename.
 
 \sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name}}  $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{\Var{v}} 
 
-Sabemos que esta regla no altera $\sigma ni \epsilon$.
-Por lo tanto puedo tomar $\Gamma' \sigma' \epsilon'$ como $\Gamma \sigma \epsilon$ respectivamente entonces se cumple que $\Gamma' \supseteq  \Gamma$
-y que \Typetup{$\Gamma'$}{\Var{v}}{t} ya que Gamma $\Gamma' \vdash \sigma', \epsilon'$
+Sabemos que esta regla no altera $\sigma \; ni \; \epsilon$.
+Por lo tanto puedo tomar $\Gamma' \; \sigma' \; \epsilon'$ como $\Gamma \; \sigma \; \epsilon$ respectivamente entonces se cumple que $\Gamma' \supseteq  \Gamma$
+y que \Typetup{$\Gamma'$}{\Var{v}}{t}{$\Gamma$''} ya que $\Gamma' \vdash \sigma', \epsilon'$
 
 T-DEFINE/T-REDEFINE: Sea la forma de P igual a  \Var{Name} = $P_{1}$. Si $P_{1}$ no es un valor entonces se cumple por HI que podemos aplicar una regla tal que:
 
 \sigmaprog{$\sigma$}{$\epsilon$}{\Var{Name} = $P_{1}$}  $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{\Var{Name} = $P_{1}$'}
 
-Con $\sigma', \epsilon'$ tal que $\Gamma' \vdash \sigma', \epsilon'$ para algún $\Gamma' \supseteq  \Gamma$ y que $P_{1}$' cumple \Typetup{$\Gamma'$}{$P_{1}$'}{t}.
+Con $\sigma', \epsilon'$ tal que $\Gamma' \vdash \sigma', \epsilon'$ para algún $\Gamma' \supseteq  \Gamma$ y que $P_{1}$' cumple \Typetup{$\Gamma'$}{$P_{1}$'}{t}{$\Gamma$''}.
 Estos $\Gamma', \sigma', \epsilon'$ Cumplen también en el caso de P' como \Var{Name} = $P_{1}$'.
 En el caso de  que $P_{1}$ es un valor entonces hay 2 posibles reglas que se aplican:
 DEFINE es el caso en que \Var{Name} no este en $\Gamma$, por lo tanto, lo agrega creando $\Gamma'$ esto cumple con  $\Gamma' \supseteq  \Gamma$.
-REDEFINE es el caso en el \Var{Name} este en $\Gamma$, por lo que cambia el valor, pero que solo cambia a $\Gamma$ si el tipo valor de $P_{1}$ es distinto
+REDEFINE es el caso en el \Var{Name} este en $\Gamma$, por lo que cambia el valor, pero que solo altera a $\Gamma'$ si el tipo valor de $P_{1}$ es distinto
 al tipo que ya tenia definido en $\Gamma$. En los dos casos $\sigma' \epsilon'$ tendrán estos cambios ya sea agregando la variable y su valor o cambiando el valor
 de la variable ya asignada.
 
@@ -258,24 +258,24 @@ $P_{1}$ es un valor en cuyo caso:
 
 \sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$ $P_{2}$ ... $P_{n}$}  $\rightarrow$ \sigmaprog{$\sigma$}{$\epsilon$}{ $P_{2}$ ... $P_{n}$}
 
-Podemos ver que al no cambiar los $\sigma \epsilon$ no hay necesidad de que $\Gamma$ cambie.
+Podemos ver que al no cambiar los $\sigma \; \epsilon$ no hay necesidad de que $\Gamma$ cambie.
 
 $P_{1}$ no es un valor en cuyo caso:  
 
 \sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$ $P_{2}$ ... $P_{n}$}  $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{$P_{1}$' $P_{2}$ ... $P_{n}$}
 
-Sabemos por HI que $\sigma' \epsilon'$ cumplen con $\Gamma' \vdash \sigma', \epsilon'$ y este $\Gamma'$ con 
+Sabemos por HI que $\sigma' \; \epsilon'$ cumplen con $\Gamma' \vdash \sigma', \epsilon'$ y este $\Gamma'$ con 
 
 $\Gamma' \supseteq  \Gamma$ y \Typetup{$\Gamma'$}{P'}{t} con P' = $P_{1}$' $P_{2}$ ... $P_{n}$
 
-T-ARITHOP sea el caso de que P = $P_{1} \Var{Arithop} P_{2}$. Análogo a otras pruebas tenemos dos casos.
+T-ARITHOP sea el caso de que P = $P_{1} \; \Var{Arithop} \; P_{2}$. Análogo a otras pruebas tenemos dos casos.
 El caso en el que $P_{1}$ es un valor v entonces se intenta usar reglas para reducir $P_{2}$, a su vez tenemos otros dos casos.
 Si $P_{2}$ es un valor, se ejecuta la operación pero $\sigma, \epsilon, \Gamma$ no reciben cambios asi que se puede usar la misma configuración.
 Si $P_{2}$ no es un valor entonces :
 
-\sigmaprog{$\sigma$}{$\epsilon$}{$ v \Var{Arithop} P_{2}$}  $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{$v \Var{Arithop} $} %caso de v + v = 5
+\sigmaprog{$\sigma$}{$\epsilon$}{$ v \; \Var{Arithop} \; P_{2}$}  $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{$v \Var{Arithop} P_{2}'$} %caso de v + v = 5
 
-Por HI sabemos que $\sigma' \epsilon'$ tiene un $\Gamma' tal que \Gamma' \vdash \sigma', \epsilon'$,
+Por HI sabemos que $\sigma' \; \epsilon'$ tiene un $\Gamma' \; tal que \; \Gamma' \vdash \sigma', \epsilon'$,
 \Typetup{$\Gamma'$}{$P_{2}'$}{t} y $\Gamma' \supseteq  \Gamma$ por lo tanto podemos usar este $\Gamma'$ Para P'
 
 El caso en el que $P_{1}$ no es un valor es similar al caso de que $P_{2}$ no es un valor.
@@ -291,9 +291,9 @@ T-ISA? Para P = \T{isa?} t $P_{1}$. De nuevo si $P_{1}$ es un valor entonces la 
 En el caso de que $P_{1}$ no sea un valor, se ejecuta un paso y eso nos entrega nuevos $\sigma', \epsilon', \Gamma'$.
 
 T-IF en el caso que P = \T{if} $P_{1}$ \T{then} $P_{2}$ \T{else} $P_{3}$. Como \Typetup{$\Gamma$}{P}{t}{$\Gamma'$}.
-Entonces existen $\Gamma_{1} y \Gamma_{2}$ tal que \Typetup{$\Gamma_{1}$}${P_{2}$}{t}{$\Gamma_{1}'$}.
+Entonces existen $\Gamma_{1} \; y \; \Gamma_{2}$ tal que \Typetup{$\Gamma_{1}$}{$P_{2}$}{t}{$\Gamma_{1}'$}.
  Para este caso debemos tener en cuenta la relación de tipado
-definida en IF. Esta relación nos permite hacer reducciones de tipos a partir de $P_{1}$, por lemma sabemos que los $\Gamma_{1} y \Gamma_{2}$
+definida en IF. Esta relación nos permite hacer reducciones de tipos a partir de $P_{1}$, por lemma sabemos que los $\Gamma_{1} \; y \; \Gamma_{2}$
 están contenidos en $\Gamma$ y por HI.
 
 $\Gamma_{1} \vdash \sigma_{1}, \epsilon_{1}$
@@ -306,12 +306,11 @@ Entonces
 
 \sigmaprog{$\sigma_{2}$}{$\epsilon{2}$}{$P_{3}$}  $\rightarrow$ \sigmaprog{$\sigma_{2}'$}{$\epsilon_{2}'$}{$P_{3}$}
 
-T-WHILE
-
+T-WHILE a
 
 \end{proof}
 
-queremos presentar de un lemma que habla sobre propiedades de términos que emanan de su estructura pero sin asumir si están bien tipado.
+Queremos presentar de un lemma que habla sobre propiedades de términos que emanan de su estructura pero sin asumir si están bien tipado.
 Como no asumimos que el termino esta bien tipado no podemos asumir si es o no un redex.
 De todos modos si puede suceder que un termino encaje con el lado izquierdo pero  que no sea un redex:
  es decir que no satisfaga las condiciones laterales que se tienen que satisfacer para que se pueda aplicar una regla semántica.
