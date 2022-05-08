@@ -19,14 +19,14 @@
      ; aunque habiendo eliminado el \; me pregunto si sigue haciendo
      ; falta la distinción entre s y e, ya que todo puede generar
      ; un valor: al menos nil
-     (var = P)
-     (t var = P)
      (unop P)
      (P binop P)
    )
   (s ::=
      (while P P)
      (if P then P else P)
+     (var = e)
+     (t var = e)
      )
 
 ; TODOM: es cierto que E tiene la siguiente instrucción a ejecutar,

@@ -90,7 +90,7 @@ Comencemos demostrando progreso. Primero definamos que significa el predicado
 con nuestros objetos matemáticos.
 
 \begin{theorem}[Progreso]
-    supongamos que P es cerrado y \Typetup{$\Gamma$}{P}{t}
+    supongamos que P \Typetup{$\Gamma$}{P}{t}{$\Gamma$}
     entonces P es un valor o para algún $\sigma$ y $\epsilon$ tal que
     $\Gamma \vdash \sigma, \epsilon$ existe una única configuración $\sigma$' : $\epsilon$' : P'.  
 
@@ -218,11 +218,11 @@ Por HI tenemos que $P_{1}$ tiene 1 opción:
 
     \sigmaprog{$\sigma$}{$\epsilon$}{P}  $\rightarrow$ \sigmaprog{$\sigma'$}{$\epsilon'$}{P'} 
 
-    entonces, para algún $\Gamma' \supseteq  \Gamma$
+    entonces, para algún $ Dom(\Gamma'') \supseteq  Dom(\Gamma)$
 
-    \Typetup{$\Gamma'$}{P'}{t}{$\Gamma'$}
+    \Typetup{$\Gamma''$}{P'}{t}{$\Gamma'''$}
 
-    $\Gamma' \vdash \sigma', \epsilon'$
+    $\Gamma'' \vdash \sigma', \epsilon'$
 
 \end{theorem}
 
@@ -251,14 +251,28 @@ REDEFINE es el caso en el \Var{Name} este en $\Gamma$, por lo que cambia el valo
 al tipo que ya tenia definido en $\Gamma$. En los dos casos $\sigma' \epsilon'$ tendrán estos cambios ya sea agregando la variable y su valor o cambiando el valor
 de la variable ya asignada.
 
-T-CONCAT: P = $P_{1}$ $P_{2}$ ... $P_{n}$. En el caso de la concatenación la única regla que se puede aplicar solo se fija en $P_{1}$.
+T-CONCAT: P = $P_{1}$ $P_{2}$ ... $P_{n}$. En el caso de la concatenación la única regla semantica o computo que se puede aplicar solo se fija en $P_{1}$.
 Hay dos casos
 
-$P_{1}$ es un valor en cuyo caso: 
+$P_{1}$ es un valor y \Typetup{\Gamma}{P_{1} P_{2}}{t}{\Gamma'} en cuyo caso: 
 
-\sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$ $P_{2}$ ... $P_{n}$}  $\rightarrow$ \sigmaprog{$\sigma$}{$\epsilon$}{ $P_{2}$ ... $P_{n}$}
+\sigmaprog{$\sigma$}{$\epsilon$}{$P_{1}$ $P_{2}$}  $\rightarrow$ \sigmaprog{$\sigma$}{$\epsilon$}{$P_{2}$}
 
-Podemos ver que al no cambiar los $\sigma \; \epsilon$ no hay necesidad de que $\Gamma$ cambie.
+Podemos ver que al no cambiar los $\sigma \; \epsilon$ no hay necesidad de que $\Gamma$ cambie,
+por lo que $\Gamma = \Gamma_{1}$. De esto sigue 
+\begin{mathpar}
+\inference
+{\Typetup{\Gamma_{1}}{P_{1}}{t_{1}}{\Gamma_{2}}\\
+\Typetup{\Gamma_{2}}{P_{2}}{t_{2}}{\Gamma_{3}}
+}
+{\Typetup{\Gamma}{P_{1} P_{2}}{t'}{\Gamma]}}
+
+\inference
+\Typetup{\Gamma_{1}}{P_{2}}{t_{2}}{\Gamma_{2}}
+}
+{\Typetup{\Gamma''}{P_{2}}{t'}{\Gamma'''}}
+
+\end{mathpar}
 
 $P_{1}$ no es un valor en cuyo caso:  
 
