@@ -35,14 +35,14 @@
   
   [(TR Γ P t_1 Γ)
    (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Γ Γ Name))))
-   (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
+   (side-condition ,(not (redex-match? crystal-lang+Γ unit (term t_1))))
    (where Γ_1 (Name : t_1 Γ))
    -----------------------------"T-DEFINE"
    (TR Γ (Name = P) t_1 Γ_1)]
   
   [(TR Γ P t_1 Γ)
    (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
-   (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
+   (side-condition ,(not (redex-match? crystal-lang+Γ unit (term t_1))))
    (where Γ_1 (Name : t_1 (remove-Γ Γ Name)))
    -----------------------------"T-REDEFINE"
    (TR Γ (Name = P) t_1 Γ_1)]
@@ -121,7 +121,7 @@
   crystal-lang+Γ
   #:mode (TN I I O O)
   #:contract (TN Γ P Γ Γ)
-
+;If an if's condition is an is_a? test, the type of a variable is guaranteed to be restricted by that type in the then branch.
   [(where t_1 (typeof-Γ Γ_1 Name))
    (where Γ_2 (Name : t_2 (remove-Γ Γ_1 Name)))
    (where Γ_3 (Name : (remove-t t_1 t_2) (remove-Γ Γ_1 Name)))

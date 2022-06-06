@@ -7,26 +7,17 @@
   (P ::=
      (P P P ...)
      e
-     s
      )
   (e ::=
      v
      var
-     (isa? t P)
-     ; TODOM: la idea de dividir entre s y e no era para poder
-     ; indicar que en el lado derecho de = puede ir cualquiera
-     ; cosa que sea un e?
-     ; aunque habiendo eliminado el \; me pregunto si sigue haciendo
-     ; falta la distinción entre s y e, ya que todo puede generar
-     ; un valor: al menos nil
+     (isa? t var)
      (unop P)
      (P binop P)
-   )
-  (s ::=
      (while P P)
      (if P then P else P)
-     (var = e)
-     (t var = e)
+     (var = P)
+     (t var = P)
      )
 
 ; TODOM: es cierto que E tiene la siguiente instrucción a ejecutar,
@@ -77,14 +68,9 @@
   [v nil bool int32 str]
   
   ;last type is the union of types
-  [t Nil Bool Int32 String union Unit]
+  [t Nil Bool Int32 String union]
   [st Nil Bool Int32 String]
-  ; TODOM: no es necesario el subíndice 1, y de hecho, puede confundir
-  ; porque normalmente utilizamos subíndices para indicar que ciertos
-  ; subtérminos tienen que ser iguales, cosa que acá no ocurre por la semántica
-  ; de _!_. Más aún, si patrón fuera otro sería un error tener p_1 y "p_1 ..." en
-  ; un mismo patrón es un error.
-  [union (st_!_ st_!_ st_!_ ...)]
+  [union (st_!_ st_!_ st_!_ ...) ⊥ ⊤]
 
   [bool true false]
 

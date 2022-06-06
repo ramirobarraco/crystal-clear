@@ -6,87 +6,90 @@
          "../Meta-functions/aux_fun.rkt"
          "../Relations/sigmaprogs.rkt"
          "../Relations/progs.rkt"
+         "../Tests/progressdefs.rkt"
          )
 
 (define-judgment-form
   crystal-lang+Γ
-  #:mode (SAT I I O)
-  #:contract (SAT Γ P Γ)
+  #:mode (SAT I O)
+  #:contract (SAT P Γ)
+  ; aca Tengo que explicar que no hay ninguna asignacion de tipos satisface a una guarda que es nil o false
   
-  [--------------------------------"T-NIL"
-   (SAT Γ nil Nil Γ)]
+  [--------------------------------"SAT-NIL"
+   (SAT nil  ·)]
 
-  [--------------------------------"T-BOOL"
-   (SAT Γ bool Bool Γ)]
+  [--------------------------------"SAT-FALSE"
+   (SAT false ·)]
 
-  [--------------------------------"T-INT32"
-   (SAT Γ int32 Int32 Γ)]
+  ; aca tengo que explicar que toda asignacion de tipos satisface una guarda que es int32 o str o true
+  [--------------------------------"SAT-TRUE"
+   (SAT true ·)]
+ 
+  [--------------------------------"SAT-INT32"
+   (SAT int32  ·)]
 
-  [--------------------------------"T-SSATING"
-   (SAT Γ str String Γ)]
+  [--------------------------------"SAT-STRING"
+   (SAT str  ·)]
 
-  [(TN Γ P_1 Γ_1 Γ_2)
-   (SAT Γ_1 P_2 t_1 Γ_3)
-   (SAT Γ_2 P_3 t_2 Γ_4)
-   -----------------------------"T-IF"
-   (SAT Γ (if P_1 then P_2 else P_3) (supreme-t t_1 t_2) (supreme-Γ Γ_3 Γ_4))]
+  [(SAT P_3 Γ_1)
+   (SAT P_2 Γ_2)
+   -----------------------------"SAT-IF"
+   (SAT (if P_1 then P_2 else P_3)  Γ_1)]
   
-  [(SAT Γ P t_1 Γ)
-   (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Γ Γ Name))))
-   (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
-   (where Γ_1 (Name : t_1 Γ))
-   -----------------------------"T-DEFINE"
-   (SAT Γ (Name = P) t_1 Γ_1)]
+  [(SAT P Γ_1)
+   () ;aca deberia una logica que explique como agrego a Name pero es imposible ya que no tengo info del Gamma anterior
+   -----------------------------"SAT-DEFINE"
+   (SAT (Name = P)  Γ_1)]
   
-  [(SAT Γ P t_1 Γ)
-   (side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
-   (side-condition ,(not (redex-match? crystal-lang+Γ Unit (term t_1))))
-   (where Γ_1 (Name : t_1 (remove-Γ Γ Name)))
-   -----------------------------"T-REDEFINE"
-   (SAT Γ (Name = P) t_1 Γ_1)]
-
-  [(concat Γ_1 P_2 P_1 t_1 Γ_2)
-   --------------------------------------------------------------"T-2P"
-   (SAT Γ_1 (P_1 P_2) t_1 Γ_2)]
-
-  [(concat Γ_1 (P_2 P_3 P_4 ...) P_1 t_1 Γ_2)
-   --------------------------------------------------------------"T-CONCAT"
-   (SAT Γ_1 (P_1 P_2 P_3 P_4 ...) t_1 Γ_2)]
-
-  [(TN Γ P_1 Γ_1 Γ_3)
-   (SAT Γ_1 P_2 t Γ_2)
-   -----------------------------"T-WHILE"
-   (SAT Γ (while P_1 P_2) t (supreme-Γ Γ_3 Γ_2))]
-
-  [(SAT Γ P_1 Int32 Γ)
-   (SAT Γ P_2 Int32 Γ)
-   -----------------------------"T-ARITHOP"
-   (SAT Γ (P_1 arithop P_2) Int32 Γ)]
+  [(SAT P Γ_1)
+   () ;mismo que arriba como se que es una redefinicion si no se cosa del gamma anterior
+   -----------------------------"SAT-REDEFINE"
+   (SAT (Name = P) Γ_1)]
   
-  [(SAT Γ P_1 Int32 Γ)
-   (SAT Γ P_2 Int32 Γ)
-   -----------------------------"T-RELOP"
-   (SAT Γ (P_1 relop P_2) Bool Γ)]
+  [(SAT P_1 Γ_1)
+   (SAT P_2 Γ_2)
+   --------------------------------------------------------------"SAT-2P"
+   (SAT (P_1 P_2) Γ_1:Γ_2)]
+
+  [(TR · (P_1 P_2 P_3 P_4 ...) t Γ_1)
+   --------------------------------------------------------------"SAT-CONCAT"
+   (SAT (P_1 P_2 P_3 P_4 ...) Γ_1)]
+
+  [(TR · (while P_1 P_2) t Γ_1)
+   -----------------------------"SAT-WHILE"
+   (SAT (while P_1 P_2) Γ_1)]
+
+  [(TR · (P_1 arithop P_2) t Γ_1)
+   -----------------------------"SAT-ARITHOP"
+   (SAT (P_1 arithop P_2)  Γ_1)]
   
-  [(SAT Γ P_1 Bool Γ)
-   (SAT Γ P_2 Bool Γ)
-   -----------------------------"T-SHORTBINOP"
-   (SAT Γ (P_1 shortbinop P_2) Bool Γ)]
+  [(TR · (P_1 relop P_2) t Γ_1)
+   -----------------------------"SAT-RELOP"
+   (SAT (P_1 relop P_2)  Γ_1)]
 
-  [(SAT Γ P_1 Bool Γ)
-   -----------------------------"T-NOT"
-   (SAT Γ (not P_1) Bool Γ)]
+  [SAT P_1 Γ_1
+   SAT P_2 Γ_2
+   -----------------------------"SAT-OR"
+   (SAT (P_1 or P_2)  Supremo(Γ_1 Γ_2))]
 
-  [(SAT Γ P_1 Int32 Γ)
-   -----------------------------"T-NEGATIVE"
-   (SAT Γ (- P_1) Int32 Γ)]
+  [SAT P_1 Γ_1
+   SAT P_2 Γ_2
+   -----------------------------"SAT-AND"
+   (SAT (P_1 and P_2) Γ_1)]
 
-  [(side-condition ,(redex-match? crystal-lang+Γ (#t _) (term (in-Γ Γ Name))))
-   (where t (typeof-Γ Γ Name))
-   -----------------------------"T-NAME"
-   (SAT Γ Name t Γ)]
+  [(TR · P t Γ_1)
+   -----------------------------"SAT-NOT"
+   (SAT (not P_1)  Γ_1)]
+
+  [(TR · (- P_1) t Γ_1)
+   -----------------------------"SAT-NEGATIVE"
+   (SAT (- P_1)  Γ_1)]
+
+  [(TR · Name t Γ_1)
+   -----------------------------"SAT-NAME"
+   (SAT Name  Γ_1)]
   
-  [(SAT Γ P t Γ)
-   ----------------------------"T-ISA?"
-   (SAT Γ (isa? t P) Bool Γ)]
+  [(where Γ_1 (Name : t ·))
+   ----------------------------"SAT-ISA?"
+   (SAT (isa? t Name)  Γ_1)]
   )
