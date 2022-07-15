@@ -1,7 +1,6 @@
 #lang racket
 ; TODOM: mínimo comentario describiendo qué hay en este módulo
 (require redex)
-;TODO ADD context for while break
 (define-language crystal-lang
   
   (P ::=
@@ -19,10 +18,7 @@
      (var = P)
      (t var = P)
      )
-
-; TODOM: es cierto que E tiene la siguiente instrucción a ejecutar,
-; pero más en general, E contiene todo lo que resta por computar,
-; no sólo la siguiente instrucción
+  
 ; next instruction to compute
   
   (E ::=
@@ -36,13 +32,6 @@
      (t var = E)
      hole
      )
-
-; TODOM: estos no son contextos ordinarios, sino que son contextos que
-; señalan donde puede estar un Name que puede ser "desreferenciado"
-; sin embargo, dado que en la categoría E no tenemos un contexto que
-; sea (E = P) no hay riesgo de que la operación de desreferenciado
-; ocurra sobre un Name que esté en el lado izquierdo de =; podrías
-; descartar Ev y simplificar la regla de "desreferenciado" implícito
   
 ; Context
 ;  (Ev ::=
@@ -61,8 +50,6 @@
    Name
    ;r
    )
-
-  ; TODOM: espaciá las cosas
   
   ;Type definition
   [v nil bool int32 str]
@@ -88,13 +75,12 @@
         < <= > >= ==
         ]
   
-
   [shortbinop and or]
 
   [unop - not
         ;typeof
         ]
-  ; TODOM: espacios
+  
   ;r is a reference
   [r (ref natural)]
   ;reference pair
@@ -114,7 +100,7 @@
 (provide crystal-lang)
 
 (define-extended-language crystal-lang+Γ crystal-lang
-  [Γ · (Name : t Γ)]
+  [Γ · (Name : t Γ) T B]
   [arithop + - * / ^ %]
   [relop < <= > >= ==]
   )
@@ -153,8 +139,6 @@
   (or (is_false? P)
       (is_nil? P)))
 
-; TODOM: esto tiene más que ver con semántica que con sintaxis,
-; pasarlo a otro módulo
 (define-metafunction crystal-lang
   is-a? : t v -> bool
   [(is-a? Int32 int32) true]

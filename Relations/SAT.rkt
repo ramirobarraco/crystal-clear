@@ -16,20 +16,20 @@
   ; aca Tengo que explicar que no hay ninguna asignacion de tipos satisface a una guarda que es nil o false
   
   [--------------------------------"SAT-NIL"
-   (SAT nil  ·)]
+   (SAT nil B)]
 
   [--------------------------------"SAT-FALSE"
-   (SAT false ·)]
+   (SAT false B)]
 
   ; aca tengo que explicar que toda asignacion de tipos satisface una guarda que es int32 o str o true
   [--------------------------------"SAT-TRUE"
-   (SAT true ·)]
+   (SAT true T)]
  
   [--------------------------------"SAT-INT32"
-   (SAT int32  ·)]
+   (SAT int32 T)]
 
   [--------------------------------"SAT-STRING"
-   (SAT str  ·)]
+   (SAT str T)]
 
   [(SAT P_3 Γ_1)
    (SAT P_2 Γ_2)
