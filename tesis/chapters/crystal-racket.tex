@@ -5,11 +5,66 @@
 
 \section{Resumen de cualidades de Crystal}
 
+Algunas cualidades importantes de nombrar  de crystal son: 
 
+Es compilado esto le permite hacer un chequeo de tipos previo al tiempo de ejecucion y ofrece una mayor a velocidad.
+
+Su sintaxis esta basada fuertemente en otro lenguaje llamado Ruby
+
+A pesar de tener tipado estatico no es necesario definir los tipos de las variables, debido a su inferenciador de tipos. Esto lo logra atra vez de union types y type narrowing
+
+\subsection[]{Union type y Type narrowing}
+
+ En crystal las variables o expresiones pueden consistir de multiples tipos. A esto lo llamamos union types, por ejemplo.
+
+\begin{verbatim}
+
+  if 1 + 2 == 3
+  x = 1
+else
+  x = "hello"
+end
+
+x : Int32 | String
+
+\end{verbatim}
+
+En este caso x tiene dos posibles tipos Int32 en el caso que x = 1 o String en caso de que x = "hello".
+ Esto genera un problema al momento de evaluar ciertas expresiones, tengamos  en consideracion ahora que usamos la variable x de la siguiente forma
+
+ \begin{verbatim}
+
+  x = x + 3
+
+\end{verbatim}
+
+Dependiendo del valor de x dicha expresion no puede ser evaluada, para esto se agrega un concepto llamado type narrowing. Es posible hacer un chequeo previo del tipo de esta forma
+
+\begin{verbatim}
+
+if x.is_a?(Int32)
+  x = x + 3
+end
+
+\end{verbatim}
+
+Crystal nos asegura que  el valor de x luego del if es un Int32 y lo cual nos permite que la expresion pueda ser evaluada.
+Es importante aclarar que los union type son asignados en tiempo de compilacion y que el chequeo de tipos que nos permite hacer type narrowing ocurre en la ejecucion.
 
 
 
 
 \section{¿Que es racket/Redex y porque lo usamos?}
 
+Racket es un lenguaje basado en lisp y descendiente de scheme. Esta diseñado como una plataforma para implementar y desarollar lenguajes de programacion.
+Esta siendo desarollado por el grupo PLT fundado por Matthias Felleisen a mediados de los 90.
+ Actualmente funcin como un projecto para crear un ambiente de programacion pedagogico.
 
+ Racket incluye distintas herramientas como macros, modulos, llamadas a la cola, cerraduras lexicas, continuaciones delimitadas, contratos, green threads, Os threads.
+ Aunque la cualidad que mas diferencia racket de otros lenguajes basados en lisp es la habilidad de extender el lenguaje, es decir la capacidad de construir nuevos lenguajes
+ ya sean de uso global o especifico del dominio. Esto permite la creacion de un modulo llamado PLT Redex,
+ un lenguaje de uso especifico para especificar y debuggear  semanticas operacionales. Con tan solo escribir la gramatica  y las reglas de recuccion, y redex te permite
+ probar interactivamente los terminos y generar test aleatorios para intentar generar  contraejemplos. 
+
+ Durante este trabajo usamos estas cualidades de racket para formalizar y intentar falsificar propiedades como progreso. Tanto de manera automatica como con nuestro propio 
+ suite de test basado en el que usan en la especificacion de Crystal.
