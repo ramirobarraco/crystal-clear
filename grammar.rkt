@@ -55,9 +55,9 @@
   [v nil bool int32 str]
   
   ;last type is the union of types
-  [t Nil Bool Int32 String union]
+  [t Nil Bool Int32 String union ⊥]
   [st Nil Bool Int32 String]
-  [union (st_!_ st_!_ st_!_ ...) ⊥ ⊤]
+  [union (st_!_ st_!_ st_!_ ...)]
 
   [bool true false]
 
@@ -100,7 +100,27 @@
 (provide crystal-lang)
 
 (define-extended-language crystal-lang+Γ crystal-lang
-  [Γ · (Name : t Γ) T B]
+  [Γ · (Name : t Γ)]
+  ; SAT solutions
+  ; possible type of a variable
+  [varsol t
+          ; TODO: estoy admitiendo cosas que no corresponde
+          (varsol_!_ varsol_!_ varsol_!_ ...)
+          ; to allow for the analysis of relops over just
+          ; Names
+          Name
+          (not varsol)
+          (varsol ⊔ varsol)
+          (varsol ⊓ varsol)]
+  ; TODO: symbol? otro nombre?
+  ; solutions for every variable
+  [SOL · ; the more relaxed solution possible: does not
+         ; restrict the type of variables: ∀ x, ·(x) = x 
+       (Name : varsol SOL)
+       
+       ;T
+       ]
+  
   [arithop + - * / ^ %]
   [relop < <= > >= ==]
   )

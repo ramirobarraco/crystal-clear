@@ -121,7 +121,7 @@
   crystal-lang+Γ
   #:mode (TN I I O O)
   #:contract (TN Γ P Γ Γ)
-;If an if's condition is an is_a? test, the type of a variable is guaranteed to be restricted by that type in the then branch.
+  ;If an if's condition is an is_a? test, the type of a variable is guaranteed to be restricted by that type in the then branch.
   [(where t_1 (typeof-Γ Γ_1 Name))
    (where Γ_2 (Name : t_2 (remove-Γ Γ_1 Name)))
    (where Γ_3 (Name : (remove-t t_1 t_2) (remove-Γ Γ_1 Name)))
@@ -151,14 +151,73 @@
 
 (define-metafunction crystal-lang+Γ
   supreme-t : t t -> t
-  [(supreme-t Unit t) t]
-  [(supreme-t t Unit) t]
+  [(supreme-t ⊥ t) t]
+  [(supreme-t t ⊥) t]
   [(supreme-t st_1 st_1) st_1]
   [(supreme-t st_1 st_2) (st_1 st_2)]
-  [(supreme-t st_1 (st_2 ...)) (st_2 ...) (side-condition (term(in-t (st_2 ...) st_1))) ]
-  [(supreme-t st_1 (st_2 ...)) (st_1 st_2 ...) (side-condition (not (term(in-t (st_2 ...) st_1)))) ]
+  [(supreme-t st_1 (st_2 ...)) (st_2 ...) (side-condition (term (in-t (st_2 ...) st_1))) ]
+  [(supreme-t st_1 (st_2 ...)) (st_1 st_2 ...) (side-condition (not (term (in-t (st_2 ...) st_1)))) ]
   [(supreme-t (st_1 ...) st_2) (supreme-t st_2 (st_1 ...))]
   [(supreme-t (st_1 ...) (st_2 ...)) t_3 (where t_3 ,(remove-duplicates (append (term (st_1 ...)) (term (st_2 ...)))))]
+  )
+
+; infimum of types
+(define-metafunction crystal-lang+Γ
+  inf-t : t t -> t
+  [(inf-t ⊥ t) ⊥]
+  [(inf-t t ⊥) ⊥]
+  [(inf-t st_1 st_1) st_1]
+  [(inf-t st_1 st_2) ⊥]
+  [(inf-t st_1 (st_2 ...)) st_1
+                           (side-condition (term (in-t (st_2 ...) st_1))) ]
+  [(inf-t st_1 (st_2 ...)) ⊥
+                           (side-condition (not (term (in-t (st_2 ...) st_1)))) ]
+  [(inf-t (st_1 ...) st_2) (inf-t st_2 (st_1 ...))]
+  ; several base cases, to solve everything here and avoid defining auxiliary
+  ; functions
+  [(inf-t (st_1 st_2) (st_3 st_4 st_5 ...)) t_3
+                                            
+                                            (where t_1 (inf-t st_1
+                                                              (st_3 st_4 st_5 ...)))
+                                            (where t_2 (inf-t st_2
+                                                              (st_3 st_4 st_5 ...)))
+                                            (where t_3 (supreme-t t_1 t_2))]
+
+  [(inf-t (st_1 st_2 st_3 ...) (st_4 st_5)) t_3
+                                            
+                                            (where t_1 (inf-t (st_1 st_2 st_3 ...)
+                                                              st_4))
+                                            (where t_2 (inf-t (st_1 st_2 st_3 ...)
+                                                              st_5))
+                                            (where t_3 (supreme-t t_1 t_2))]
+  
+  [(inf-t (st_1 st_2 st_3 st_4 ...) (st_5 st_6 st_7 st_8 ...)) t_3
+   (where t_1 (inf-t st_1 (st_5 st_6 st_7 st_8 ...)))
+   (where t_2 (inf-t (st_2 st_3 st_4 ...) (st_5 st_6 st_7 st_8 ...)))
+   (where t_3 (supreme-t t_1 t_2))]
+  )
+
+; complement of types
+; TODO: determinar si es un nombre adecuado
+(define-metafunction crystal-lang+Γ
+  comp-t : t -> t
+
+  ; several bases cases to avoid resorting to racket
+  ; code
+  [(comp-t ⊥) (Nil Bool Int32 String)]
+
+  [(comp-t Nil) (Bool Int32 String) ]
+
+  [(comp-t Bool) (Nil Int32 String)]
+
+  [(comp-t Int32) (Nil Bool String)]
+
+  [(comp-t String) (Nil Bool Int32)]
+
+  [(comp-t (st_1 st_2)) (inf-t (comp-t st_1) (comp-t st_2))]
+
+  [(comp-t (st_1 st_2 st_3 st_4 ...)) (inf-t (comp-t st_1)
+                                             (comp-t (st_2 st_3 st_4 ...)))]
   )
 
 (define-metafunction crystal-lang+Γ
@@ -168,13 +227,30 @@
 
 (define-metafunction crystal-lang+Γ
   supreme-Γ : Γ Γ -> Γ
-  [(supreme-Γ · ·) ·]
-  [(supreme-Γ · (Name_1 : t_1 Γ_1)) (Name_1 : (supreme-t t_1 Nil) (supreme-Γ · Γ_1))]
-  [(supreme-Γ (Name_1 : t_1 Γ_1) ·) (Name_1 : (supreme-t t_1 Nil) (supreme-Γ Γ_1 ·))]
+  [(supreme-Γ · Γ) Γ]
+  [(supreme-Γ Γ ·) Γ]
+  ;[(supreme-Γ · ·) ·]
+  ; TODO: creo que no es necesario tomar supremo
+  ;  [(supreme-Γ · (Name_1 : t_1 Γ_1)) (Name_1 : (supreme-t t_1 Nil) (supreme-Γ · Γ_1))]
+  ;  [(supreme-Γ (Name_1 : t_1 Γ_1) ·) (Name_1 : (supreme-t t_1 Nil) (supreme-Γ Γ_1 ·))]
   [(supreme-Γ (Name_1 : t_1 Γ_1) (Name_1 : t_2 Γ_2))
    (Name_1 : (supreme-t t_1 t_2) (supreme-Γ Γ_1  Γ_2))]
   [(supreme-Γ (Name_1 : t_1 Γ_1) (Name_2 : t_2 Γ_2))
    (Name_1 : (supreme-t t_1 t_3) (Name_2 : (supreme-t t_2 t_4) (supreme-Γ (remove-Γ Γ_1 Name_2) (remove-Γ Γ_2 Name_1))))
+   (where (_ t_3) (in-Γ (Name_2 : t_2 Γ_2) Name_1))
+   (where (_ t_4) (in-Γ (Name_1 : t_1 Γ_1) Name_2))
+   ]
+  )
+
+; infimum of typing environments: the most restricted type assumptions
+(define-metafunction crystal-lang+Γ
+  inf-Γ : Γ Γ -> Γ
+  [(inf-Γ · Γ) ·]
+  [(inf-Γ Γ ·) ·]
+  [(inf-Γ (Name_1 : t_1 Γ_1) (Name_1 : t_2 Γ_2))
+   (Name_1 : (inf-t t_1 t_2) (inf-Γ Γ_1  Γ_2))]
+  [(inf-Γ (Name_1 : t_1 Γ_1) (Name_2 : t_2 Γ_2))
+   (Name_1 : (inf-t t_1 t_3) (Name_2 : (inf-t t_2 t_4) (inf-Γ (remove-Γ Γ_1 Name_2) (remove-Γ Γ_2 Name_1))))
    (where (_ t_3) (in-Γ (Name_2 : t_2 Γ_2) Name_1))
    (where (_ t_4) (in-Γ (Name_1 : t_1 Γ_1) Name_2))
    ]
@@ -336,7 +412,7 @@
   (if (TR? σϵprog)
       (or (v? (term (get-P ,σϵprog)))
           (reduces? σϵprog))
-             (begin (print ("progress failed ")) #t)))
+      (begin (print ("progress failed ")) #t)))
 
 
 ;checks that if its well typed then it only has one or less reductions
@@ -355,7 +431,7 @@
   (if (TR? σϵprog)
       (or (v? (term (get-P ,σϵprog)))
           (reducestyped? σϵprog))
-             (begin (print ("preservation failed ")) #t)))
+      (begin (print ("preservation failed ")) #t)))
 
 (define (safety? σϵprog)
   (and
