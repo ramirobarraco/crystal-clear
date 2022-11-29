@@ -69,7 +69,10 @@
    (TR Γ P_2 Int32 Γ)
    -----------------------------"T-RELOP"
    (TR Γ (P_1 relop P_2) Bool Γ)]
-  
+
+  ; TODO: ; el tipo de ambos conyuntos no tiene por qué ser bool, puede ser cualquier cosa
+  ; TODO: para el caso de &&, de https://crystal-lang.org/reference/1.6/syntax_and_semantics/and.html:
+  ; "Its type is the union of the types of both sides."
   [(TR Γ P_1 Bool Γ)
    (TR Γ P_2 Bool Γ)
    -----------------------------"T-SHORTBINOP"
