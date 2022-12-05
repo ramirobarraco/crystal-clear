@@ -1,0 +1,122 @@
+\newtheorem{assumption}{Assumption}[section]
+
+\definecolor{mygreen}{rgb}{0,0.6,0}
+
+\lstset{
+  basicstyle=\sffamily,
+  aboveskip=3mm,
+  belowskip=3mm,
+  numbers=left,
+  numbersep=2pt,
+  numberstyle=\footnotesize\color{mygreen},
+  stepnumber=1,
+  numberfirstline=true,
+  columns=flexible,
+  breaklines=true,
+  tabsize=3,
+  commentstyle=\color{mygreen},
+  morecomment=[l]{--},
+  captionpos=b,
+  xleftmargin=2.5ex,
+  escapechar=!,
+  showstringspaces=false
+  }
+\renewcommand{\lstlistingname}{\textbf{Figure}}
+
+\newif\ifprintcomments
+
+\newcommand{\betaz}[1]{\textbf{\color{red}[BZ: #1]}}
+
+\newcommand{\todo}[1]{\textbf{TODO: #1}}
+
+\newcommand{\slabel}[1]{\label{sec:#1}}
+\newcommand{\sref}[1]{\S\ref{sec:#1}}
+\newcommand{\flabel}[1]{\label{fig:#1}}
+\newcommand{\fref}[1]{Figure~\ref{fig:#1}}
+
+\newcommand{\ie}{\emph{i.e.}, }
+\newcommand{\eg}{\emph{e.g.}, }
+\newcommand{\cf}{\emph{c.f.}, }
+\newcommand{\etc}{\emph{etc.}}
+\newcommand{\Iff}{iff}
+\newcommand{\etal}{\emph{et.~al.}}
+
+\newcommand{\KW}[1]{\textsf{\textbf{#1}}}
+
+\newcommand{\Label}[1]{{\footnotesize\textsc{#1}}}
+
+\newcommand{\nil}{\KW{nil}}
+\newcommand{\false}{\KW{false}}
+
+\newcommand{\Var}[1]{\textsf{\textit{#1}}}
+
+\newcommand{\NT}[1]{\textsf{\textit{#1}}}
+
+\newcommand{\T}[1]{\textsf{\textbf{#1}}}
+
+\newcommand{\MT}[1]{$\boldsymbol{#1}$}
+
+\newcommand{\funcall}[1]{\llparenthesis{#1}\rrparenthesis_{\KW{FunCall}}}
+
+\newcommand{\LabelCons}[2]{\llparenthesis{\;#1\;}\rrparenthesis_{#2}}
+
+\newcommand{\Rule}[1]{\textsf{#1}}
+
+\newcommand{\Svc}[1]{\textsf{#1}}
+
+% contexts and operations
+\newcommand{\hole}{[\![\;]\!]}
+\newcommand{\plug}[2]{#1[\![ #2 ]\!]}
+\newcommand{\mtch}[2]{\vdash_{\mathit{mtch}} #1 \approx #2}
+
+%separator for grammar
+\newcommand{\sep}{\textbar\;}
+
+%double quotation for code
+\newcommand{\dbq}[1]{``#1"}
+
+\newcommand{\dom}[1]{\ensuremath{\mathsf{dom}(#1)}}
+
+\newcommand{\refs}[1]{\ensuremath{\mathsf{refs}(#1)}}
+
+% computation rules
+\newcommand{\inference}[2]{\inferrule{#1}{#2}}
+\newcommand{\luastep}{\overset{\mathsf{\scriptscriptstyle L}}{\mapsto}}
+\newcommand{\gcstep}{\overset{\mathsf{\scriptscriptstyle GC}}{\mapsto}}
+\newcommand{\finstep}{\overset{\mathsf{\scriptscriptstyle F}}{\mapsto}}
+\newcommand{\weakstep}{\overset{\mathsf{\scriptscriptstyle W}}{\mapsto}}
+\newcommand{\luagcstep}{\overset{\mathsf{\scriptscriptstyle L+GC}}{\mapsto}}
+\newcommand{\luaweakstep}{\overset{\mathsf{\scriptscriptstyle L+W}}{\mapsto}}
+
+% equivalences
+\newcommand{\rcheq}{\overset{\mathsf{rch}}{\sim}}
+\newcommand{\strcheq}{\overset{\mathsf{strch}}{\sim}}
+
+% lua's
+\newcommand{\setmetatable}{\T{setmetatable}}
+
+% claims
+%\newenvironment{claim}[1]{\par\noindent\underline{Claim:}\space#1}{}
+\newenvironment{claimproof}[1]{\par\noindent\underline{Proof:}\space#1}{\hfill $\blacksquare$}
+
+\newcommand{\finlt}{\ensuremath{<^{\mathit{fin}}}}
+\newcommand{\finle}{\ensuremath{\leq^{\mathit{fin}}}}
+
+
+% gc-safeness
+\newcommand{\gctool}{\textbf{LuaSafe}}
+\newcommand{\safeset}{P_{\mathit{safe}}}
+\newcommand{\typed}[1]{#1_{\mathit{typed}}}
+\newcommand{\rchdef}[1]{#1_{\mathit{rch\_def}}}
+
+% type checking
+\newcommand{\emptup}{\textbf{()}}
+\newcommand{\typee}{\vdash_{\mathit{te}}}
+\newcommand{\types}{\vdash_{\mathit{ts}}}
+\newcommand{\st}[1]{\ensuremath{\langle #1 \rangle}}
+\newcommand{\vst}{\NT{v}\ensuremath{_{\sf st}}}
+% type inf.
+\newcommand{\consgen}{\vdash_{\mathit{c\_gen}}}
+\newcommand{\consgenfld}{\vdash_{\mathit{c\_gen\_fld}}}
+\newcommand{\param}[1]{#1_{\mathit{par}}}
+\newcommand{\ret}[1]{#1_{\mathit{ret}}}

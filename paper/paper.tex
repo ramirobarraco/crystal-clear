@@ -1,0 +1,113 @@
+\documentclass[format=sigconf]{acmart}
+
+\usepackage{amsmath}
+
+% TODO: to fix "LaTeX Error: Command `\Bbbk' already defined"
+% the problem seems to be responsibility of the authors of the
+% package
+%\usepackage{amssymb}
+
+\captionsetup{belowskip=-1em,justification=centering}
+
+% Weird parenthesis
+\usepackage[llparenthesis, rrparenthesis]{stmaryrd}
+
+% Inference rules
+\usepackage{mathpartir}
+
+\usepackage{color}
+
+% Code
+\usepackage{listings}
+\lstset{language=[5.2]Lua}
+\lstset{morekeywords={for}}
+\lstset{lineskip={-1.5pt}}
+
+\usepackage{hyperref}
+
+% dia diagrams
+\usepackage{tikz}
+
+% Appendix
+\usepackage[toc,page]{appendix}
+
+\input{defs}
+
+\begin{document}
+
+\title{Towards a formal understanding of Crystal}
+
+
+\author{Ramiro Barraco}
+\affiliation{
+  \department{FAMAF, UNC}
+  \country{Argentina}
+}
+\email{ramirobarraco@gmail.com}
+
+\author{Mallku Soldevila}
+\affiliation{
+  \department{FAMAF, UNC and CONICET}
+  \country{Argentina}
+}
+\email{mes0107@famaf.unc.edu.ar}
+
+\author{Beta Ziliani}
+\affiliation{
+  \department{FAMAF, UNC and Manas.Tech}
+  \country{Argentina}
+}
+\email{beta@mpi-sws.org}
+
+\begin{CCSXML}
+<ccs2012>
+   <concept>
+       <concept_id>10003752.10010124.10010131.10010134</concept_id>
+       <concept_desc>Theory of computation~Operational semantics</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+   <concept>
+       <concept_id>10003752.10010124.10010138.10010143</concept_id>
+       <concept_desc>Theory of computation~Program analysis</concept_desc>
+       <concept_significance>500</concept_significance>
+       </concept>
+ </ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Theory of computation~Operational semantics}
+\ccsdesc[500]{Theory of computation~Program analysis}
+
+\begin{abstract}
+  We identify a minimal subset of features of the Crystal programming language, that is
+still interesting enough to give raise to a class of programs that violates type safety. We
+provide formal static and dynamic semantics to said set of features, through a flow-sensitive
+type system and a small-step operational semantics, respectively . Of interest is
+the first formal account, to the best of our knowledge, of type narrowing in
+Crystal. Into that formal setting, we identify conditions that are sufficient to provoke an
+offense to type safety. The obtained conditions are not limited to our model, but are
+general enough to guide future efforts in guarantying type safety in the whole Crystal
+language. We analyze ways of overcoming the issue, and prove that they guarantee
+type safety. Finally, we take advantage of our formal model to analyze a class of
+programs that are currently rejected by the type checker, but that are free of run-time
+type errors. We propose ways of extending the capabilities of the type checker to be
+able to correctly reason over this class of programs, in a way that still preserves type
+safety.
+\keywords{Lua \and Garbage Collection \and Verification}
+
+\end{abstract}
+
+
+\maketitle
+
+\input{intro}
+
+\input{related_work}
+
+% create the bibliography
+% \bibliographystyle{ACM-Reference-Format}
+\bibliographystyle{splncs04}
+\bibliography{references}
+
+\end{document}
+
+%  LocalWords:  Mallku Soldevila FAMAF UNC CONICET Ziliani Fridlender:  
