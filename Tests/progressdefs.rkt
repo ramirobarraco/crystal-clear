@@ -6,6 +6,7 @@
          "../Meta-functions/aux_fun.rkt"
          "../Relations/sigmaprogs.rkt"
          "../Relations/progs.rkt"
+         "../Relations/SAT.rkt"
          )
 
 
@@ -125,8 +126,9 @@
   #:mode (TN I I O O)
   #:contract (TN Γ P Γ Γ)
   
-  [(where Γ_1 (inst-SOL (SAT P) Γ))
-   (where Γ_2 (inst-SOL (comp-SOL(SAT P)) Γ))
+  [(SAT P SOL)
+   (where Γ_1 (inst-SOL SOL Γ))
+   (where Γ_2 (comp-SOL (inst-SOL SOL Γ)))
    --------------------------------------------------------------------
    (TN Γ P Γ_1 Γ_2)]
   
