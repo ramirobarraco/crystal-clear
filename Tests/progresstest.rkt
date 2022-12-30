@@ -2,6 +2,7 @@
 (require redex
          "../grammar.rkt"
          "./progressdefs.rkt"
+         "../Meta-functions/aux_fun.rkt"
          )
 
 (define (supremes-test-suite)

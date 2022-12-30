@@ -10,7 +10,7 @@
   (e ::=
      v
      var
-     (isa? t var)
+     (isa? t P)
      (unop P)
      (P binop P)
      (while P P)

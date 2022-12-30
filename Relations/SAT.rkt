@@ -1,7 +1,7 @@
 #lang racket
 (require redex
          "../grammar.rkt"
-         "../Tests/progressdefs.rkt"
+         "../Meta-functions/aux_fun.rkt"
          )
 
 (provide (all-defined-out))

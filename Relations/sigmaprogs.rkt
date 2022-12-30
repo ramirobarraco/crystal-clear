@@ -38,6 +38,8 @@
    ;     (σ_2 : term(subst(P ((Name_1 r_2)(Name_2 r_3) ...))))
    ;    (where (σ_2 (r_2 r_3 ...)) (term(addVal σ_1 (v_2 v_3 ...))))
    ;   ]
+
+
   
    
    ))

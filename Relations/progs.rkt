@@ -53,10 +53,12 @@
    [-->P (not v)
          (δ not v)
          negation]
-   
+
    [-->P (isa? t v)
-         (is-a? t v)
-         ]
+           (is-a? t v)
+           ]
+   
+
 
    ))
 (provide progs-rel)

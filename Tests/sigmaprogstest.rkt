@@ -44,7 +44,6 @@
          
            (term ((((ref 0) 0)): ((x (ref 0))): nil))
            )
-
   (test-results)
   )
   
