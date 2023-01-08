@@ -1,7 +1,7 @@
 #lang racket
 (require redex
          "../grammar.rkt"
-         "../Relations/SAT.rkt"
+         "../Relations/sat.rkt"
          )
 
 (define (sat-test-suite)
@@ -353,6 +353,27 @@
                                    (x : (x ⊓ Int32) ·))) #t)
 
   ; relops
+  ; no restrictions
+  (test-equal (judgment-holds (SAT (x == x) ·)) #t)
+  ; testing some of the expressions for which it makes sense
+  ; the comparison with a Name
+  (test-equal (judgment-holds (SAT (x == 1) 
+                                   (x : (x ⊓ 1) ·))) #t)
+  (test-equal (judgment-holds (SAT (x == (1 + 1)) 
+                                   (x : (x ⊓ (1 + 1)) ·))) #t)
+  (test-equal (judgment-holds (SAT (x == (true or false))
+                                   (x : (x ⊓ (true or false)) ·))) #t)
+  (test-equal (judgment-holds (SAT (x == (not (1 + 1)))
+                                   (x : (x ⊓ (not (1 + 1))) ·))) #t)
+  
+  (test-equal (judgment-holds (SAT (1 == x) 
+                                   (x : (x ⊓ 1) ·))) #t)
+  (test-equal (judgment-holds (SAT ((1 + 1) == x) 
+                                   (x : (x ⊓ (1 + 1)) ·))) #t)
+  (test-equal (judgment-holds (SAT ((true or false) == x)
+                                   (x : (x ⊓ (true or false)) ·))) #t)
+  (test-equal (judgment-holds (SAT ((not (1 + 1)) == x)
+                                   (x : (x ⊓ (not (1 + 1))) ·))) #t)
   (test-equal (judgment-holds (SAT (x == y)
                                    (x : (x ⊓ y) (y : (y ⊓ x) ·)))) #t)
   (test-equal (judgment-holds (SAT ((x == y) and (isa? String x))
@@ -369,5 +390,13 @@
                                    (x : (x ⊓ y) (y : (y ⊓ x) ·)))) #t)
   (test-equal (judgment-holds (SAT (x >= y)
                                    (x : (x ⊓ y) (y : (y ⊓ x) ·)))) #t)
+  (test-equal (judgment-holds (SAT (x < 1) 
+                                   (x : (x ⊓ 1) ·))) #t)
+  (test-equal (judgment-holds (SAT (x < (1 + 1)) 
+                                   (x : (x ⊓ (1 + 1)) ·))) #t)
+  (test-equal (judgment-holds (SAT (x < (true or false))
+                                   (x : (x ⊓ (true or false)) ·))) #t)
+  (test-equal (judgment-holds (SAT (x < (not (1 + 1)))
+                                   (x : (x ⊓ (not (1 + 1))) ·))) #t)
   
   (test-results))

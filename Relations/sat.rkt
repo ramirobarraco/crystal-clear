@@ -5,14 +5,15 @@
          )
 
 (provide (all-defined-out))
+; some auxiliary functions useful to define SAT
 
 ; complement of varsol: types + expressions involving Names
 (define-metafunction crystal-lang+Γ
   comp-varsol : varsol -> varsol
 
   [(comp-varsol t) (comp-t t)]
-  [(comp-varsol Name) (not Name)]
-  [(comp-varsol (not Name)) Name]
+  [(comp-varsol (not varsol)) varsol]
+  [(comp-varsol varsol) (not varsol)]
   )
 
 ; complement of typing environments
@@ -20,7 +21,7 @@
   comp-SOL : SOL -> SOL
   ; TODO: no estoy seguro de esta ecuación
   [(comp-SOL ·) ·]
-  [(comp-SOL (Name_1 : varsol Γ_1)) (Name_1 : (comp-varsol varsol) (comp-SOL Γ_1))]
+  [(comp-SOL (Name_1 : varsol SOL)) (Name_1 : (comp-varsol varsol) (comp-SOL SOL))]
   )
 
 ; supremum of varsols
@@ -43,7 +44,7 @@
   
   [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_1 : varsol_2 SOL_2))
    (Name_1 : (sup-varsol varsol_1 varsol_2) (sup-SOL SOL_1  SOL_2))]
-  
+  ;{Name_1 <> Name_2}
   [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
    (Name_1 : (sup-varsol varsol_1 varsol_3)
            (Name_2 : (sup-varsol varsol_2 varsol_4)
@@ -161,10 +162,8 @@
 
    (where (#t t) (in-Γ Γ Name))]
 
-  [(inst-varsol (not Name) Γ)
-   (comp-t t)
-
-   (where (#t t) (in-Γ Γ Name))]
+  [(inst-varsol (not varsol) Γ)
+   (comp-t (inst-varsol varsol Γ))]
 
   [(inst-varsol (varsol_1 ⊔ varsol_2) Γ)
    (supreme-t (inst-varsol varsol_1 Γ) (inst-varsol varsol_2 Γ))]
@@ -259,10 +258,31 @@
   ;           ^
   ; Error: undefined method '+' for Bool (compile-time type is (Bool | Int32))
   ; pasa lo mismo con otras relaciones
-  [-----------------------------"SAT-RELOP"
+  [; TODO: can't use pattern _!_ to impose different Names,
+   ; and refer later to the matched Names
+   (side-condition ,(not (equal? (term Name_1)
+                                 (term Name_2))))
+   -----------------------------------------------------------"SAT-RELOP-DIF-NAMES"
    (SAT (Name_1 relop Name_2) (Name_1 : (Name_1 ⊓ Name_2)
-                                      (Name_2 : (Name_2 ⊓ Name_1) ·)))]
+                              (Name_2 : (Name_2 ⊓ Name_1) ·)))]
 
+  ; no restriction
+  [-------------------------"SAT-RELOP-SAME-NAME"
+   (SAT (Name relop Name) ·)]
+
+  [------------------------------------------"SAT-RELOP-L-NAME"
+   (SAT (Name relop P) (Name : (Name ⊓ P) ·))]
+
+  
+  [------------------------------------------"SAT-RELOP-R-NAME"
+   (SAT (P relop Name) (Name : (Name ⊓ P) ·))]
+
+  
+  [(side-condition ,(not (redex-match? crystal-lang+Γ Name (term P_1))))
+   (side-condition ,(not (redex-match? crystal-lang+Γ Name (term P_2))))
+   ---------------------------------------------------------------------"SAT-RELOP-NO-NAME"
+   (SAT (P_1 relop P_2) ·)]
+  
   ; (isa? t Name) : bool that indicates if Name has a type that
   ;  is a subtype of t, in run-time
   ; while is_a? determines the run-time type of a variable, "the compiler
@@ -397,5 +417,3 @@
    (SAT (while P_1 P_2) ·)]
    
   )
-
-(provide SAT)
