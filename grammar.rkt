@@ -105,10 +105,10 @@
   ; possible type of a variable
   [varsol t
           ; TODO: estoy admitiendo cosas que no corresponde
-          (varsol_!_ varsol_!_ varsol_!_ ...)
-          ; to allow for the analysis of relops over just
-          ; Names
-          Name
+          ; (varsol_!_ varsol_!_ varsol_!_ ...)
+          ; to allow for the analysis of relops over 
+          ; Names and arbitrary terms
+          P
           (not varsol)
           (varsol ⊔ varsol)
           (varsol ⊓ varsol)]

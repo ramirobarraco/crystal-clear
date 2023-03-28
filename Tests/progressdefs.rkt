@@ -2,11 +2,10 @@
 (require redex
          "../grammar.rkt"
          "../Relations/fullprogs.rkt"
+         ; TODO: usar subtyping
          "../Relations/subtyping.rkt"
+         "../Relations/sat.rkt"
          "../Meta-functions/aux_fun.rkt"
-         "../Relations/sigmaprogs.rkt"
-         "../Relations/progs.rkt"
-         "../Relations/SAT.rkt"
          )
 
 
@@ -59,7 +58,8 @@
   [(TN Γ P_1 Γ_1 Γ_3)
    (TR Γ_1 P_2 t Γ_2)
    -----------------------------"T-WHILE"
-   (TR Γ (while P_1 P_2) t (supreme-Γ Γ_3 Γ_2))]
+   (TR Γ (while P_1 P_2) t (supreme-Γ Γ_3 Γ_2)
+       )]
 
   [(TR Γ P_1 Int32 Γ)
    (TR Γ P_2 Int32 Γ)
@@ -126,20 +126,59 @@
   #:mode (TN I I O O)
   #:contract (TN Γ P Γ Γ)
   
-  [(SAT P SOL)
-   (where Γ_1 (inst-SOL SOL Γ))
-   (where Γ_2 (comp-SOL (inst-SOL SOL Γ)))
+  [(SAT P SOL_1)
+   ; SOL could have some varsols of the form P, for an arbitrary P
+   ; we type them and replace them with their type in SOL
+   (where SOL_2 (type-SOL-terms SOL_1 Γ))
+   
+   (where Γ_1 (inst-SOL SOL_2 Γ))
+   (where Γ_2 (inst-SOL (comp-SOL SOL_2) Γ))
    --------------------------------------------------------------------
    (TN Γ P Γ_1 Γ_2)]
-  
-  
 
   )
 
 (provide (all-defined-out))
 
 
+; to replace varsols of the form P, present into a given SOL,
+; with their respective type
+(define-metafunction crystal-lang+Γ
+  type-SOL-terms : SOL Γ -> SOL
 
+  [(type-SOL-terms · _)
+   ·]
+  
+  [(type-SOL-terms (Name : varsol SOL) Γ)
+   (Name : (type-varsol-terms varsol Γ)
+           (type-SOL-terms SOL Γ))]
+  )
+
+
+(define-metafunction crystal-lang+Γ
+  type-varsol-terms : varsol Γ -> varsol
+
+  [(type-varsol-terms P Γ_1)
+   t
+
+   (where ((t _)) ,(judgment-holds (TR Γ_1 P t Γ_2) (t Γ)))]
+  
+  [(type-varsol-terms (not varsol) Γ)
+   (not (type-varsol-terms varsol Γ))]
+  
+  [(type-varsol-terms (not varsol) Γ)
+   (not (type-varsol-terms varsol Γ))]
+  
+  [(type-varsol-terms (varsol_1 ⊔ varsol_2) Γ)
+   ((type-varsol-terms varsol_1 Γ) ⊔ (type-varsol-terms varsol_2 Γ))]
+  
+  [(type-varsol-terms (varsol_1 ⊓ varsol_2) Γ)
+   ((type-varsol-terms varsol_1 Γ) ⊓ (type-varsol-terms varsol_2 Γ))]
+  
+  [(type-varsol-terms varsol _)
+   varsol]
+  )
+; TODO: esta función para no usarse
 (define-metafunction crystal-lang+Γ
   make-Γ : σϵprog -> Γ
   [(make-Γ (σ : () : P)) · ]
