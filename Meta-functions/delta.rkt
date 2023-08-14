@@ -40,6 +40,9 @@
   
   [(δ > v_1 v_2)
    (toBool ,(> (term v_1)(term v_2)))]
+
+  [(δ .. str_1 str_2)
+   ,(string-append (term str_1) (term str_2))]
   
   [(δ and v P)
    v
