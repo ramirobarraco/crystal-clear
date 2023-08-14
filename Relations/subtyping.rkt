@@ -2,6 +2,7 @@
 (require redex
          "../grammar.rkt"
          )
+
 ; TODOM: documentación
 (define-relation crystal-lang
   subtype ⊆ t × t
@@ -14,6 +15,7 @@
                     (upper_bound? t_1 t_2)))
    ]
   )
+
 ; given t_1 t_2 returns true if t_1 is an upper bound of t_2
 (define-metafunction crystal-lang
   upper_bound? : t t -> boolean

@@ -1,15 +1,16 @@
 #lang racket
 (require redex
          "../grammar.rkt"
-         "../Relations/fullprogs.rkt"
+         "./fullprogs.rkt"
          ; TODO: usar subtyping
-         "../Relations/subtyping.rkt"
-         "../Relations/sat.rkt"
+         "./subtyping.rkt"
+         "./sat.rkt"
          "../Meta-functions/aux_fun.rkt"
+         "../Meta-functions/typing.rkt"
          )
 
 
-
+; flow-sensitive typing relation: Γ × P × t × Γ
 (define-judgment-form
   crystal-lang+Γ
   #:mode (TR I  I O O )
@@ -27,12 +28,13 @@
   [--------------------------------"T-STRING"
    (TR Γ str String Γ)]
 
+  ; during typing of
   [(TN Γ P_1 Γ_1 Γ_2)
    (TR Γ_1 P_2 t_1 Γ_3)
    (TR Γ_2 P_3 t_2 Γ_4)
    -----------------------------"T-IF"
    (TR Γ (if P_1 then P_2 else P_3) (supreme-t t_1 t_2) (supreme-Γ Γ_3 Γ_4))]
-  
+
   [(TR Γ P t_1 Γ)
    (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Γ Γ Name))))
    (side-condition ,(not (redex-match? crystal-lang+Γ unit (term t_1))))
@@ -57,6 +59,7 @@
 
   [(TN Γ P_1 Γ_1 Γ_3)
    (TR Γ_1 P_2 t Γ_2)
+   (TN Γ_2 P_1 Γ_1 Γ_3)
    -----------------------------"T-WHILE"
    (TR Γ (while P_1 P_2) t (supreme-Γ Γ_3 Γ_2)
        )]
@@ -66,22 +69,36 @@
    -----------------------------"T-ARITHOP"
    (TR Γ (P_1 arithop P_2) Int32 Γ)]
   
-  [(TR Γ P_1 Int32 Γ)
+  [(side-condition ,(not (redex-match? crystal-lang+Γ == (term relop))))
+   (TR Γ P_1 Int32 Γ)
    (TR Γ P_2 Int32 Γ)
    -----------------------------"T-RELOP"
    (TR Γ (P_1 relop P_2) Bool Γ)]
 
+  ; TODO: this rule only types compared terms of the same type
+  ; what about type narrowing?
+  [(TR Γ P_1 t Γ)
+   (TR Γ P_2 t Γ)
+   -----------------------------"T-EQ"
+   (TR Γ (P_1 == P_2) Bool Γ)]
+
+  [(TR Γ P_1 String Γ)
+   (TR Γ P_2 String Γ)
+   -----------------------------"T-STRCONCAT"
+   (TR Γ (P_1 .. P_2) String Γ)]
+
   ; TODO: ; el tipo de ambos conyuntos no tiene por qué ser bool, puede ser cualquier cosa
   ; TODO: para el caso de &&, de https://crystal-lang.org/reference/1.6/syntax_and_semantics/and.html:
   ; "Its type is the union of the types of both sides."
-  [(TR Γ P_1 Bool Γ)
-   (TR Γ P_2 Bool Γ)
+  [(TR Γ P_1 t_1 Γ)
+   (TR Γ P_2 t_2 Γ)
+   (where t_3 (supreme-t t_1 t_2))
    -----------------------------"T-SHORTBINOP"
-   (TR Γ (P_1 shortbinop P_2) Bool Γ)]
+   (TR Γ (P_1 shortbinop P_2) t_3 Γ)]
 
-  [(TR Γ P_1 Bool Γ)
+  [(TR Γ P _ Γ) ; it does not matter the actual type of P
    -----------------------------"T-NOT"
-   (TR Γ (not P_1) Bool Γ)]
+   (TR Γ (not P) Bool Γ)]
 
   [(TR Γ P_1 Int32 Γ)
    -----------------------------"T-NEGATIVE"
@@ -133,8 +150,16 @@
    
    (where Γ_1 (inst-SOL SOL_2 Γ))
    (where Γ_2 (inst-SOL (comp-SOL SOL_2) Γ))
+
+   ; inf. between the proposed Γ_1 and the original Γ
+   (where Γ_3 (inf-Γ Γ Γ_1))
+   (where Γ_4 (inf-Γ Γ Γ_2))
+   
+   (side-condition ,(println (term Γ)))
+   (side-condition ,(println (term Γ_2)))
+   (side-condition ,(println (term Γ_4)))
    --------------------------------------------------------------------
-   (TN Γ P Γ_1 Γ_2)]
+   (TN Γ P Γ_3 Γ_4)]
 
   )
 
