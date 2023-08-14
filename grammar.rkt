@@ -70,9 +70,11 @@
   ; Not short-circuit binop
   [strictbinop
         ;arith
-        + - * / ^ % 
+        + - * / ^ %
         ; relop 
         < <= > >= ==
+        ; string
+        ..
         ]
   
   [shortbinop and or]
@@ -120,7 +122,8 @@
        
        ;T
        ]
-  
+
+  ; some syntactic categories to ease the definition of typing rules
   [arithop + - * / ^ %]
   [relop < <= > >= ==]
   )
