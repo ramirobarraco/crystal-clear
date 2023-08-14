@@ -400,3 +400,5 @@
                                    (x : (x ⊓ (not (1 + 1))) ·))) #t)
   
   (test-results))
+
+(provide sat-test-suite)

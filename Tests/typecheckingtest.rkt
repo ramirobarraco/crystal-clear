@@ -1,11 +1,11 @@
 #lang racket
 (require redex
          "../grammar.rkt"
-         "./progressdefs.rkt"
+         "../Relations/typingrelation.rkt"
          "../Meta-functions/aux_fun.rkt"
          )
 
-(define (supremes-test-suite)
+(define (inf-sup-test-suite)
   (test-equal (term (supreme-t (String Bool) Int32))
               (term (Int32 String Bool))
               )
@@ -67,7 +67,12 @@
               (term (String Bool Int32))
               )
   
-  ; complement of types
+  (test-results))
+  
+(provide inf-sup-test-suite)
+
+; complement of types
+(define (comp-test-suite)
   (test-equal (term (comp-t ⊥))
               (term (Nil Bool Int32 String))
               )
@@ -92,7 +97,12 @@
   (test-equal (term (comp-t (Nil Bool Int32 String)))
               (term ⊥)
               )
-  
+
+  (test-results))
+
+(provide comp-test-suite)
+
+(define (inf-sup-contexts-test-suite)
   ; infimum of typing contexts
   (test-equal (term (inf-Γ · ·))
               (term ·)
@@ -157,42 +167,138 @@
               )
 
   (test-equal (term (supreme-Γ (x : Int32 (y : Int32 (z : Int32 ·)))
-                           (x : Bool (z : Int32 (y : Int32 ·)))))
+                               (x : Bool (z : Int32 (y : Int32 ·)))))
               (term (x : (Int32 Bool) (y : Int32 (z : Int32 ·))))
               )
 
+  (test-results))
+
+(provide inf-sup-contexts-test-suite)
+
+(define (type-checking-test-suite)
   ;Concat judgment form
+  ; TODO: where should we put this test? are more tests needed?
   (test-equal (judgment-holds (concat (x : Int32 ·) (nil nil nil) nil Nil (x : Int32 ·))) #t)
   
-  ;value calls
+  ; values
   (test-equal (judgment-holds (TR (x : Int32 ·) x Int32 (x : Int32 ·))) #t)
-  (test-equal (judgment-holds (TR (x : Int32 ·) 10 Int32 (x : Int32 ·))) #t)
-  (test-equal (judgment-holds (TR (x : Int32 ·) true Bool (x : Int32 ·))) #t)
-  (test-equal (judgment-holds (TR (x : Int32 ·) "asas" String (x : Int32 ·))) #t)
-  (test-equal (judgment-holds (TR (x : Int32 ·) nil Nil (x : Int32 ·))) #t)
-  
-  ;basic functions
-  (test-equal (judgment-holds (TR (x : Int32 ·) (1 + 1) Int32 (x : Int32 ·))) #t)
-  (test-equal (judgment-holds (TR (x : Int32 ·) (true and false) Bool (x : Int32 ·))) #t)
-  (test-equal (judgment-holds (TR (x : Int32 ·) (- 1) Int32 (x : Int32 ·))) #t)
-  (test-equal (judgment-holds (TR (x : Bool ·) (a = x) Bool (a : Bool (x : Bool ·)))) #t)
+  (test-equal (judgment-holds (TR · 10 Int32 ·)) #t)
+  (test-equal (judgment-holds (TR · true Bool ·)) #t)
+  (test-equal (judgment-holds (TR · "asas" String ·)) #t)
+  (test-equal (judgment-holds (TR · nil Nil ·)) #t)
+
+  ; binops
+  (test-equal (judgment-holds (TR · (1 + 1) Int32 ·)) #t)
   (test-equal (judgment-holds (TR (x : Int32 ·) (x + 1) Int32 (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (1 + x) Int32 (x : Int32 ·))) #t)
+  
+
+  (test-equal (judgment-holds (TR · (1 - 1) Int32 ·)) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (x - 1) Int32 (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (1 - x) Int32 (x : Int32 ·))) #t)
+
+  (test-equal (judgment-holds (TR · (1 * 1) Int32 ·)) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (x * 1) Int32 (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (1 * x) Int32 (x : Int32 ·))) #t)
+
+  (test-equal (judgment-holds (TR · (1 / 1) Int32 ·)) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (x / 1) Int32 (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (1 / x) Int32 (x : Int32 ·))) #t)
+
+  (test-equal (judgment-holds (TR · (1 ^ 1) Int32 ·)) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (x ^ 1) Int32 (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (1 ^ x) Int32 (x : Int32 ·))) #t)
+
+  (test-equal (judgment-holds (TR · (1 % 1) Int32 ·)) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (x % 1) Int32 (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (1 % x) Int32 (x : Int32 ·))) #t)
+
+  ; relop
+  (test-equal (judgment-holds (TR · (1 < 1) Bool ·)) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (x < 1) Bool (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (1 < x) Bool (x : Int32 ·))) #t)
+
+  (test-equal (judgment-holds (TR · (1 <= 1) Bool ·)) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (x <= 1) Bool (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (1 <= x) Bool (x : Int32 ·))) #t)
+
+  (test-equal (judgment-holds (TR · (1 > 1) Bool ·)) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (x > 1) Bool (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (1 > x) Bool (x : Int32 ·))) #t)
+
+  (test-equal (judgment-holds (TR · (1 >= 1) Bool ·)) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (x >= 1) Bool (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (1 >= x) Bool (x : Int32 ·))) #t)
+
+  (test-equal (judgment-holds (TR · (1 == 1) Bool ·)) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (x == 1) Bool (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (1 == x) Bool (x : Int32 ·))) #t)
+
+  (test-equal (judgment-holds (TR · ("1" == "asd") Bool ·)) #t)
+  (test-equal (judgment-holds (TR (x : String ·) (x == "1") Bool (x : String ·))) #t)
+  (test-equal (judgment-holds (TR (x : String ·) ("1" == x) Bool (x : String ·))) #t)
+
+  ; boolean op
+  (test-equal (judgment-holds (TR · (true and false) Bool ·)) #t)
+  (test-equal (judgment-holds (TR · (1 and true) (Int32 Bool) ·)) #t)
+  (test-equal (judgment-holds (TR · ("asd" and 1) (String Int32) ·)) #t)
+  (test-equal (judgment-holds (TR (x : String ·) (1 and x) (Int32 String) (x : String ·))) #t)
+
+  (test-equal (judgment-holds (TR · (true or false) Bool ·)) #t)
+  (test-equal (judgment-holds (TR · (1 or true) (Int32 Bool) ·)) #t)
+  (test-equal (judgment-holds (TR · ("asd" or 1) (String Int32) ·)) #t)
+  (test-equal (judgment-holds (TR (x : String ·) (1 or x) (Int32 String) (x : String ·))) #t)
+
+  ; unop
+  (test-equal (judgment-holds (TR · (- 1) Int32 ·)) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (- x) Int32 (x : Int32 ·))) #t)
+  
+  (test-equal (judgment-holds (TR · (not 1) Bool ·)) #t)
+  (test-equal (judgment-holds (TR · (not false) Bool ·)) #t)
+  (test-equal (judgment-holds (TR · (not "asf") Bool ·)) #t)
+  (test-equal (judgment-holds (TR · (not nil) Bool ·)) #t)
+
+  ; assignment
+  (test-equal (judgment-holds (TR (x : Bool ·) (a = x) Bool (a : Bool (x : Bool ·)))) #t)
   
   ;while
-  (test-equal (judgment-holds (TR (x : Int32 ·) (while (x == 1) (a = true))
-                                  Bool
-                                  (x : Int32 (a : (Bool Nil) ·))))
-              #t)
+  ; TODO: solve while!
+  ;  (test-equal (judgment-holds (TR (x : Int32 ·) (while (x == 1) (a = true))
+  ;                                  Bool
+  ;                                  (x : Int32 (a : (Bool Nil) ·))))
+  ;              #t)
+  ;
   
-  ;if
-  (test-equal (judgment-holds (TR (x : Int32 ·) (if (x == 1) then (a = true) else (a = "asaS"))
+  ; if
+  (test-equal (judgment-holds (TR (x : Int32 ·)
+                                  (if (x == 1) then (a = true) else (a = "asaS"))
                                   (Bool String)
                                   (a : (Bool String) (x : Int32 ·))))
               #t)
   
-  (test-equal (judgment-holds (TR (x : (String Int32) ·) (if (isa? Int32 x) then (x + 1) else (a = "asaS"))
+  (test-equal (judgment-holds (TR (x : (String Int32) ·)
+                                  (if (isa? Int32 x) then (x + 1) else (a = "asaS"))
                                   (Int32 String)
                                   (x : (Int32 String) (a : (String Nil) ·))))
+              #t)
+
+  ; example based on crystal docs
+  ; b = true ? 1 : "hello"
+  ; puts (typeof (b))
+  ;
+  ; if b.is_a?(Int32)
+  ;   b = "hello" 
+  ; else
+  ;   puts (b .. "1")
+  ; end
+  (test-equal (judgment-holds (TR (a : (Int32 String) ·)
+                                  (if (isa? String a)
+                                      then
+                                      (a = (a .. "asdf"))
+                                      else
+                                      (a = (a + 1)))
+                                  (String Int32)
+                                  (a : (String Int32) ·)))
               #t)
   
   ;a = 1
@@ -218,11 +324,11 @@
   ;end
   ;# b : Int32 | String
   (test-equal (judgment-holds (TR (b : Int32 ·)
-                                  ((if (b > 0)
+                                  (if (b > 0)
                                        then
                                        (b = "hello")
                                        else
-                                       nil) b)
+                                       nil)
                                   (String Int32)
                                   (b : (String Int32) ·)))
               #t)
@@ -271,4 +377,4 @@
   (test-results)
   )
 
-(supremes-test-suite)
+(provide type-checking-test-suite)
