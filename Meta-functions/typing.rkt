@@ -92,6 +92,8 @@
 
 (define-metafunction crystal-lang+Γ
   supreme-Γ : Γ Γ -> Γ
+
+  ; TODO: check this
   [(supreme-Γ · Γ) Γ]
   [(supreme-Γ Γ ·) Γ]
   ;[(supreme-Γ · ·) ·]
@@ -110,6 +112,8 @@
 ; infimum of typing environments: the most restricted type assumptions
 (define-metafunction crystal-lang+Γ
   inf-Γ : Γ Γ -> Γ
+
+  ; · is no type restriction at all
   [(inf-Γ · Γ) Γ]
   [(inf-Γ Γ ·) Γ]
   [(inf-Γ (Name_1 : t_1 Γ_1) (Name_1 : t_2 Γ_2))

@@ -70,21 +70,21 @@
    (TR Γ (P_1 arithop P_2) Int32 Γ)]
   
   [(side-condition ,(not (redex-match? crystal-lang+Γ == (term relop))))
-   (TR Γ P_1 Int32 Γ)
-   (TR Γ P_2 Int32 Γ)
-   -----------------------------"T-RELOP"
+   (TR Γ P_1 t Γ)
+   (TR Γ P_2 t Γ)
+   (side-condition ,(or (equal? (term t) (term String))
+                        (equal? (term t) (term Int32))))
+   ---------------------------------------------------------------------"T-RELOP"
    (TR Γ (P_1 relop P_2) Bool Γ)]
 
-  ; TODO: this rule only types compared terms of the same type
-  ; what about type narrowing?
-  [(TR Γ P_1 t Γ)
-   (TR Γ P_2 t Γ)
-   -----------------------------"T-EQ"
+  [(TR Γ P_1 t_1 Γ)
+   (TR Γ P_2 t_2 Γ)
+   --------------------------"T-EQ"
    (TR Γ (P_1 == P_2) Bool Γ)]
 
   [(TR Γ P_1 String Γ)
    (TR Γ P_2 String Γ)
-   -----------------------------"T-STRCONCAT"
+   ----------------------------"T-STRCONCAT"
    (TR Γ (P_1 .. P_2) String Γ)]
 
   ; TODO: ; el tipo de ambos conyuntos no tiene por qué ser bool, puede ser cualquier cosa
@@ -112,8 +112,6 @@
   [(TR Γ P t Γ)
    ----------------------------"T-ISA?"
    (TR Γ (isa? t P) Bool Γ)]
-
-
   
   )
 

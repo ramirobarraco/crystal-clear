@@ -1,8 +1,7 @@
 #lang racket
 (require redex
-         "../grammar.rkt"
          "../Relations/typingrelation.rkt"
-         "../Meta-functions/aux_fun.rkt"
+         "../Meta-functions/typing.rkt"
          )
 
 (define (inf-sup-test-suite)
@@ -109,11 +108,11 @@
               )
 
   (test-equal (term (inf-Γ (x : Bool ·) ·))
-              (term ·)
+              (term (x : Bool ·))
               )
 
   (test-equal (term (inf-Γ · (x : Bool ·)))
-              (term ·)
+              (term (x : Bool ·))
               )
 
   (test-equal (term (inf-Γ (x : Int32 ·) (y : Bool ·)))
@@ -230,6 +229,22 @@
   (test-equal (judgment-holds (TR (x : Int32 ·) (x >= 1) Bool (x : Int32 ·))) #t)
   (test-equal (judgment-holds (TR (x : Int32 ·) (1 >= x) Bool (x : Int32 ·))) #t)
 
+  (test-equal (judgment-holds (TR · (1 < 1) Bool ·)) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (x < 1) Bool (x : Int32 ·))) #t)
+  (test-equal (judgment-holds (TR (x : Int32 ·) (1 < x) Bool (x : Int32 ·))) #t)
+
+  (test-equal (judgment-holds (TR · ("1" <= "1") Bool ·)) #t)
+  (test-equal (judgment-holds (TR (x : String ·) (x <= "1") Bool (x : String ·))) #t)
+  (test-equal (judgment-holds (TR (x : String ·) ("1" <= x) Bool (x : String ·))) #t)
+
+  (test-equal (judgment-holds (TR · ("1" > "1") Bool ·)) #t)
+  (test-equal (judgment-holds (TR (x : String ·) (x > "1") Bool (x : String ·))) #t)
+  (test-equal (judgment-holds (TR (x : String ·) ("1" > x) Bool (x : String ·))) #t)
+
+  (test-equal (judgment-holds (TR · ("1" >= "1") Bool ·)) #t)
+  (test-equal (judgment-holds (TR (x : String ·) (x >= "1") Bool (x : String ·))) #t)
+  (test-equal (judgment-holds (TR (x : String ·) ("1" >= x) Bool (x : String ·))) #t)
+
   (test-equal (judgment-holds (TR · (1 == 1) Bool ·)) #t)
   (test-equal (judgment-holds (TR (x : Int32 ·) (x == 1) Bool (x : Int32 ·))) #t)
   (test-equal (judgment-holds (TR (x : Int32 ·) (1 == x) Bool (x : Int32 ·))) #t)
@@ -238,6 +253,13 @@
   (test-equal (judgment-holds (TR (x : String ·) (x == "1") Bool (x : String ·))) #t)
   (test-equal (judgment-holds (TR (x : String ·) ("1" == x) Bool (x : String ·))) #t)
 
+  (test-equal (judgment-holds (TR · (1 == "asd") Bool ·)) #t)
+  (test-equal (judgment-holds (TR (x : String ·) (x == 1) Bool (x : String ·))) #t)
+  (test-equal (judgment-holds (TR (x : String ·) (1 == x) Bool (x : String ·))) #t)
+
+  (test-equal (judgment-holds (TR · (true == false) Bool ·)) #t)
+  (test-equal (judgment-holds (TR (x : Bool ·) (x == false) Bool (x : Bool ·))) #t)
+  (test-equal (judgment-holds (TR (x : Bool ·) (false == x) Bool (x : Bool ·))) #t)
   ; boolean op
   (test-equal (judgment-holds (TR · (true and false) Bool ·)) #t)
   (test-equal (judgment-holds (TR · (1 and true) (Int32 Bool) ·)) #t)

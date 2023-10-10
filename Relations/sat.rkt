@@ -236,9 +236,8 @@
   [-----------------------------"SAT-ARITHOP"
    (SAT (P_1 arithop P_2) ·)]
   ;
-  ;  TODO: acá hay una oportunidad interesante para mejorar type narrowing. En
-  ;  el siguiente ejemplo, el compilador no es capaz de darse cuenta que ambas
-  ;  x debe ser Int32:
+  ;  TODO: opportunity to improve type narrowing: in the following example,
+  ;  the compiler cannot infer that xshould be Int32, for the guard to hold:
   ;
   ;  x = 1
   ;  y = 1
@@ -263,24 +262,35 @@
    (side-condition ,(not (equal? (term Name_1)
                                  (term Name_2))))
    -----------------------------------------------------------"SAT-RELOP-DIF-NAMES"
-   (SAT (Name_1 relop Name_2) (Name_1 : (Name_1 ⊓ Name_2)
-                              (Name_2 : (Name_2 ⊓ Name_1) ·)))]
+   (SAT (Name_1 == Name_2) (Name_1 : (Name_1 ⊓ Name_2)
+                           (Name_2 : (Name_2 ⊓ Name_1) ·)))]
 
   ; no restriction
-  [-------------------------"SAT-RELOP-SAME-NAME"
-   (SAT (Name relop Name) ·)]
+  [----------------------"SAT-RELOP-SAME-NAME"
+   (SAT (Name == Name) ·)]
 
-  [------------------------------------------"SAT-RELOP-L-NAME"
-   (SAT (Name relop P) (Name : (Name ⊓ P) ·))]
-
-  
-  [------------------------------------------"SAT-RELOP-R-NAME"
-   (SAT (P relop Name) (Name : (Name ⊓ P) ·))]
+  [(side-condition ,(not (equal? (term Name)
+                                 (term P))))
+   ------------------------------------------"SAT-RELOP-L-NAME"
+   (SAT (Name == P) (Name : (Name ⊓ P) ·))]
 
   
-  [(side-condition ,(not (redex-match? crystal-lang+Γ Name (term P_1))))
-   (side-condition ,(not (redex-match? crystal-lang+Γ Name (term P_2))))
-   ---------------------------------------------------------------------"SAT-RELOP-NO-NAME"
+  [(side-condition ,(not (equal? (term Name)
+                                 (term P))))
+   ------------------------------------------"SAT-RELOP-R-NAME"
+   (SAT (P == Name) (Name : (Name ⊓ P) ·))]
+
+  
+  [(side-condition ,(and (not (redex-match? crystal-lang+Γ Name (term P_1)))
+                         (not (redex-match? crystal-lang+Γ Name (term P_2)))))
+   ---------------------------------------------------------------------------"SAT-RELOP-NO-NAME"
+   (SAT (P_1 == P_2) ·)]
+
+  ; we do not improve type narrowing any further in this case:
+  ; type checking itself will ask for P_1 and P_2 to have the same type, and that
+  ; type being String or Int32
+  [(side-condition ,(not (equal? (term ==) (term relop))))
+   -------------------------------------------------------"SAT-RELOP-NO-EQ"
    (SAT (P_1 relop P_2) ·)]
   
   ; (isa? t Name) : bool that indicates if Name has a type that
