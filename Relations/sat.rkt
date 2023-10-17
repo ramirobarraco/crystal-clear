@@ -21,16 +21,24 @@
   comp-SOL : SOL -> SOL
   ; TODO: no estoy seguro de esta ecuación
   [(comp-SOL ·) ·]
-  [(comp-SOL (Name_1 : varsol SOL)) (Name_1 : (comp-varsol varsol) (comp-SOL SOL))]
+  
+  [(comp-SOL (Name_1 : varsol SOL))
+   (Name_1 : (comp-varsol varsol) (comp-SOL SOL))]
   )
 
 ; supremum of varsols
 (define-metafunction crystal-lang+Γ
   sup-varsol : varsol varsol -> varsol
 
-  [(sup-varsol t_1 t_2) (supreme-t t_1 t_2)]
-  [(sup-varsol varsol varsol) (varsol)]
-  [(sup-varsol varsol_1 varsol_2) (varsol_1 ⊔ varsol_2)]
+  [(sup-varsol t_1 t_2)
+   (supreme-t t_1 t_2)]
+  
+  [(sup-varsol varsol varsol)
+   varsol]
+
+  ; {varsol_1 <> varsol_2}
+  [(sup-varsol varsol_1 varsol_2)
+   (varsol_1 ⊔ varsol_2)]
   )
 
 ; "supremum" of 2 given sat solutions: returns the most general
@@ -39,11 +47,16 @@
   sup-SOL : SOL SOL -> SOL
   ; recall that · defines ·(x) = x for all variable
   [(sup-SOL · ·) ·]
-  [(sup-SOL (Name : varsol SOL) ·) (Name : (varsol ⊔ Name) (sup-SOL SOL ·))]
-  [(sup-SOL · (Name : varsol SOL)) (Name : (Name ⊔ varsol) (sup-SOL · SOL))]
+  
+  [(sup-SOL (Name : varsol SOL) ·)
+   (Name : (varsol ⊔ Name) (sup-SOL SOL ·))]
+  
+  [(sup-SOL · (Name : varsol SOL))
+   (Name : (Name ⊔ varsol) (sup-SOL · SOL))]
   
   [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_1 : varsol_2 SOL_2))
    (Name_1 : (sup-varsol varsol_1 varsol_2) (sup-SOL SOL_1  SOL_2))]
+  
   ;{Name_1 <> Name_2}
   [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
    (Name_1 : (sup-varsol varsol_1 varsol_3)
@@ -53,48 +66,60 @@
    (where varsol_3 (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
    (where varsol_4 (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
 
-  [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
-   (Name_1 : (varsol_1 ⊔ Name_1)
-           (Name_2 : (sup-varsol varsol_2 varsol_4)
-                   (sup-SOL (remove-SOL SOL_1 Name_2)
-                            (remove-SOL SOL_2 Name_1))))
-   (where #f (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-   (where varsol_4 (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
-
-  [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
-   (Name_1 : (sup-varsol varsol_1 varsol_3)
-           (Name_2 : (varsol_2 ⊔ Name_2)
-                   (sup-SOL (remove-SOL SOL_1 Name_2)
-                            (remove-SOL SOL_2 Name_1))))
-   (where varsol_3 (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-   (where #f (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
-
-  [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
-   (Name_1 : (varsol_1 ⊔ Name_1)
-           (Name_2 : (varsol_2 ⊔ Name_2)
-                   (sup-SOL (remove-SOL SOL_1 Name_2)
-                            (remove-SOL SOL_2 Name_1))))
-   (where #f (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-   (where #f (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
+;  [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
+;   (Name_1 : (varsol_1 ⊔ Name_1)
+;           (Name_2 : (sup-varsol varsol_2 varsol_4)
+;                   (sup-SOL (remove-SOL SOL_1 Name_2)
+;                            (remove-SOL SOL_2 Name_1))))
+;   (where #f (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
+;   (where varsol_4 (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
+;
+;  [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
+;   (Name_1 : (sup-varsol varsol_1 varsol_3)
+;           (Name_2 : (varsol_2 ⊔ Name_2)
+;                   (sup-SOL (remove-SOL SOL_1 Name_2)
+;                            (remove-SOL SOL_2 Name_1))))
+;   (where varsol_3 (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
+;   (where #f (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
+;
+;  [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
+;   (Name_1 : (varsol_1 ⊔ Name_1)
+;           (Name_2 : (varsol_2 ⊔ Name_2)
+;                   (sup-SOL (remove-SOL SOL_1 Name_2)
+;                            (remove-SOL SOL_2 Name_1))))
+;   (where #f (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
+;   (where #f (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
   )
 
 ; removes the solution proposed for a given Name, into a given SOL
 (define-metafunction crystal-lang+Γ
   remove-SOL : SOL Name -> SOL
-  [(remove-SOL · Name) ·]
-  [(remove-SOL (Name_1 : _ SOL) Name_1) SOL]
-  [(remove-SOL (Name_1 : any SOL) Name_2) (Name_1 : any (remove-SOL SOL Name_2))]
+  
+  [(remove-SOL · Name)
+   ·]
+  
+  [(remove-SOL (Name_1 : _ SOL) Name_1)
+   SOL]
+
+  ; {Name_1 <> Name_2}
+  [(remove-SOL (Name_1 : any SOL) Name_2)
+   (Name_1 : any (remove-SOL SOL Name_2))]
   )
 
-; determines if a given SOL proposes a solution for a given Name
+; returns the solution proposed by a given SOL, for a given Name
 (define-metafunction crystal-lang+Γ
-  in-SOL : SOL Name -> varsol or #f
-  [(in-SOL · Name_1) #f]
+  in-SOL : SOL Name -> varsol
+
+  ; ∀ x, ·(x) = x 
+  [(in-SOL · Name)
+   Name]
   
-  [(in-SOL (Name_1 : varsol SOL) Name_1) varsol]
+  [(in-SOL (Name_1 : varsol SOL) Name_1)
+   varsol]
   
   ; {Name_1 != Name_2}
-  [(in-SOL (Name_1 : _ SOL) Name_2) (in-SOL SOL Name_2)])
+  [(in-SOL (Name_1 : _ SOL) Name_2)
+   (in-SOL SOL Name_2)])
 
 ; infimum of varsol
 (define-metafunction crystal-lang+Γ
@@ -112,42 +137,54 @@
   inf-SOL : SOL SOL -> SOL
 
   ; recall that · defines ·(x) = x for all variable
-  [(inf-SOL · ·) ·]
-  [(inf-SOL (Name : varsol SOL) ·) (Name : (varsol ⊓ Name) (inf-SOL SOL ·))]
-  [(inf-SOL · (Name : varsol SOL)) (Name : (Name ⊓ varsol) (inf-SOL · SOL))]
+  [(inf-SOL · ·)
+   ·]
+  
+  [(inf-SOL (Name : varsol SOL) ·)
+   (Name : (varsol ⊓ Name) (inf-SOL SOL ·))]
+  
+  [(inf-SOL · (Name : varsol SOL))
+   (Name : (Name ⊓ varsol) (inf-SOL · SOL))]
+  
   [(inf-SOL (Name_1 : varsol_1 SOL_1) (Name_1 : varsol_2 SOL_2))
    (Name_1 : (inf-varsol varsol_1 varsol_2) (inf-SOL SOL_1  SOL_2))]
+
+  ; {Name_1 <> Name_2}
   [(inf-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
    (Name_1 : (inf-varsol varsol_1 varsol_3)
            (Name_2 : (inf-varsol varsol_2 varsol_4)
                    (inf-SOL (remove-SOL SOL_1 Name_2)
                             (remove-SOL SOL_2 Name_1))))
+   
    (where varsol_3 (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-   (where varsol_4 (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))
-   ]
-  [(inf-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
-   (Name_1 : (varsol_1 ⊓ Name_1)
-           (Name_2 : (inf-varsol varsol_2 varsol_3)
-                   (inf-SOL (remove-SOL SOL_1 Name_2)
-                            SOL_2)))
-   (where #f (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-   (where varsol_3 (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))
-   ]
-  [(inf-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
-   (Name_1 : (inf-varsol varsol_1 varsol_3)
-           (Name_2 : (varsol_2 ⊓ Name_2)
-                   (inf-SOL SOL_1
-                            (remove-SOL SOL_2 Name_1))))
-   (where varsol_3 (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-   (where #f (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))
-   ]
-  [(inf-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
-   (Name_1 : (varsol_1 ⊓ Name_1)
-           (Name_2 : (varsol_2 ⊓ Name_2)
-                   (inf-SOL SOL_1 SOL_2)))
-   (where #f (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-   (where #f (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))
-   ]
+   (where varsol_4 (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
+  
+;  [(inf-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
+;   (Name_1 : (varsol_1 ⊓ Name_1)
+;           (Name_2 : (inf-varsol varsol_2 varsol_3)
+;                   (inf-SOL (remove-SOL SOL_1 Name_2)
+;                            SOL_2)))
+;   
+;   (where #f (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
+;   (where varsol_3 (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))
+;   ]
+;  [(inf-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
+;   (Name_1 : (inf-varsol varsol_1 varsol_3)
+;           (Name_2 : (varsol_2 ⊓ Name_2)
+;                   (inf-SOL SOL_1
+;                            (remove-SOL SOL_2 Name_1))))
+;   
+;   (where varsol_3 (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
+;   (where #f (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))
+;   ]
+;  
+;  [(inf-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
+;   (Name_1 : (varsol_1 ⊓ Name_1)
+;           (Name_2 : (varsol_2 ⊓ Name_2)
+;                   (inf-SOL SOL_1 SOL_2)))
+;   (where #f (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
+;   (where #f (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))
+;   ]
   )
 
 ; instantiate a given varsol with type information provided in a given Γ
@@ -289,8 +326,7 @@
   ; we do not improve type narrowing any further in this case:
   ; type checking itself will ask for P_1 and P_2 to have the same type, and that
   ; type being String or Int32
-  [(side-condition ,(not (equal? (term ==) (term relop))))
-   -------------------------------------------------------"SAT-RELOP-NO-EQ"
+  [-----------------------"SAT-RELOP-NO-EQ"
    (SAT (P_1 relop P_2) ·)]
   
   ; (isa? t Name) : bool that indicates if Name has a type that
@@ -299,7 +335,7 @@
   ; knows about it and it can affect type information", as indicated by the
   ; reference manual. Hence, it is taken into account in this sat step
   ; it can be trivially satisfied by a solution of the form Name : t
-  [----------------------------"SAT-ISA?"
+  [--------------------------------"SAT-ISA?"
    (SAT (isa? t Name) (Name : t ·))]
   
   ; NOTE: the compiler 1.5 disables type narrowing in guards like:

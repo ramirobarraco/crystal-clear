@@ -5,6 +5,7 @@
          )
 
 (define (inf-sup-test-suite)
+  ; supreme between types
   (test-equal (term (supreme-t (String Bool) Int32))
               (term (Int32 String Bool))
               )
@@ -16,9 +17,6 @@
               )
   (test-equal (term (supreme-t (String Int32) Int32))
               (term (String Int32))
-              )
-  (test-equal (term (supreme-Γ (x : (String Bool) ·) (x : String ·)))
-              (term (x : (String Bool) ·))
               )
 
   ; inf of types
@@ -116,7 +114,7 @@
               )
 
   (test-equal (term (inf-Γ (x : Int32 ·) (y : Bool ·)))
-              (term (x : ⊥ (y : ⊥ ·)))
+              (term (x : Int32 (y : Bool ·)))
               )
 
   (test-equal (term (inf-Γ (x : Int32 ·) (x : Bool ·)))
@@ -142,11 +140,11 @@
               )
 
   (test-equal (term (supreme-Γ (x : Bool ·) ·))
-              (term (x : Bool ·))
+              (term (x : (Bool Nil) ·))
               )
 
   (test-equal (term (supreme-Γ · (x : Bool ·)))
-              (term (x : Bool ·))
+              (term (x : (Bool Nil) ·))
               )
   ; TODO: no estoy seguro de que el resultado debiera ser este
   (test-equal (term (supreme-Γ (x : Int32 ·) (y : Bool ·)))
@@ -169,6 +167,19 @@
                                (x : Bool (z : Int32 (y : Int32 ·)))))
               (term (x : (Int32 Bool) (y : Int32 (z : Int32 ·))))
               )
+
+  (test-equal (term (supreme-Γ (x : (String Bool) ·) (x : String ·)))
+              (term (x : (String Bool) ·))
+              )
+
+  (test-equal (term (supreme-Γ (x : (String Bool) ·) ·))
+              (term (x : (Nil String Bool) ·))
+              )
+
+  (test-equal (term (supreme-Γ · (x : (String Bool) ·)))
+              (term (x : (Nil String Bool) ·))
+              )
+
 
   (test-results))
 
@@ -293,13 +304,13 @@
   
   ; if
   (test-equal (judgment-holds (TR (x : Int32 ·)
-                                  (if (x == 1) then (a = true) else (a = "asaS"))
+                                  (if (x == 1) (a = true) else (a = "asaS"))
                                   (Bool String)
                                   (a : (Bool String) (x : Int32 ·))))
               #t)
   
   (test-equal (judgment-holds (TR (x : (String Int32) ·)
-                                  (if (isa? Int32 x) then (x + 1) else (a = "asaS"))
+                                  (if (isa? Int32 x) (x + 1) else (a = "asaS"))
                                   (Int32 String)
                                   (x : (Int32 String) (a : (String Nil) ·))))
               #t)
@@ -315,7 +326,6 @@
   ; end
   (test-equal (judgment-holds (TR (a : (Int32 String) ·)
                                   (if (isa? String a)
-                                      then
                                       (a = (a .. "asdf"))
                                       else
                                       (a = (a + 1)))
@@ -332,7 +342,6 @@
   ;# a : String | Bool
   (test-equal (judgment-holds (TR (a : Int32 ·)
                                   ((if (a > 0)
-                                       then
                                        (a = "hello")
                                        else
                                        (a = true)) a)
@@ -347,11 +356,10 @@
   ;# b : Int32 | String
   (test-equal (judgment-holds (TR (b : Int32 ·)
                                   (if (b > 0)
-                                       then
                                        (b = "hello")
                                        else
                                        nil)
-                                  (String Int32)
+                                  (String Nil)
                                   (b : (String Int32) ·)))
               #t)
   
@@ -363,7 +371,6 @@
   ;# c : Int32 | String
   (test-equal (judgment-holds (TR (c : Int32 ·)  
                                   ((if (c == 1)
-                                       then
                                        (c = 1)
                                        else
                                        (c = "hello")) c)
@@ -375,20 +382,17 @@
   ;  d = 1
   ;end
   ;# d : Int32 | Nil
-  ;divergence becouse of diference with how we modeled the enviroment
   (test-equal (judgment-holds (TR ·
-                                  ((if (1 == 1)
-                                       then
+                                  (if (1 == 1)
                                        (d = 1)
                                        else
-                                       nil)d)
+                                       nil)
                                   (Int32 Nil)
                                   (d : (Int32 Nil) ·)))
               #t)
   
   (test-equal (judgment-holds (TR (x : Int32 ·) 
                                   ((if (a = (isa? Int32 x))
-                                       then
                                        a
                                        else
                                        nil)a)

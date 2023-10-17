@@ -77,6 +77,10 @@
   (test-equal (term (sup-varsol (String Int32) (not x)))
               (term ((String Int32) ⊔ (not x)))
               )
+
+    (test-equal (term (sup-varsol x x))
+              (term x)
+              )
   
   ; supremum of SOL
   (test-equal (term (sup-SOL · (x : Bool ·)))
@@ -114,10 +118,10 @@
 
   ; in-SOL
   (test-equal (term (in-SOL (x : String ·) y))
-              (term #f)
+              (term y)
               )
   (test-equal (term (in-SOL (x : String (z : String ·)) y))
-              (term #f)
+              (term y)
               )
   (test-equal (term (in-SOL (x : String (z : String ·)) z))
               (term String)
@@ -126,7 +130,7 @@
               (term String)
               )
   (test-equal (term (in-SOL (x : String (y : String (z : String ·))) u))
-              (term #f)
+              (term u)
               )
 
   

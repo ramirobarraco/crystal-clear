@@ -28,12 +28,11 @@
   [--------------------------------"T-STRING"
    (TR Γ str String Γ)]
 
-  ; during typing of
   [(TN Γ P_1 Γ_1 Γ_2)
    (TR Γ_1 P_2 t_1 Γ_3)
    (TR Γ_2 P_3 t_2 Γ_4)
-   -----------------------------"T-IF"
-   (TR Γ (if P_1 then P_2 else P_3) (supreme-t t_1 t_2) (supreme-Γ Γ_3 Γ_4))]
+   -------------------------------------------------------------------------"T-IF"
+   (TR Γ (if P_1 P_2 else P_3) (supreme-t t_1 t_2) (supreme-Γ Γ_3 Γ_4))]
 
   [(TR Γ P t_1 Γ)
    (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Γ Γ Name))))
@@ -61,16 +60,14 @@
    (TR Γ_1 P_2 t Γ_2)
    (TN Γ_2 P_1 Γ_1 Γ_3)
    -----------------------------"T-WHILE"
-   (TR Γ (while P_1 P_2) t (supreme-Γ Γ_3 Γ_2)
-       )]
+   (TR Γ (while P_1 P_2) t (supreme-Γ Γ_3 Γ_2))]
 
   [(TR Γ P_1 Int32 Γ)
    (TR Γ P_2 Int32 Γ)
    -----------------------------"T-ARITHOP"
    (TR Γ (P_1 arithop P_2) Int32 Γ)]
   
-  [(side-condition ,(not (redex-match? crystal-lang+Γ == (term relop))))
-   (TR Γ P_1 t Γ)
+  [(TR Γ P_1 t Γ)
    (TR Γ P_2 t Γ)
    (side-condition ,(or (equal? (term t) (term String))
                         (equal? (term t) (term Int32))))
@@ -142,8 +139,8 @@
   #:contract (TN Γ P Γ Γ)
   
   [(SAT P SOL_1)
-   ; SOL could have some varsols of the form P, for an arbitrary P
-   ; we type them and replace them with their type in SOL
+   ; SOL could have some varsols of the form P, for an arbitrary P;
+   ; we type and replace them with their type in SOL
    (where SOL_2 (type-SOL-terms SOL_1 Γ))
    
    (where Γ_1 (inst-SOL SOL_2 Γ))
@@ -152,10 +149,14 @@
    ; inf. between the proposed Γ_1 and the original Γ
    (where Γ_3 (inf-Γ Γ Γ_1))
    (where Γ_4 (inf-Γ Γ Γ_2))
-   
-   (side-condition ,(println (term Γ)))
-   (side-condition ,(println (term Γ_2)))
-   (side-condition ,(println (term Γ_4)))
+
+;   (side-condition ,(println (term SOL_1)))
+;   (side-condition ,(println (term SOL_2)))
+;   (side-condition ,(println (term Γ)))
+;   (side-condition ,(println (term Γ_1)))
+;   (side-condition ,(println (term Γ_2)))
+;   (side-condition ,(println (term Γ_3)))
+;   (side-condition ,(println (term Γ_4)))
    --------------------------------------------------------------------
    (TN Γ P Γ_3 Γ_4)]
 
