@@ -9,11 +9,11 @@
             (term 2))
 
   (test-->> progs-rel
-            (term (if true then 1 else 2))
+            (term (if true 1 else 2))
             (term 1))
   
   (test-->> progs-rel
-            (term (if false then 1 else 2))
+            (term (if false 1 else 2))
             (term 2))
 
   (test-->> progs-rel

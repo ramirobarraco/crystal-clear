@@ -14,7 +14,7 @@
      (unop P)
      (P binop P)
      (while P P)
-     (if P then P else P)
+     (if P P else P)
      (var = P)
      (t var = P)
      )
@@ -46,15 +46,11 @@
 ;     hole
 ;       )
 
-  (var ::=
-   Name
-   ;r
-   )
+  (var ::= Name)
   
-  ;Type definition
   [v nil bool int32 str]
-  
-  ;last type is the union of types
+
+  ; types
   [t Nil Bool Int32 String union ⊥]
   [st Nil Bool Int32 String]
   [union (st_!_ st_!_ st_!_ ...)]
@@ -125,7 +121,7 @@
 
   ; some syntactic categories to ease the definition of typing rules
   [arithop + - * / ^ %]
-  [relop < <= > >= ==]
+  [relop < <= > >=]
   )
 
 (provide crystal-lang+Γ)

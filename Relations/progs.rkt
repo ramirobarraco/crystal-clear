@@ -11,12 +11,12 @@
    #:domain P
    #:arrow -->P
 
-   [-->P (if v then P_1 else P_2)
+   [-->P (if v P_1 else P_2)
          P_1
          if-T
          (side-condition (not (is_false_cond? (term v))))]
 
-   [-->P (if v then P_1 else P_2)
+   [-->P (if v P_1 else P_2)
          P_2
          if-F
 
