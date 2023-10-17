@@ -19,6 +19,7 @@
   [(supreme-t ⊥ t) t]
   [(supreme-t t ⊥) t]
   [(supreme-t st_1 st_1) st_1]
+  ; {st_1 =/= st_2}
   [(supreme-t st_1 st_2) (st_1 st_2)]
   [(supreme-t st_1 (st_2 ...)) (st_2 ...) (side-condition (term (in-t (st_2 ...) st_1))) ]
   [(supreme-t st_1 (st_2 ...)) (st_1 st_2 ...) (side-condition (not (term (in-t (st_2 ...) st_1)))) ]
@@ -85,28 +86,35 @@
                                              (comp-t (st_2 st_3 st_4 ...)))]
   )
 
-(define-metafunction crystal-lang+Γ
-  equal-t : t t -> boolean
-  [(equal-t t_1 t_2) ,(and (term (upper_bound? t_1 t_2)) (term (upper_bound? t_2 t_1)))] 
-  )
-
+; supreme between 2 typing contexts: the absence of a type hypothesis for a
+; given variable x, will be interpreted as the hypothesis x : Nil
 (define-metafunction crystal-lang+Γ
   supreme-Γ : Γ Γ -> Γ
 
-  ; TODO: check this
-  [(supreme-Γ · Γ) Γ]
-  [(supreme-Γ Γ ·) Γ]
-  ;[(supreme-Γ · ·) ·]
-  ; TODO: creo que no es necesario tomar supremo
-  ;  [(supreme-Γ · (Name_1 : t_1 Γ_1)) (Name_1 : (supreme-t t_1 Nil) (supreme-Γ · Γ_1))]
-  ;  [(supreme-Γ (Name_1 : t_1 Γ_1) ·) (Name_1 : (supreme-t t_1 Nil) (supreme-Γ Γ_1 ·))]
+  [(supreme-Γ · ·)
+   ·]
+  
+  ; we need to add a union with Nil to every variable present in one context,
+  ; that is absent from the other context
+  [(supreme-Γ · (Name_1 : t_1 Γ_1))
+   (Name_1 : (supreme-t t_1 Nil) (supreme-Γ · Γ_1))]
+  
+  [(supreme-Γ (Name_1 : t_1 Γ_1) ·)
+   (Name_1 : (supreme-t t_1 Nil) (supreme-Γ Γ_1 ·))]
+  
   [(supreme-Γ (Name_1 : t_1 Γ_1) (Name_1 : t_2 Γ_2))
    (Name_1 : (supreme-t t_1 t_2) (supreme-Γ Γ_1  Γ_2))]
+
+  ; {Name_1 <> Name_2}
   [(supreme-Γ (Name_1 : t_1 Γ_1) (Name_2 : t_2 Γ_2))
-   (Name_1 : (supreme-t t_1 t_3) (Name_2 : (supreme-t t_2 t_4) (supreme-Γ (remove-Γ Γ_1 Name_2) (remove-Γ Γ_2 Name_1))))
-   (where (_ t_3) (in-Γ (Name_2 : t_2 Γ_2) Name_1))
-   (where (_ t_4) (in-Γ (Name_1 : t_1 Γ_1) Name_2))
-   ]
+   (Name_1 : (supreme-t t_1 t_3)
+    (Name_2 : (supreme-t t_2 t_4)
+     (supreme-Γ (remove-Γ Γ_1 Name_2) (remove-Γ Γ_2 Name_1))))
+
+   ; if not (in-Γ Γ_2 Name_1), t_3 = Nil; this helps implementing
+   ; the semantics of supreme-Γ (same with Name_2 and t_4)
+   (where (_ t_3) (in-Γ Γ_2 Name_1))
+   (where (_ t_4) (in-Γ Γ_1 Name_2))]
   )
 
 ; infimum of typing environments: the most restricted type assumptions
@@ -115,14 +123,44 @@
 
   ; · is no type restriction at all
   [(inf-Γ · Γ) Γ]
+  
   [(inf-Γ Γ ·) Γ]
+  
   [(inf-Γ (Name_1 : t_1 Γ_1) (Name_1 : t_2 Γ_2))
    (Name_1 : (inf-t t_1 t_2) (inf-Γ Γ_1  Γ_2))]
+
+  ; {Name_1 <> Name_2}
   [(inf-Γ (Name_1 : t_1 Γ_1) (Name_2 : t_2 Γ_2))
-   (Name_1 : (inf-t t_1 t_3) (Name_2 : (inf-t t_2 t_4) (inf-Γ (remove-Γ Γ_1 Name_2) (remove-Γ Γ_2 Name_1))))
-   (where (_ t_3) (in-Γ (Name_2 : t_2 Γ_2) Name_1))
-   (where (_ t_4) (in-Γ (Name_1 : t_1 Γ_1) Name_2))
-   ]
+   (Name_1 : (inf-t t_1 t_3)
+           (Name_2 : (inf-t t_2 t_4)
+                   (inf-Γ (remove-Γ Γ_1 Name_2) (remove-Γ Γ_2 Name_1))))
+   
+   (where (#t t_3) (in-Γ (Name_2 : t_2 Γ_2) Name_1))
+   (where (#t t_4) (in-Γ (Name_1 : t_1 Γ_1) Name_2))]
+
+   [(inf-Γ (Name_1 : t_1 Γ_1) (Name_2 : t_2 Γ_2))
+   (Name_1 : t_1
+           (Name_2 : (inf-t t_2 t_4)
+                   (inf-Γ (remove-Γ Γ_1 Name_2) (remove-Γ Γ_2 Name_1))))
+   
+   (where (#f _) (in-Γ (Name_2 : t_2 Γ_2) Name_1))
+   (where (#t t_4) (in-Γ (Name_1 : t_1 Γ_1) Name_2))]
+
+  [(inf-Γ (Name_1 : t_1 Γ_1) (Name_2 : t_2 Γ_2))
+   (Name_1 : (inf-t t_1 t_3)
+           (Name_2 : t_2
+                   (inf-Γ (remove-Γ Γ_1 Name_2) (remove-Γ Γ_2 Name_1))))
+   
+   (where (#t t_3) (in-Γ (Name_2 : t_2 Γ_2) Name_1))
+   (where (#f _) (in-Γ (Name_1 : t_1 Γ_1) Name_2))]
+
+  [(inf-Γ (Name_1 : t_1 Γ_1) (Name_2 : t_2 Γ_2))
+   (Name_1 : t_1
+           (Name_2 : t_2
+                   (inf-Γ (remove-Γ Γ_1 Name_2) (remove-Γ Γ_2 Name_1))))
+   
+   (where (#f _) (in-Γ (Name_2 : t_2 Γ_2) Name_1))
+   (where (#f _) (in-Γ (Name_1 : t_1 Γ_1) Name_2))]
   )
 
 ; removes from the first t the second t
@@ -137,6 +175,7 @@
   [(remove-t (st_1 st_2 ...) (st_3 st_4 ...))(remove-t t_1 (st_4 ...)) (where t_1 ,(remove (term st_3) (term (st_1 st_2 ...))))]
   )
 
+; removes typing assumptions of a given Name
 (define-metafunction crystal-lang+Γ
   [(remove-Γ · Name) ·]
   [(remove-Γ (Name_1 : t Γ) Name_1) Γ]
