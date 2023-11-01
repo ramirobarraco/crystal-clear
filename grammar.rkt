@@ -3,35 +3,29 @@
 (require redex)
 (define-language crystal-lang
   
-  (P ::=
-     (P P P ...)
-     e
-     )
-  (e ::=
-     v
-     var
-     (isa? t P)
-     (unop P)
-     (P binop P)
-     (while P P)
-     (if P P else P)
-     (var = P)
-     (t var = P)
-     )
+  (P ::= (P P P ...) e)
+  
+  (e ::= v
+         var
+         (isa? t P)
+         (unop P)
+         (P binop P)
+         (while P P)
+         (if P P else P)
+         (var = P)
+         )
   
 ; next instruction to compute
   
-  (E ::=
-     (unop E)
-     (E binop P)
-     (v strictbinop E)
-     (E P P ...)
-     (isa? t E)
-     (if E then P else P)
-     (var = E)
-     (t var = E)
-     hole
-     )
+  (E ::= (unop E)
+         (E binop P)
+         (v strictbinop E)
+         (E P P ...)
+         (isa? t E)
+         (if E P else P)
+         (var = E)
+         hole
+         )
   
 ; Context
 ;  (Ev ::=

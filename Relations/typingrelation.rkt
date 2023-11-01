@@ -28,11 +28,12 @@
   [--------------------------------"T-STRING"
    (TR Γ str String Γ)]
 
-  [(TN Γ P_1 Γ_1 Γ_2)
-   (TR Γ_1 P_2 t_1 Γ_3)
-   (TR Γ_2 P_3 t_2 Γ_4)
+  [(TR Γ_1 P_1 t_1 Γ_2)
+   (TN Γ_2 P_1 Γ_3 Γ_4)
+   (TR Γ_3 P_2 t_2 Γ_5)
+   (TR Γ_4 P_3 t_3 Γ_6)
    -------------------------------------------------------------------------"T-IF"
-   (TR Γ (if P_1 P_2 else P_3) (supreme-t t_1 t_2) (supreme-Γ Γ_3 Γ_4))]
+   (TR Γ_1 (if P_1 P_2 else P_3) (supreme-t t_2 t_3) (supreme-Γ Γ_5 Γ_6))]
 
   [(TR Γ P t_1 Γ)
    (side-condition ,(redex-match? crystal-lang+Γ (#f _) (term (in-Γ Γ Name))))
@@ -48,13 +49,15 @@
    -----------------------------"T-REDEFINE"
    (TR Γ (Name = P) t_1 Γ_1)]
 
-  [(concat Γ_1 P_2 P_1 t_1 Γ_2)
+  [(TR Γ_1 P_1 t_1 Γ_2)
+   (TR Γ_2 P_2 t_2 Γ_3)
    --------------------------------------------------------------"T-2P"
-   (TR Γ_1 (P_1 P_2) t_1 Γ_2)]
+   (TR Γ_1 (P_1 P_2) t_2 Γ_3)]
 
-  [(concat Γ_1 (P_2 P_3 P_4 ...) P_1 t_1 Γ_2)
+  [(TR Γ_1 P_1 t_1 Γ_2)
+   (TR Γ_2 (P_2 P_3 P_4 ...) t_2 Γ_3)
    --------------------------------------------------------------"T-CONCAT"
-   (TR Γ_1 (P_1 P_2 P_3 P_4 ...) t_1 Γ_2)]
+   (TR Γ_1 (P_1 P_2 P_3 P_4 ...) t_2 Γ_3)]
 
   [(TN Γ P_1 Γ_1 Γ_3)
    (TR Γ_1 P_2 t Γ_2)
@@ -106,33 +109,13 @@
    -----------------------------"T-NAME"
    (TR Γ Name t Γ)]
   
-  [(TR Γ P t Γ)
+  [(TR Γ_1 P t_2 Γ_2)
    ----------------------------"T-ISA?"
-   (TR Γ (isa? t P) Bool Γ)]
+   (TR Γ_1 (isa? t_1 P) Bool Γ_2)]
   
   )
 
-(define-judgment-form
-  crystal-lang+Γ
-  #:mode (concat I I I O O)
-  #:contract (concat Γ P P t Γ)
-
-  [(TR Γ_1 P_1 t_1 Γ_2)
-   (concat Γ_2 P_3 P_2 t_2 Γ_3)
-   --------------------------------------------------------------------
-   (concat Γ_1 (P_2 P_3) P_1 t_2 Γ_3)]
-
-  [(TR Γ_1 P_1 t_1 Γ_2)
-   (concat Γ_2 (P_3 P_4 P_5 ...) P_2 t_2 Γ_3)
-   --------------------------------------------------------------------
-   (concat Γ_1  (P_2 P_3 P_4 P_5 ...) P_1 t_2 Γ_3)]
-
-  [(TR Γ_1 P_1 t_1 Γ_2)
-   (TR Γ_2 P_2 t_2 Γ_3)
-   --------------------------------------------------------------------
-   (concat Γ_1 P_2 P_1 t_2 Γ_3)]
-  )
-
+; type narrowing
 (define-judgment-form
   crystal-lang+Γ
   #:mode (TN I I O O)
@@ -149,14 +132,9 @@
    ; inf. between the proposed Γ_1 and the original Γ
    (where Γ_3 (inf-Γ Γ Γ_1))
    (where Γ_4 (inf-Γ Γ Γ_2))
-
-;   (side-condition ,(println (term SOL_1)))
-;   (side-condition ,(println (term SOL_2)))
-;   (side-condition ,(println (term Γ)))
-;   (side-condition ,(println (term Γ_1)))
-;   (side-condition ,(println (term Γ_2)))
-;   (side-condition ,(println (term Γ_3)))
-;   (side-condition ,(println (term Γ_4)))
+   (side-condition ,(println (term SOL_1)))
+   (side-condition ,(println (term Γ_3)))
+   (side-condition ,(println (term Γ)))
    --------------------------------------------------------------------
    (TN Γ P Γ_3 Γ_4)]
 

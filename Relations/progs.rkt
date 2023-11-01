@@ -31,7 +31,7 @@
          more-e]
 
    [-->P (while P_1 P_2)
-         (if P_1 then (P_2 (while P_1 P_2)) else nil)
+         (if P_1 (P_2 (while P_1 P_2)) else nil)
          while
          ]
    

@@ -186,10 +186,6 @@
 (provide inf-sup-contexts-test-suite)
 
 (define (type-checking-test-suite)
-  ;Concat judgment form
-  ; TODO: where should we put this test? are more tests needed?
-  (test-equal (judgment-holds (concat (x : Int32 ·) (nil nil nil) nil Nil (x : Int32 ·))) #t)
-  
   ; values
   (test-equal (judgment-holds (TR (x : Int32 ·) x Int32 (x : Int32 ·))) #t)
   (test-equal (judgment-holds (TR · 10 Int32 ·)) #t)
@@ -293,6 +289,11 @@
 
   ; assignment
   (test-equal (judgment-holds (TR (x : Bool ·) (a = x) Bool (a : Bool (x : Bool ·)))) #t)
+
+  
+  ; concat
+  (test-equal (judgment-holds (TR (x : Int32 ·) ((x = "asd") (x = true)) Bool (x : Bool ·))) #t)
+  (judgment-holds (TR · ((a = 1) (if (a = (isa? Int32 a)) (a + "S") else a)) t Γ) (t Γ))
   
   ;while
   ; TODO: solve while!

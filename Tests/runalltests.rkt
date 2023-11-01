@@ -1,8 +1,11 @@
 #lang racket
 (require redex
-         ; Type-checking
+         ; type-checking
          "./sattest.rkt"
          "./typecheckingtest.rkt"
+         ; dyn. semantics
+         "./fullprogstest.rkt"
+         "./sigmaprogstest.rkt"
          rackunit/text-ui
          )
 
@@ -19,9 +22,17 @@
   (type-checking-test-suite)
   )
 
+(define (test-dyn-sem)
+  (print "testing sigma-progs-rel:")
+  (sigma-progs-test-suite)
+  (print "testing full-progs-rel:")
+  (full-progs-rel-test-suite)
+  )
+
 (define (test-all)
   (check-redundancy #t)
   (caching-enabled? #t)
+  (test-dyn-sem)
   (test-type-checking))
 
 (test-all)
