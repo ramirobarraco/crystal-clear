@@ -316,6 +316,14 @@
                                   (x : (Int32 String) (a : (String Nil) ·))))
               #t)
 
+  (test-equal (judgment-holds (TR (x : Int32 (y : (Int32 String)·)) 
+                                  (if (x == y)
+                                       (x + y)
+                                       else
+                                       nil)
+                                  (Int32 Nil) (x : Int32 (y : (Int32 String) ·))))
+              #t)
+
   ; example based on crystal docs
   ; b = true ? 1 : "hello"
   ; puts (typeof (b))
@@ -399,6 +407,14 @@
                                        nil)a)
                                   Bool
                                   (a : Bool (x : Int32 ·))))
+              #t)
+
+  ; interesting behavior that breaks the original intended preservation property
+  (test-equal (judgment-holds (TR (x : (Int32 String) ·) (if (isa? Int32 x) (x = true) else nil) (Bool Nil) (x : (Bool String) ·)))
+              #t)
+  (test-equal (judgment-holds (TR (x : (Int32 String) ·) (if true (x = true) else nil) (Bool Nil) (x : (Bool Int32 String) ·)))
+              #t)
+  (test-equal (judgment-holds (TR (x : (Int32 String) ·) (x = true) Bool (x : Bool ·)))
               #t)
   
   (test-results)

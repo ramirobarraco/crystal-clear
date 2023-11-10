@@ -26,19 +26,6 @@
          (var = E)
          hole
          )
-  
-; Context
-;  (Ev ::=
-;     (unop hole)
-;     (hole binop P)
-;     (v strictbinop hole)
-;     (hole P P ...)
-;     (if hole then P else P)
-;     (var = hole)
-;     (t var = hole)
-;     (isa? t hole)
-;     hole
-;       )
 
   (var ::= Name)
   
@@ -93,25 +80,26 @@
 
 (define-extended-language crystal-lang+Γ crystal-lang
   [Γ · (Name : t Γ)]
+  
   ; SAT solutions
-  ; possible type of a variable
+  
+  ; expression describing the possible type of a variable
   [varsol t
-          ; TODO: estoy admitiendo cosas que no corresponde
-          ; (varsol_!_ varsol_!_ varsol_!_ ...)
           ; to allow for the analysis of relops over 
           ; Names and arbitrary terms
           P
           (not varsol)
           (varsol ⊔ varsol)
-          (varsol ⊓ varsol)]
-  ; TODO: symbol? otro nombre?
+          (varsol ⊓ varsol)
+          ; to express the restrictions imposed by a guard of the
+          ; form Name == P: it restricts the type of Name in the 'if' branch,
+          ; but not in the 'else' branch
+          (varsol △ varsol)]
+  
   ; solutions for every variable
-  [SOL · ; the more relaxed solution possible: does not
+  [SOL · ; the most relaxed solution possible: does not
          ; restrict the type of variables: ∀ x, ·(x) = x 
-       (Name : varsol SOL)
-       
-       ;T
-       ]
+       (Name : varsol SOL)]
 
   ; some syntactic categories to ease the definition of typing rules
   [arithop + - * / ^ %]

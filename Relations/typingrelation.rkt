@@ -126,22 +126,24 @@
    ; we type and replace them with their type in SOL
    (where SOL_2 (type-SOL-terms SOL_1 Γ))
    
-   (where Γ_1 (inst-SOL SOL_2 Γ))
-   (where Γ_2 (inst-SOL (comp-SOL SOL_2) Γ))
+   (where Γ_1 (denote-SOL SOL_2))
+   (where Γ_2 (denote-SOL (comp-SOL SOL_2)))
 
    ; inf. between the proposed Γ_1 and the original Γ
    (where Γ_3 (inf-Γ Γ Γ_1))
    (where Γ_4 (inf-Γ Γ Γ_2))
    (side-condition ,(println (term SOL_1)))
+   (side-condition ,(println (term SOL_2)))
+   (side-condition ,(println (term Γ_1)))
+   (side-condition ,(println (term Γ_2)))
    (side-condition ,(println (term Γ_3)))
-   (side-condition ,(println (term Γ)))
+   (side-condition ,(println (term Γ_4)))
    --------------------------------------------------------------------
    (TN Γ P Γ_3 Γ_4)]
 
   )
 
 (provide (all-defined-out))
-
 
 ; to replace varsols of the form P, present into a given SOL,
 ; with their respective type
@@ -155,7 +157,6 @@
    (Name : (type-varsol-terms varsol Γ)
            (type-SOL-terms SOL Γ))]
   )
-
 
 (define-metafunction crystal-lang+Γ
   type-varsol-terms : varsol Γ -> varsol
@@ -176,10 +177,14 @@
   
   [(type-varsol-terms (varsol_1 ⊓ varsol_2) Γ)
    ((type-varsol-terms varsol_1 Γ) ⊓ (type-varsol-terms varsol_2 Γ))]
+
+  [(type-varsol-terms (Name △ varsol) Γ)
+   ((type-varsol-terms Name Γ) △ (type-varsol-terms varsol Γ))]
   
   [(type-varsol-terms varsol _)
    varsol]
   )
+
 ; TODO: esta función para no usarse
 (define-metafunction crystal-lang+Γ
   make-Γ : σϵprog -> Γ

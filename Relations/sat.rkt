@@ -12,7 +12,15 @@
   comp-varsol : varsol -> varsol
 
   [(comp-varsol t) (comp-t t)]
+  
   [(comp-varsol (not varsol)) varsol]
+  
+  ; guards of the form Name_1 == Name_2 do not restrict the 'else'
+  ; branch; hence, the complement here should not behave as with the
+  ; remaining varsols: in the 'else' branch, the variable recover its
+  ; original type
+  [(comp-varsol (varsol_1 △ varsol_2)) varsol_1]
+  
   [(comp-varsol varsol) (not varsol)]
   )
 
@@ -65,30 +73,6 @@
                             (remove-SOL SOL_2 Name_1))))
    (where varsol_3 (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
    (where varsol_4 (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
-
-;  [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
-;   (Name_1 : (varsol_1 ⊔ Name_1)
-;           (Name_2 : (sup-varsol varsol_2 varsol_4)
-;                   (sup-SOL (remove-SOL SOL_1 Name_2)
-;                            (remove-SOL SOL_2 Name_1))))
-;   (where #f (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-;   (where varsol_4 (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
-;
-;  [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
-;   (Name_1 : (sup-varsol varsol_1 varsol_3)
-;           (Name_2 : (varsol_2 ⊔ Name_2)
-;                   (sup-SOL (remove-SOL SOL_1 Name_2)
-;                            (remove-SOL SOL_2 Name_1))))
-;   (where varsol_3 (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-;   (where #f (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
-;
-;  [(sup-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
-;   (Name_1 : (varsol_1 ⊔ Name_1)
-;           (Name_2 : (varsol_2 ⊔ Name_2)
-;                   (sup-SOL (remove-SOL SOL_1 Name_2)
-;                            (remove-SOL SOL_2 Name_1))))
-;   (where #f (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-;   (where #f (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
   )
 
 ; removes the solution proposed for a given Name, into a given SOL
@@ -158,69 +142,37 @@
    
    (where varsol_3 (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
    (where varsol_4 (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))]
-  
-;  [(inf-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
-;   (Name_1 : (varsol_1 ⊓ Name_1)
-;           (Name_2 : (inf-varsol varsol_2 varsol_3)
-;                   (inf-SOL (remove-SOL SOL_1 Name_2)
-;                            SOL_2)))
-;   
-;   (where #f (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-;   (where varsol_3 (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))
-;   ]
-;  [(inf-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
-;   (Name_1 : (inf-varsol varsol_1 varsol_3)
-;           (Name_2 : (varsol_2 ⊓ Name_2)
-;                   (inf-SOL SOL_1
-;                            (remove-SOL SOL_2 Name_1))))
-;   
-;   (where varsol_3 (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-;   (where #f (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))
-;   ]
-;  
-;  [(inf-SOL (Name_1 : varsol_1 SOL_1) (Name_2 : varsol_2 SOL_2))
-;   (Name_1 : (varsol_1 ⊓ Name_1)
-;           (Name_2 : (varsol_2 ⊓ Name_2)
-;                   (inf-SOL SOL_1 SOL_2)))
-;   (where #f (in-SOL (Name_2 : varsol_2 SOL_2) Name_1))
-;   (where #f (in-SOL (Name_1 : varsol_1 SOL_1) Name_2))
-;   ]
   )
 
-; instantiate a given varsol with type information provided in a given Γ
+; denotational semantics for varsols
 (define-metafunction crystal-lang+Γ
-  inst-varsol : varsol Γ -> t
-  ; PRE : {every Name occurring in varsol has a type assigned by means of
-  ;        Γ}
-  [(inst-varsol t _) t]
+  denote-varsol : varsol -> t
+  ; PRE : {every P occurring in the original varsol has been replaced by its type}
+  [(denote-varsol t) t]
 
-  [(inst-varsol Name Γ)
-   t
+  [(denote-varsol (not varsol))
+   (comp-t (denote-varsol varsol))]
 
-   (where (#t t) (in-Γ Γ Name))]
+  [(denote-varsol (varsol_1 ⊔ varsol_2))
+   (supreme-t (denote-varsol varsol_1) (denote-varsol varsol_2))]
 
-  [(inst-varsol (not varsol) Γ)
-   (comp-t (inst-varsol varsol Γ))]
+  [(denote-varsol (varsol_1 ⊓ varsol_2))
+   (inf-t (denote-varsol varsol_1) (denote-varsol varsol_2))]
 
-  [(inst-varsol (varsol_1 ⊔ varsol_2) Γ)
-   (supreme-t (inst-varsol varsol_1 Γ) (inst-varsol varsol_2 Γ))]
-
-  [(inst-varsol (varsol_1 ⊓ varsol_2) Γ)
-   (inf-t (inst-varsol varsol_1 Γ) (inst-varsol varsol_2 Γ))]
+  [(denote-varsol (t △ varsol))
+   (inf-t t (denote-varsol varsol))]
   )
 
-
-; instantiate every varsol in a given SOL, with type information provided in a given Γ;
-; returns the corresponding new Γ
+; denotational semantics for a given SOL, that has embeded all the required
+; typing information to build the corresponding Γ
+; PRE : {every P occurring in varsols in SOL have been replaced by their type}
 (define-metafunction crystal-lang+Γ
-  inst-SOL : SOL Γ -> Γ
-  ; PRE : {every Name occurring in varsols in SOL has a type assigned by means of
-  ;        Γ}
-  [(inst-SOL · _) ·]
+  denote-SOL : SOL -> Γ
+  [(denote-SOL ·) ·]
 
-  [(inst-SOL (Name : varsol SOL) Γ)
-   (Name : (inst-varsol varsol Γ)
-         (inst-SOL SOL Γ))]
+  [(denote-SOL (Name : varsol SOL))
+   (Name : (denote-varsol varsol)
+         (denote-SOL SOL))]
   )
 
 
@@ -294,28 +246,24 @@
   ;           ^
   ; Error: undefined method '+' for Bool (compile-time type is (Bool | Int32))
   ; pasa lo mismo con otras relaciones
-  [; TODO: can't use pattern _!_ to impose different Names,
-   ; and refer later to the matched Names
-   (side-condition ,(not (equal? (term Name_1)
+  [(side-condition ,(not (equal? (term Name_1)
                                  (term Name_2))))
    -----------------------------------------------------------"SAT-RELOP-DIF-NAMES"
-   (SAT (Name_1 == Name_2) (Name_1 : (Name_1 ⊓ Name_2)
-                           (Name_2 : (Name_2 ⊓ Name_1) ·)))]
+   (SAT (Name_1 == Name_2) (Name_1 : (Name_1 △ Name_2)
+                           (Name_2 : (Name_2 △ Name_1) ·)))]
 
   ; no restriction
   [----------------------"SAT-RELOP-SAME-NAME"
    (SAT (Name == Name) ·)]
 
-  [(side-condition ,(not (equal? (term Name)
-                                 (term P))))
-   ------------------------------------------"SAT-RELOP-L-NAME"
-   (SAT (Name == P) (Name : (Name ⊓ P) ·))]
+  [(side-condition ,(not (redex-match? crystal-lang+Γ Name (term P))))
+   -------------------------------------------------------------------"SAT-RELOP-L-NAME"
+   (SAT (Name == P) (Name : (Name △ P) ·))]
 
   
-  [(side-condition ,(not (equal? (term Name)
-                                 (term P))))
-   ------------------------------------------"SAT-RELOP-R-NAME"
-   (SAT (P == Name) (Name : (Name ⊓ P) ·))]
+  [(side-condition ,(not (redex-match? crystal-lang+Γ Name (term P))))
+   -------------------------------------------------------------------"SAT-RELOP-R-NAME"
+   (SAT (P == Name) (Name : (Name △ P) ·))]
 
   
   [(side-condition ,(and (not (redex-match? crystal-lang+Γ Name (term P_1)))
