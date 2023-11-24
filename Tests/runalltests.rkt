@@ -18,6 +18,8 @@
   (inf-sup-test-suite)
   (print "testing sup. and inf. of typing contexts:")
   (inf-sup-contexts-test-suite)
+  (print "testing subtyping:")
+  (subtyping-test-suite)
   (print "testing typing relation:")
   (type-checking-test-suite)
   )

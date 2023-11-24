@@ -4,6 +4,78 @@
          "../Meta-functions/typing.rkt"
          )
 
+; subtyping
+(define (subtyping-test-suite)
+  ; bottom type
+  (test-equal (judgment-holds (subtype ⊥ Bool))
+              #t)
+
+  (test-equal (judgment-holds (subtype ⊥ Int32))
+              #t)
+
+  (test-equal (judgment-holds (subtype ⊥ String))
+              #t)
+
+  (test-equal (judgment-holds (subtype ⊥ (Int32 Bool)))
+              #t)
+
+  (test-equal (judgment-holds (subtype ⊥ (Int32 Bool String)))
+              #t)
+
+  (test-equal (judgment-holds (subtype ⊥ (Int32 Bool String Nil)))
+              #t)
+
+  ; remaining st types
+  (test-equal (judgment-holds (subtype Int32 String))
+              #f)
+
+  (test-equal (judgment-holds (subtype Int32 Bool))
+              #f)
+
+  (test-equal (judgment-holds (subtype Nil Bool))
+              #f)
+
+  ; union types
+  (test-equal (judgment-holds (subtype Int32 (Int32 Bool)))
+              #t)
+  
+  (test-equal (judgment-holds (subtype Bool (Int32 Bool)))
+              #t)
+  
+  (test-equal (judgment-holds (subtype String (Int32 Bool)))
+              #f)
+
+  (test-equal (judgment-holds (subtype (Int32 Bool) (Int32 Bool String)))
+              #t)
+
+
+  (test-equal (judgment-holds (subtype (Int32 Bool String) (Bool Int32 String Nil)))
+              #t)
+  
+  ; reflexivity
+  (test-equal (judgment-holds (subtype ⊥ ⊥))
+              #t)
+  
+  (test-equal (judgment-holds (subtype Int32 Int32))
+              #t)
+
+  (test-equal (judgment-holds (subtype String String))
+              #t)
+  
+  (test-equal (judgment-holds (subtype Bool Bool))
+              #t)
+
+  (test-equal (judgment-holds (subtype (Int32 Bool) (Int32 Bool)))
+              #t)
+
+  (test-equal (judgment-holds (subtype (Bool Int32) (Bool Int32)))
+              #t)
+  
+  
+  (test-results))
+
+(provide subtyping-test-suite)
+
 (define (inf-sup-test-suite)
   ; supreme between types
   (test-equal (term (supreme-t (String Bool) Int32))

@@ -21,8 +21,9 @@
   [(supreme-t st_1 st_1) st_1]
   ; {st_1 =/= st_2}
   [(supreme-t st_1 st_2) (st_1 st_2)]
-  [(supreme-t st_1 (st_2 ...)) (st_2 ...) (side-condition (term (in-t (st_2 ...) st_1))) ]
-  [(supreme-t st_1 (st_2 ...)) (st_1 st_2 ...) (side-condition (not (term (in-t (st_2 ...) st_1)))) ]
+  [(supreme-t st_1 (st_2 ... st_1 st_3 ...)) (st_2 ... st_1 st_3 ...)]
+  ; {not (term (in-t (st_2 ...) st_1))))}
+  [(supreme-t st_1 (st_2 ...)) (st_1 st_2 ...) ]
   [(supreme-t (st_1 ...) st_2) (supreme-t st_2 (st_1 ...))]
   [(supreme-t (st_1 ...) (st_2 ...)) t_3 (where t_3 ,(remove-duplicates (append (term (st_1 ...)) (term (st_2 ...)))))]
   )
@@ -30,34 +31,43 @@
 ; infimum between types
 (define-metafunction crystal-lang+Γ
   inf-t : t t -> t
+
   [(inf-t ⊥ t) ⊥]
+  
   [(inf-t t ⊥) ⊥]
+  
   [(inf-t st_1 st_1) st_1]
+  
+  ; {st_1 <> st_2}
   [(inf-t st_1 st_2) ⊥]
-  [(inf-t st_1 (st_2 ...)) st_1
-                           (side-condition (term (in-t (st_2 ...) st_1))) ]
-  [(inf-t st_1 (st_2 ...)) ⊥
-                           (side-condition (not (term (in-t (st_2 ...) st_1)))) ]
+  
+  [(inf-t st_1 (st_2 ... st_1 st_3 ...)) st_1]
+  
+  [(inf-t st_1 (st_2 ...)) ⊥]
+  
   [(inf-t (st_1 ...) st_2) (inf-t st_2 (st_1 ...))]
+  
   ; several base cases, to solve everything here and avoid defining auxiliary
   ; functions
-  [(inf-t (st_1 st_2) (st_3 st_4 st_5 ...)) t_3
+  [(inf-t (st_1 st_2) (st_3 st_4 st_5 ...))
+   t_3
                                             
-                                            (where t_1 (inf-t st_1
-                                                              (st_3 st_4 st_5 ...)))
-                                            (where t_2 (inf-t st_2
-                                                              (st_3 st_4 st_5 ...)))
-                                            (where t_3 (supreme-t t_1 t_2))]
+   (where t_1 (inf-t st_1
+                     (st_3 st_4 st_5 ...)))
+   (where t_2 (inf-t st_2
+                     (st_3 st_4 st_5 ...)))
+   (where t_3 (supreme-t t_1 t_2))]
 
-  [(inf-t (st_1 st_2 st_3 ...) (st_4 st_5)) t_3
+  [(inf-t (st_1 st_2 st_3 ...) (st_4 st_5))
+   t_3
                                             
-                                            (where t_1 (inf-t (st_1 st_2 st_3 ...)
-                                                              st_4))
-                                            (where t_2 (inf-t (st_1 st_2 st_3 ...)
-                                                              st_5))
-                                            (where t_3 (supreme-t t_1 t_2))]
+   (where t_1 (inf-t (st_1 st_2 st_3 ...) st_4))
+   (where t_2 (inf-t (st_1 st_2 st_3 ...) st_5))
+   (where t_3 (supreme-t t_1 t_2))]
   
-  [(inf-t (st_1 st_2 st_3 st_4 ...) (st_5 st_6 st_7 st_8 ...)) t_3
+  [(inf-t (st_1 st_2 st_3 st_4 ...) (st_5 st_6 st_7 st_8 ...))
+   t_3
+   
    (where t_1 (inf-t st_1 (st_5 st_6 st_7 st_8 ...)))
    (where t_2 (inf-t (st_2 st_3 st_4 ...) (st_5 st_6 st_7 st_8 ...)))
    (where t_3 (supreme-t t_1 t_2))]
@@ -202,4 +212,5 @@
   [(typeof-Γ Γ Name_1)
    t (where (_ t) (in-Γ Γ Name_1))
    ])
+
 (provide (all-defined-out))

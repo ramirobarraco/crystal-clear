@@ -2,12 +2,33 @@
 (require redex
          "../grammar.rkt"
          "./fullprogs.rkt"
-         ; TODO: usar subtyping
-         "./subtyping.rkt"
          "./sat.rkt"
          "../Meta-functions/aux_fun.rkt"
          "../Meta-functions/typing.rkt"
          )
+
+; subtyping relation: "algorithmic" subtyping, no mention to transitivity 
+(define-relation crystal-lang
+  subtype ⊆ t × t
+  
+  ; we have a bottom type
+  [(subtype ⊥ t)]
+
+  ; subtyping is reflexive
+  [(subtype t t)]
+  
+  [(subtype st_1 (st_2 ... st_1 st_3 ...))]
+
+  [(subtype (st_1 st_2) (t_3 ...))
+
+   (side-condition (judgment-holds (subtype st_1 (t_3 ...))))
+   (side-condition (judgment-holds (subtype st_2 (t_3 ...))))]
+
+  [(subtype (st_1 st_2 st_3 st_4 ...) (st_5 ...))
+
+   (side-condition (judgment-holds (subtype st_1 (st_5 ...))))
+   (side-condition (judgment-holds (subtype (st_2 st_3 st_4 ...) (st_5 ...))))]
+)
 
 
 ; flow-sensitive typing relation: Γ × P × t × Γ
