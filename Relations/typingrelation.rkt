@@ -86,15 +86,18 @@
    -----------------------------"T-WHILE"
    (TR Γ (while P_1 P_2) t (supreme-Γ Γ_3 Γ_2))]
 
-  [(TR Γ P_1 Int32 Γ)
-   (TR Γ P_2 Int32 Γ)
+  ; algorithmic subsumption
+  [(TR Γ P_1 t_1 Γ)
+   (TR Γ P_2 t_2 Γ)
+   (subtype t_1 Int32)
+   (subtype t_2 Int32)
    -----------------------------"T-ARITHOP"
    (TR Γ (P_1 arithop P_2) Int32 Γ)]
   
   [(TR Γ P_1 t Γ)
    (TR Γ P_2 t Γ)
-   (side-condition ,(or (equal? (term t) (term String))
-                        (equal? (term t) (term Int32))))
+   (side-condition ,(or (judgment-holds (subtype t String))
+                        (judgment-holds (subtype t Int32))))
    ---------------------------------------------------------------------"T-RELOP"
    (TR Γ (P_1 relop P_2) Bool Γ)]
 
@@ -103,8 +106,11 @@
    --------------------------"T-EQ"
    (TR Γ (P_1 == P_2) Bool Γ)]
 
-  [(TR Γ P_1 String Γ)
-   (TR Γ P_2 String Γ)
+  ; algorithmic subsumption
+  [(TR Γ P_1 t_1 Γ)
+   (TR Γ P_2 t_2 Γ)
+   (subtype t_1 String)
+   (subtype t_2 String)
    ----------------------------"T-STRCONCAT"
    (TR Γ (P_1 .. P_2) String Γ)]
 
@@ -121,7 +127,9 @@
    -----------------------------"T-NOT"
    (TR Γ (not P) Bool Γ)]
 
-  [(TR Γ P_1 Int32 Γ)
+  ; algorithmic subsumption
+  [(TR Γ P_1 t Γ)
+   (subtype t Int32)
    -----------------------------"T-NEGATIVE"
    (TR Γ (- P_1) Int32 Γ)]
 
